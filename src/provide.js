@@ -274,6 +274,11 @@ export default function provide (propTypes, options = {}) {
       }
     }
 
+    if (!WrappedComponent.propTypes) {
+      WrappedComponent.propTypes = {};
+    }
+    Object.assign(WrappedComponent.propTypes, propTypes);
+
     Provide.displayName = getDisplayName();
     Provide.WrappedComponent = WrappedComponent;
     Provide.contextTypes = {
