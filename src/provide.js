@@ -135,7 +135,7 @@ export default function provide (propTypes, options = {}) {
         Object.assign(mergedProps, providerMergedProps);
       }
 
-      for (let key in propTypes) {
+      for (let key in WrappedComponent.propTypes) {
         if (mergedProps[key] !== undefined) {
           filtered[key] = mergedProps[key];
         }
