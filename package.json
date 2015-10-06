@@ -1,0 +1,42 @@
+{
+  "name": "react-redux-provide",
+  "version": "3.1.0",
+  "description": "Wrap components with a smart component and later assign providers (i.e., stores and action creators) to it.",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "babel src --out-dir lib --stage 0",
+    "clean": "rimraf lib",
+    "prepublish": "npm run clean && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loggur/react-redux-provide.git"
+  },
+  "keywords": [
+    "react",
+    "redux",
+    "provide",
+    "stores",
+    "actions",
+    "smart",
+    "dumb",
+    "decorator",
+    "hoc"
+  ],
+  "author": "timbur",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/loggur/react-redux-provide/issues"
+  },
+  "homepage": "https://github.com/loggur/react-redux-provide#readme",
+  "dependencies": {
+    "hoist-non-react-statics": "^1.0.3",
+    "react-redux": "^3.1.0",
+    "redux": "^3.0.2"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "rimraf": "^2.4.3"
+  }
+}
