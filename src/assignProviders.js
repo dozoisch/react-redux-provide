@@ -1,3 +1,6 @@
+import createProvider from './createProvider';
+import namespaceProvider from './namespaceProvider';
+
 /**
  * Assigns each provider to each component.  Expects each component to be
  * decorated with `@provide` such that it has an `addProvider` static method.
@@ -7,20 +10,18 @@
  * @api public
  */
 export default function assignProviders (providers, components) {
-  for (let providerName in providers) {
-    let provider = providers[providerName];
-
-    if (provider.default) {
-      provider = provider.default;
-    } else if (provider.provider) {
-      provider = provider.provider;
-    }
+  for (let key in providers) {
+    let provider = providers[key];
 
     for (let componentName in components) {
       let addProvider = components[componentName].addProvider;
       
       if (typeof addProvider === 'function') {
-        addProvider(providerName, provider);
+        if (provider.namespaced || provider.name !== key) {
+          provider = namespaceProvider(key, provider);
+        }
+
+        addProvider(key, createProvider(provider));
       }
     }
   }

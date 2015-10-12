@@ -8,7 +8,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
  * @return {Object}
  * @api public
  */
-export default function createStoreFromProviders (providers, initialState) {
+export default function createProvidersStore (providers, initialState) {
   const reducers = {};
   const middleware = [];
   let create = createStore;

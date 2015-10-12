@@ -1,5 +1,4 @@
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
 
 /**
  * Creates an object to be used as a provider from a set of actions and 
