@@ -1,11 +1,10 @@
-import React, { Component, PropTypes } from 'react';
-import createStoreShape from 'react-redux/lib/utils/createStoreShape';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import shallowEqual from 'react-redux/lib/utils/shallowEqual';
 import isPlainObject from 'react-redux/lib/utils/isPlainObject';
 import wrapActionCreators from 'react-redux/lib/utils/wrapActionCreators';
 import hoistStatics from 'hoist-non-react-statics';
 
-const storeShape = createStoreShape(PropTypes);
 const defaultMapState = () => ({});
 const defaultMapDispatch = dispatch => ({ dispatch });
 const defaultMerge = (stateProps, dispatchProps, parentProps) => ({
@@ -33,16 +32,33 @@ export default function provide (propTypes, options = {}) {
         +'('+providers.map(provider => provider.name).join(',')+')';
     }
 
-    function addProvider (name, { mapState, mapDispatch, merge }) {
-      if (Boolean(mapState)) {
-        shouldSubscribe = true; 
+    function addProvider (provider) {
+      const { actions, reducers } = provider;
+      let { mapState, mapDispatch, merge } = provider;
+
+      if (typeof mapState === 'undefined') {
+        mapState = (state) => {
+          const props = {};
+
+          for (let key in reducers) {
+            props[key] = state[key];
+          }
+
+          return props;
+        };
+      }
+
+      if (typeof mapState === 'function') {
+        shouldSubscribe = true;
       } else {
         mapState = defaultMapState;
       }
 
-      if (isPlainObject(mapDispatch)) {
+      if (typeof mapDispatch === 'undefined') {
+        mapDispatch = dispatch => bindActionCreators(actions, dispatch);
+      } else if (isPlainObject(mapDispatch)) {
         mapDispatch = wrapActionCreators(mapDispatch);
-      } else if (!mapDispatch) {
+      } else if (typeof mapDispatch !== 'function') {
         mapDispatch = defaultMapDispatch;
       }
 
@@ -61,7 +77,7 @@ export default function provide (propTypes, options = {}) {
       }
       
       providers.push({
-        name,
+        ...provider,
         mapState,
         mapStateProps,
         mapDispatch,
@@ -72,11 +88,12 @@ export default function provide (propTypes, options = {}) {
       Provide.displayName = getDisplayName();
     }
 
-    function computeStateProps (store, props) {
-      const state = store.getState();
+    function computeStateProps (props) {
       const stateProps = {};
 
       for (let provider of providers) {
+        let { store } = provider;
+        let state = store.getState();
         let providerStateProps = provider.mapStateProps
           ? provider.mapState(state, props)
           : provider.mapState(state);
@@ -94,11 +111,12 @@ export default function provide (propTypes, options = {}) {
       return stateProps;
     }
 
-    function computeDispatchProps (store, props) {
-      const { dispatch } = store;
+    function computeDispatchProps (props) {
       const dispatchProps = {};
 
       for (let provider of providers) {
+        let { store } = provider;
+        let { dispatch } = store;
         let providerDispatchProps = provider.mapDispatchProps
           ? provider.mapDispatch(dispatch, props)
           : provider.mapDispatch(dispatch);
@@ -174,23 +192,11 @@ export default function provide (propTypes, options = {}) {
         return false;
       }
 
-      constructor(props, context) {
-        super(props, context);
+      constructor(props) {
+        super(props);
         this.version = version;
-        this.store = props.store || context.store;
-
-        if (!this.store) {
-          throw new Error(
-            `Could not find "store" in either the context or ` +
-            `props of "${this.constructor.displayName}". ` +
-            `Either wrap the root component in a <Provider>, ` +
-            `or explicitly pass "store" as a prop to ` +
-            `"${this.constructor.displayName}".`
-          );
-        }
-
-        this.stateProps = computeStateProps(this.store, props);
-        this.dispatchProps = computeDispatchProps(this.store, props);
+        this.stateProps = computeStateProps(props);
+        this.dispatchProps = computeDispatchProps(props);
         this.state = { storeState: null };
         this.updateState();
       }
@@ -204,7 +210,7 @@ export default function provide (propTypes, options = {}) {
       }
 
       updateStateProps(props = this.props) {
-        const nextStateProps = computeStateProps(this.store, props);
+        const nextStateProps = computeStateProps(props);
         if (shallowEqual(nextStateProps, this.stateProps)) {
           return false;
         }
@@ -214,7 +220,7 @@ export default function provide (propTypes, options = {}) {
       }
 
       updateDispatchProps(props = this.props) {
-        const nextDispatchProps = computeDispatchProps(this.store, props);
+        const nextDispatchProps = computeDispatchProps(props);
         if (shallowEqual(nextDispatchProps, this.dispatchProps)) {
           return false;
         }
@@ -233,14 +239,18 @@ export default function provide (propTypes, options = {}) {
 
       trySubscribe() {
         if (shouldSubscribe && !this.unsubscribe) {
-          this.unsubscribe = this.store.subscribe(::this.handleChange);
+          this.unsubscribe = providers.map(
+            provider => provider.store.subscribe(::this.handleChange)
+          );
           this.handleChange();
         }
       }
 
       tryUnsubscribe() {
         if (this.unsubscribe) {
-          this.unsubscribe();
+          for (let unsubscribe of this.unsubscribe) {
+            unsubscribe();
+          }
           this.unsubscribe = null;
         }
       }
@@ -258,9 +268,13 @@ export default function provide (propTypes, options = {}) {
           return;
         }
 
-        this.setState({
-          storeState: this.store.getState()
-        });
+        let storeState = {};
+
+        for (let provider of providers) {
+          Object.assign(storeState, provider.store.getState());
+        }
+
+        this.setState({ storeState });
       }
 
       getWrappedInstance() {
@@ -281,12 +295,6 @@ export default function provide (propTypes, options = {}) {
 
     Provide.displayName = getDisplayName();
     Provide.WrappedComponent = WrappedComponent;
-    Provide.contextTypes = {
-      store: storeShape
-    };
-    Provide.propTypes = {
-      store: storeShape
-    };
     Provide.addProvider = addProvider;
 
     if (process.env.NODE_ENV !== 'production') {
