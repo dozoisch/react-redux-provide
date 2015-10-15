@@ -1,31 +1,52 @@
 import expect from 'expect';
 import jsdomReact from '../jsdomReact';
-import React from 'react/addons';
+import TestUtils from 'react-addons-test-utils';
+import { assignProviders } from 'react-redux-provide';
+import * as list from 'react-redux-provide-list';
+import * as selectable from 'react-redux-provide-selectable';
 import MainSection from '../../components/MainSection';
 import TodoItem from '../../components/TodoItem';
 import Footer from '../../components/Footer';
-import { SHOW_ALL, SHOW_COMPLETED } from '../../constants/TodoFilters';
 
-const { TestUtils } = React.addons;
+const states = {
+  todo: {
+    list: [
+      {
+        value: 'Use redux providers',
+        completed: false
+      },
+      {
+        value: 'Run the tests',
+        completed: true
+      }
+    ]
+  },
+
+  filters: {
+    map: {
+      All: item => true,
+      Active: item => !item.completed,
+      Completed: item => item.completed
+    },
+    selectedKey: 'All'
+  }
+};
+
+assignProviders(states.todo, { list }, {
+  MainSection,
+  TodoItem,
+  Footer
+});
+
+assignProviders(states.filters, { selectable }, {
+  MainSection,
+  Footer
+});
 
 function setup(propOverrides) {
   const props = Object.assign({
-    todos: [{
-      text: 'Use Redux',
-      completed: false,
-      id: 0
-    }, {
-      text: 'Run the tests',
-      completed: true,
-      id: 1
-    }],
-    actions: {
-      editTodo: expect.createSpy(),
-      deleteTodo: expect.createSpy(),
-      completeTodo: expect.createSpy(),
-      completeAll: expect.createSpy(),
-      clearCompleted: expect.createSpy()
-    }
+    mapList: expect.createSpy(),
+    selected: expect.createSpy()
   }, propOverrides);
 
   const renderer = TestUtils.createRenderer();
@@ -49,6 +70,29 @@ describe('components', () => {
       expect(output.props.className).toBe('main');
     });
 
+    describe('todo list', () => {
+      it('should render', () => {
+        const { output, props } = setup();
+        const [, list] = output.props.children;
+        expect(list.type).toBe('ul');
+        expect(list.props.children.length).toBe(2);
+        list.props.children.forEach((item, i) => {
+          expect(item.type).toBe(TodoItem);
+          expect(item.props.item.value).toBe(states.todo.list[i].value);
+        });
+      });
+
+      it('should filter items', () => {
+        const { output, renderer, props } = setup();
+        const [,, footer] = output.props.children;
+        footer.props.select('Completed');
+        const updated = renderer.getRenderOutput();
+        const [, updatedList] = updated.props.children;
+        expect(updatedList.props.children.length).toBe(1);
+        expect(updatedList.props.children[0].props.item.value).toBe(states.todo.list[1].value);
+      });
+    });
+
     describe('toggle all input', () => {
       it('should render', () => {
         const { output } = setup();
@@ -58,82 +102,17 @@ describe('components', () => {
         expect(toggle.props.checked).toBe(false);
       });
 
-      it('should be checked if all todos completed', () => {
-        const { output } = setup({ todos: [{
-          text: 'Use Redux',
-          completed: true,
-          id: 0
-        }]});
-        const [toggle] = output.props.children;
-        expect(toggle.props.checked).toBe(true);
-      });
-
-      it('should call completeAll on change', () => {
+      it('should call mapList on change', () => {
         const { output, props } = setup();
         const [toggle] = output.props.children;
         toggle.props.onChange({});
-        expect(props.actions.completeAll).toHaveBeenCalled();
-      });
-    });
-
-    describe('footer', () => {
-      it('should render', () => {
-        const { output } = setup();
-        const [,, footer] = output.props.children;
-        expect(footer.type).toBe(Footer);
-        expect(footer.props.completedCount).toBe(1);
-        expect(footer.props.activeCount).toBe(1);
-        expect(footer.props.filter).toBe(SHOW_ALL);
+        expect(props.actions.mapList).toHaveBeenCalled();
       });
 
-      it('onShow should set the filter', () => {
-        const { output, renderer } = setup();
-        const [,, footer] = output.props.children;
-        footer.props.onShow(SHOW_COMPLETED);
-        const updated = renderer.getRenderOutput();
-        const [,, updatedFooter] = updated.props.children;
-        expect(updatedFooter.props.filter).toBe(SHOW_COMPLETED);
-      });
-
-      it('onClearCompleted should call clearCompleted', () => {
-        const { output, props } = setup();
-        const [,, footer] = output.props.children;
-        footer.props.onClearCompleted();
-        expect(props.actions.clearCompleted).toHaveBeenCalled();
-      });
-
-      it('onClearCompleted shouldnt call clearCompleted if no todos completed', () => {
-        const { output, props } = setup({ todos: [{
-          text: 'Use Redux',
-          completed: false,
-          id: 0
-        }]});
-        const [,, footer] = output.props.children;
-        footer.props.onClearCompleted();
-        expect(props.actions.clearCompleted.calls.length).toBe(0);
-      });
-    });
-
-    describe('todo list', () => {
-      it('should render', () => {
-        const { output, props } = setup();
-        const [, list] = output.props.children;
-        expect(list.type).toBe('ul');
-        expect(list.props.children.length).toBe(2);
-        list.props.children.forEach((item, i) => {
-          expect(item.type).toBe(TodoItem);
-          expect(item.props.todo).toBe(props.todos[i]);
-        });
-      });
-
-      it('should filter items', () => {
-        const { output, renderer, props } = setup();
-        const [,, footer] = output.props.children;
-        footer.props.onShow(SHOW_COMPLETED);
-        const updated = renderer.getRenderOutput();
-        const [, updatedList] = updated.props.children;
-        expect(updatedList.props.children.length).toBe(1);
-        expect(updatedList.props.children[0].props.todo).toBe(props.todos[1]);
+      it('should be checked if all todos completed', () => {
+        const { output } = setup({});
+        const [, toggle] = output.props.children;
+        expect(toggle.props.checked).toBe(true);
       });
     });
   });

@@ -1,18 +1,31 @@
 import expect from 'expect';
 import jsdomReact from '../jsdomReact';
-import React from 'react/addons';
+import TestUtils from 'react-addons-test-utils';
+import { assignProviders } from 'react-redux-provide';
+import * as selectable from 'react-redux-provide-selectable';
 import Footer from '../../components/Footer';
-import { SHOW_ALL, SHOW_ACTIVE } from '../../constants/TodoFilters';
 
-const { TestUtils } = React.addons;
+const states = {
+  filters: {
+    map: {
+      All: item => true,
+      Active: item => !item.completed,
+      Completed: item => item.completed
+    },
+    selectedKey: 'All'
+  }
+};
+
+assignProviders(states.filters, { selectable }, {
+  Footer
+});
 
 function setup(propOverrides) {
   const props = Object.assign({
+    filterList: expect.createSpy(),
+    select: expect.createSpy(),
     completedCount: 0,
-    activeCount: 0,
-    filter: SHOW_ALL,
-    onClearCompleted: expect.createSpy(),
-    onShow: expect.createSpy()
+    activeCount: 0
   }, propOverrides);
 
   const renderer = TestUtils.createRenderer();
@@ -75,12 +88,12 @@ describe('components', () => {
       });
     });
 
-    it('should call onShow when a filter is clicked', () => {
+    it('should call select when a filter is clicked', () => {
       const { output, props } = setup();
       const [, filters] = output.props.children;
       const filterLink = filters.props.children[1].props.children;
       filterLink.props.onClick({});
-      expect(props.onShow).toHaveBeenCalledWith(SHOW_ACTIVE);
+      expect(props.select).toHaveBeenCalledWith('Active');
     });
 
     it('shouldnt show clear button when no completed todos', () => {
@@ -96,11 +109,11 @@ describe('components', () => {
       expect(clear.props.children).toBe('Clear completed');
     });
 
-    it('should call onClearCompleted on clear button click', () => {
+    it('should call filterList on clear button click', () => {
       const { output, props } = setup({ completedCount: 1 });
       const [,, clear] = output.props.children;
       clear.props.onClick({});
-      expect(props.onClearCompleted).toHaveBeenCalled();
+      expect(props.filterList).toHaveBeenCalled();
     });
   });
 });

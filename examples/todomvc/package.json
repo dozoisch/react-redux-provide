@@ -22,8 +22,8 @@
     "react-dom": "^0.14.0",
     "react-redux": "^3.1.0",
     "react-redux-provide": "^3.1.0",
-    "react-redux-provide-list": "^0.1.0",
-    "react-redux-provide-selectable": "^0.1.0",
+    "react-redux-provide-list": "^0.1.1",
+    "react-redux-provide-selectable": "^0.1.1",
     "redux": "^3.0.2"
   },
   "devDependencies": {
@@ -37,6 +37,8 @@
     "mocha-jsdom": "^1.0.0",
     "node-libs-browser": "^0.5.2",
     "raw-loader": "^0.5.1",
+    "react": "^0.14.0",
+    "react-addons-test-utils": "^0.14.0",
     "react-transform-hmr": "^1.0.0",
     "style-loader": "^0.12.3",
     "todomvc-app-css": "^2.0.1",

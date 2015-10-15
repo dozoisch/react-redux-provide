@@ -13,10 +13,12 @@ import Footer from './components/Footer';
 
 const states = {
   todo: {
-    list: [{
-      value: 'Use redux providers',
-      completed: false
-    }]
+    list: [
+      {
+        value: 'Use redux providers',
+        completed: false
+      }
+    ]
   },
 
   filters: {
