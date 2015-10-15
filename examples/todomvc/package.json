@@ -22,6 +22,8 @@
     "react-dom": "^0.14.0",
     "react-redux": "^3.1.0",
     "react-redux-provide": "^3.1.0",
+    "react-redux-provide-list": "^0.1.0",
+    "react-redux-provide-selectable": "^0.1.0",
     "redux": "^3.0.2"
   },
   "devDependencies": {
