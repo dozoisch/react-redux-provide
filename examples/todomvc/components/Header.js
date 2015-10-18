@@ -16,7 +16,7 @@ export default class Header extends Component {
   }
 
   createItemOnEnter(event) {
-    if (event.which === 13) {
+    if (event.key === 'Enter') {
       this.createItem();
     }
   }

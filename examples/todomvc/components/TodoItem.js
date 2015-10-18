@@ -30,7 +30,7 @@ export default class TodoItem extends Component {
   }
 
   saveOnEnter(event) {
-    if (event.which === 13) {
+    if (event.key === 'Enter') {
       this.save();
     }
   }
