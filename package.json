@@ -4,10 +4,15 @@
   "description": "Wrap components with a smart component and later assign providers (i.e., stores and action creators) to it.",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "babel src --out-dir lib --stage 0",
-    "clean": "rimraf lib",
+    "build:lib": "babel src --out-dir lib",
+    "build:umd": "webpack src/index.js dist/react-redux-provide.js --config webpack.config.development.js",
+    "build:umd:min": "webpack src/index.js dist/react-redux-provide.min.js --config webpack.config.production.js",
+    "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "clean": "rimraf lib dist coverage",
     "prepublish": "npm run clean && npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --compilers js:babel/register --recursive --require react-redux-provide-test-utils/lib/setup.js",
+    "test:watch": "npm test -- --watch",
+    "test:cov": "babel-node ./node_modules/isparta/bin/isparta cover ./node_modules/mocha/bin/_mocha -- --recursive"
   },
   "repository": {
     "type": "git",
@@ -37,7 +42,20 @@
     "redux": "^3.0.0"
   },
   "devDependencies": {
-    "babel": "^5.8.23",
-    "rimraf": "^2.4.3"
+    "babel": "^5.8.21",
+    "babel-core": "^5.8.22",
+    "babel-loader": "^5.3.2",
+    "expect": "^1.8.0",
+    "isparta": "^3.0.3",
+    "istanbul": "^0.3.17",
+    "jsdom": "~5.4.3",
+    "mocha": "^2.2.5",
+    "react-addons-test-utils": "^0.14.0",
+    "react-dom": "^0.14.0",
+    "react-redux-provide-list": "^0.1.1",
+    "react-redux-provide-test-utils": "^0.1.3",
+    "react-tools": "^0.10.0",
+    "rimraf": "^2.3.4",
+    "webpack": "^1.11.0"
   }
 }
