@@ -4,7 +4,7 @@
   "description": "Redux TodoMVC example using providers",
   "scripts": {
     "start": "node server.js",
-    "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register --require ./test/setup.js",
+    "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register --require react-redux-provide-test-utils/lib/setup.js",
     "test:watch": "npm test -- --watch"
   },
   "repository": {
@@ -32,13 +32,12 @@
     "babel-plugin-react-transform": "^1.1.0",
     "expect": "^1.8.0",
     "express": "^4.13.3",
-    "jsdom": "^5.6.1",
     "mocha": "^2.2.5",
     "node-libs-browser": "^0.5.2",
     "raw-loader": "^0.5.1",
     "react": "^0.14.0",
     "react-addons-test-utils": "^0.14.0",
-    "react-redux-provide-test-utils": "0.0.2",
+    "react-redux-provide-test-utils": "^0.1.3",
     "react-transform-hmr": "^1.0.0",
     "style-loader": "^0.12.3",
     "todomvc-app-css": "^2.0.1",
