@@ -57,9 +57,9 @@ The API surface area is naturally tiny.  There are just 3 exports, but you proba
 
 ## Quick Example
 
-Basically, create some component with only the view in mind and whatever `props` you'd expect to use for triggering actions.  For this quick example, we know [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list) provides a `list` prop and a `createItem` function, so in our `@provide` decorator we'll make it clear that's what we want.
+Basically, create some component with only the view in mind, plus whatever `props` you'd expect to use for triggering actions.  For this quick example, we know [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list) provides a `list` prop and a `createItem` function, so in our `@provide` decorator we'll make it clear that's what we want.
 
-From [examples/good-times/src/components/GoodTimes.js](https://github.com/loggur/react-redux-provide/blob/master/examples/good-times/src/components/GoodTimes.js):
+From [examples/good-times/components/GoodTimes.js](https://github.com/loggur/react-redux-provide/blob/master/examples/good-times/components/GoodTimes.js):
 ```js
 import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
@@ -112,7 +112,7 @@ export default class GoodTimes extends Component {
 }
 ```
 
-Then when mounting the app, all we need to do is assign the provider(s) to the component(s).  Let's create a file called [`init.js`](https://github.com/loggur/react-redux-provide/blob/master/examples/good-times/src/init.js) to do this:
+Then when mounting the app, all we need to do is assign the provider(s) to the component(s).  Let's create a file called [`init.js`](https://github.com/loggur/react-redux-provide/blob/master/examples/good-times/init.js) to do this:
 
 ```js
 import { assignProviders } from 'react-redux-provide';
@@ -134,7 +134,7 @@ assignProviders(states.times, { list }, {
 });
 ```
 
-And last but not least, all we have to do is import `init.js` when rendering the app.  From [`index.js`](https://github.com/loggur/react-redux-provide/blob/master/examples/good-times/src/index.js):
+And last but not least, all we have to do is import `init.js` when rendering the app.  From [`index.js`](https://github.com/loggur/react-redux-provide/blob/master/examples/good-times/index.js):
 
 ```js
 import './init';
