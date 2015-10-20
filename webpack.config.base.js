@@ -16,10 +16,18 @@ var reduxExternal = {
   amd: 'redux'
 };
 
+var reactReduxExternal = {
+  root: 'ReactRedux',
+  commonjs2: 'react-redux',
+  commonjs: 'react-redux',
+  amd: 'react-redux'
+};
+
 module.exports = {
   externals: {
     'react': reactExternal,
-    'redux': reduxExternal
+    'redux': reduxExternal,
+    'react-redux': reactReduxExternal
   },
   module: {
     loaders: [
@@ -27,7 +35,7 @@ module.exports = {
     ]
   },
   output: {
-    library: 'ReactRedux',
+    library: 'ReactReduxProvide',
     libraryTarget: 'umd'
   },
   resolve: {

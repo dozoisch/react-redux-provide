@@ -16,7 +16,7 @@ function renderItem (props) {
 
 const placeholder = 'Testing...';
 
-describe('provide', () => {
+describe('react-redux-provide', () => {
   it('should have the correct displayName', () => {
     expect(Test.displayName).toBe('ProvideTest(list)');
   });
