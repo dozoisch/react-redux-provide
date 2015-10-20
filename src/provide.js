@@ -136,8 +136,7 @@ export default function provide (propTypes, options = {}) {
 
     function computeNextState (stateProps, dispatchProps, parentProps) {
       const mergedProps = defaultMerge(stateProps, dispatchProps, parentProps);
-      const filtered = {};
-
+      
       for (let provider of providers) {
         let providerMergedProps = provider.merge(
           stateProps, dispatchProps, mergedProps
@@ -153,9 +152,15 @@ export default function provide (propTypes, options = {}) {
         Object.assign(mergedProps, providerMergedProps);
       }
 
+      return filterPropTypes(mergedProps);
+    }
+
+    function filterPropTypes(props) {
+      const filtered = {};
+
       for (let key in WrappedComponent.propTypes) {
-        if (mergedProps[key] !== undefined) {
-          filtered[key] = mergedProps[key];
+        if (props[key] !== undefined) {
+          filtered[key] = props[key];
         }
       }
 
@@ -175,6 +180,7 @@ export default function provide (propTypes, options = {}) {
         const propsChanged = !shallowEqual(nextProps, this.props);
         let mapStateProducedChange = false;
         let dispatchPropsChanged = false;
+        let currentState;
 
         if (storeChanged || (propsChanged && shouldUpdateStateProps)) {
           mapStateProducedChange = this.updateStateProps(nextProps);
@@ -185,8 +191,9 @@ export default function provide (propTypes, options = {}) {
         }
 
         if (propsChanged || mapStateProducedChange || dispatchPropsChanged) {
+          currentState = this.nextState;
           this.updateState(nextProps);
-          return true;
+          return !shallowEqual(currentState, this.nextState);
         }
 
         return false;
@@ -283,7 +290,7 @@ export default function provide (propTypes, options = {}) {
 
       render() {
         return (
-          <WrappedComponent ref='wrappedInstance' {...this.nextState} />
+          <WrappedComponent ref="wrappedInstance" {...this.nextState} />
         );
       }
     }
