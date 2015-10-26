@@ -6,11 +6,11 @@
 
 This small library allows you to:
 
-1. Build your entire app's view layer first.
+1. Build your entire app's view layer first - i.e., all your components become as "dumb" as possible.
 
-2. Decorate your components with `@provide`, which allows you to specify (as `propTypes`) exactly the data and actions said components need.
+2. Decorate your components with `@provide`, which allows you to specify - as `propTypes` - exactly the data and actions said components need.
 
-3. When mounting your app, assign arbitrary providers to your components as necessary.
+3. When mounting your app, assign providers to your components as necessary.
 
 
 ## Pros
