@@ -1,6 +1,6 @@
 import { assignProviders } from 'react-redux-provide';
 import * as list from 'react-redux-provide-list';
-import * as selectable from 'react-redux-provide-selectable';
+import * as map from 'react-redux-provide-map';
 import App from './components/App';
 import Header from './components/Header';
 import MainSection from './components/MainSection';
@@ -34,7 +34,7 @@ assignProviders(states.todo, { list }, {
   Footer
 });
 
-assignProviders(states.filters, { selectable }, {
+assignProviders(states.filters, { map }, {
   MainSection,
   Footer
 });

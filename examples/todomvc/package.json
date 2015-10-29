@@ -22,7 +22,7 @@
     "react-dom": "^0.14.0",
     "react-redux-provide": "^4.0.0",
     "react-redux-provide-list": "^0.1.1",
-    "react-redux-provide-selectable": "^0.1.1"
+    "react-redux-provide-map": "^0.1.2"
   },
   "devDependencies": {
     "babel-core": "^5.8.25",

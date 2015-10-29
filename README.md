@@ -154,7 +154,7 @@ render(<GoodTimes/>, document.getElementById('root'));
 
 A provider is just an object with a few properties.  At its core, it's your usual [`redux`](https://github.com/rackt/redux) `actions` and `reducers`, which you'll need at a bare minimum.  There are a few other things you can optionally include:
 
-- `name` - Defaults to its corresponding key within the `providers` argument of your `assignProviders` call.  This will show up in [`react-devtools`](https://github.com/facebook/react-devtools) - e.g., if you provide `list` and `selectable` to `SomeComponent`, in your dev tools, you'll see `SomeComponent` wrapped with another component called `ProvideSomeComponent(list,selectable)`.
+- `name` - Defaults to its corresponding key within the `providers` argument of your `assignProviders` call.  This will show up in [`react-devtools`](https://github.com/facebook/react-devtools) - e.g., if you provide `list` and `map` to `SomeComponent`, in your dev tools, you'll see `SomeComponent` wrapped with another component called `ProvideSomeComponent(list,map)`.
 
 - `middleware` - Include whatever middleware is used by your provider.  This can be either an array of middleware or a single middleware.
 
