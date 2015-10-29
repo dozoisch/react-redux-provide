@@ -5,8 +5,7 @@ import classnames from 'classnames';
 @provide({
   filterList: PropTypes.func.isRequired,
   map: PropTypes.object.isRequired,
-  select: PropTypes.func.isRequired,
-  selectedKey: PropTypes.string.isRequired
+  updateMap: PropTypes.func.isRequired
 })
 export default class Footer extends Component {
   static propTypes = {
@@ -45,24 +44,26 @@ export default class Footer extends Component {
 
   renderFilters() {
     return Object.keys(this.props.map).map(
-      key => (
-        <li key={key}>
-          {this.renderFilterLink(key)}
+      filterName => (
+        <li key={filterName}>
+          {this.renderFilterLink(filterName)}
         </li>
       )
     );
   }
 
-  renderFilterLink(key) {
-    const { selectedKey, select } = this.props;
+  renderFilterLink(filterName) {
+    const { map, updateMap } = this.props;
 
     return (
       <a
-        className={classnames({ selected: key === selectedKey })}
+        className={classnames({ selected: map[filterName].selected })}
         style={{ cursor: 'pointer' }}
-        onClick={() => select(key)}
+        onClick={() => updateMap(
+          (item, index) => ({ ...item, selected: filterName === index })
+        )}
       >
-        {key}
+        {filterName}
       </a>
     );
   }

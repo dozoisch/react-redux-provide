@@ -5,14 +5,14 @@ import Footer from './Footer';
 
 @provide({
   list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  mapList: PropTypes.func.isRequired,
-  selected: PropTypes.func.isRequired
+  updateList: PropTypes.func.isRequired,
+  filter: PropTypes.func.isRequired
 })
 export default class MainSection extends Component {
   toggleAll() {
     const completed = this.refs.toggleAll.checked;
 
-    this.props.mapList(item => {
+    this.props.updateList(item => {
       return { ...item, completed };
     });
   }
@@ -40,7 +40,7 @@ export default class MainSection extends Component {
     const items = [];
 
     this.props.list.forEach((item, index) => {
-      if (this.props.selected(item)) {
+      if (this.props.filter(item)) {
         items.push(
           <TodoItem key={index} index={index} />
         );

@@ -54,7 +54,7 @@ describe('react-redux-provide', () => {
     expect(wrappedInstance.props.index).toBe(undefined);
 
     expect(wrappedInstance.props.setList).toBe(undefined);
-    expect(wrappedInstance.props.mapList).toBe(undefined);
+    expect(wrappedInstance.props.updateList).toBe(undefined);
     expect(wrappedInstance.props.filterList).toBe(undefined);
     expect(wrappedInstance.props.createItem).toBeTruthy();
     expect(wrappedInstance.props.updateItem).toBe(undefined);
