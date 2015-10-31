@@ -16,5 +16,15 @@ export default function createProviderStore (provider, initialState) {
     create = applyMiddleware.apply(null, [].concat(middleware))(createStore);
   }
 
+  if (initialState) {
+    initialState = { ...initialState };
+
+    for (let key in initialState) {
+      if (reducers[key] === undefined) {
+        delete initialState[key];
+      }
+    }
+  }
+
   return create(combineReducers(reducers), initialState);
 }

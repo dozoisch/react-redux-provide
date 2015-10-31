@@ -8,28 +8,24 @@ import MainSection from './components/MainSection';
 import TodoItem from './components/TodoItem';
 import Footer from './components/Footer';
 
-const states = {
-  todo: {
-    list: [
-      {
-        value: 'Use redux providers',
-        completed: true
-      }
-    ]
-  },
+const initialState = {
+  list: [
+    {
+      value: 'Use redux providers',
+      completed: true
+    }
+  ],
 
-  filters: {
-    map: {
-      All: {
-        filter: item => true,
-        selected: true
-      },
-      Active: {
-        filter: item => !item.completed
-      },
-      Completed: {
-        filter: item => item.completed
-      }
+  map: {
+    All: {
+      filter: item => true,
+      selected: true
+    },
+    Active: {
+      filter: item => !item.completed
+    },
+    Completed: {
+      filter: item => item.completed
     }
   }
 };
@@ -53,14 +49,14 @@ const filterMap = remap(map, {
   }
 });
 
-assignProviders(states.todo, { list }, {
+assignProviders(initialState, { list }, {
   Header,
   MainSection,
   TodoItem,
   Footer
 });
 
-assignProviders(states.filters, { filterMap }, {
+assignProviders(initialState, { filterMap }, {
   MainSection,
   Footer
 });
