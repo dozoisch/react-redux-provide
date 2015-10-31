@@ -45,7 +45,7 @@ const filterMap = remap(map, {
       }
     }
 
-    return Object.assign({}, parentProps, { item, filter });
+    return { ...parentProps, item, filter };
   }
 });
 
