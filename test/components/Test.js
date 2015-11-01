@@ -4,22 +4,22 @@ import TestItem from './TestItem';
 
 @provide({
   list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  createItem: PropTypes.func.isRequired
+  unshiftItem: PropTypes.func.isRequired
 })
 export default class Test extends Component {
   static propTypes = {
     placeholder: PropTypes.string.isRequired
   };
 
-  createItem() {
-    this.props.createItem({
+  unshiftItem() {
+    this.props.unshiftItem({
       value: this.refs.input.value
     });
   }
 
-  createItemOnEnter(event) {
+  unshiftItemOnEnter(event) {
     if (event.key === 'Enter') {
-      this.createItem();
+      this.unshiftItem();
     }
   }
 
@@ -38,7 +38,7 @@ export default class Test extends Component {
         ref="input"
         type="text"
         placeholder={this.props.placeholder}
-        onKeyDown={::this.createItemOnEnter}
+        onKeyDown={::this.unshiftItemOnEnter}
       />
     );
   }

@@ -2,22 +2,22 @@ import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
 
 @provide({
-  createItem: PropTypes.func.isRequired
+  pushTodoItem: PropTypes.func.isRequired
 })
 export default class Header extends Component {
-  createItem() {
+  pushTodoItem() {
     const { input } = this.refs;
     const value = input.value.trim();
 
     if (value) {
-      this.props.createItem({ value });
+      this.props.pushTodoItem({ value });
       input.value = '';
     }
   }
 
-  createItemOnEnter(event) {
+  pushTodoItemOnEnter(event) {
     if (event.key === 'Enter') {
-      this.createItem();
+      this.pushTodoItem();
     }
   }
 
@@ -32,8 +32,8 @@ export default class Header extends Component {
           type="text"
           placeholder="What needs to be done?"
           autoFocus={true}
-          onBlur={::this.createItem}
-          onKeyDown={::this.createItemOnEnter}
+          onBlur={::this.pushTodoItem}
+          onKeyDown={::this.pushTodoItemOnEnter}
         />
       </header>
     );

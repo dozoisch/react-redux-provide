@@ -3,9 +3,9 @@ import provide from 'react-redux-provide';
 import classnames from 'classnames';
 
 @provide({
-  item: PropTypes.object.isRequired,
-  updateItem: PropTypes.func.isRequired,
-  deleteItem: PropTypes.func.isRequired
+  todoItem: PropTypes.object.isRequired,
+  updateTodoItem: PropTypes.func.isRequired,
+  deleteTodoItem: PropTypes.func.isRequired
 })
 export default class TodoItem extends Component {
   static propTypes = {
@@ -15,7 +15,7 @@ export default class TodoItem extends Component {
   edit() {
     const { index } = this.props;
 
-    this.props.updateItem(index, { editing: true });
+    this.props.updateTodoItem(index, { editing: true });
   }
 
   save() {
@@ -23,9 +23,9 @@ export default class TodoItem extends Component {
     const value = this.refs.input.value;
 
     if (value.length) {
-      this.props.updateItem(index, { value, editing: false });
+      this.props.updateTodoItem(index, { value, editing: false });
     } else {
-      this.props.deleteItem(index);
+      this.props.deleteTodoItem(index);
     }
   }
 
@@ -37,19 +37,20 @@ export default class TodoItem extends Component {
 
   toggle() {
     const { index } = this.props;
+    const completed = this.refs.checkbox.checked;
 
-    this.props.updateItem(index, { completed: this.refs.checkbox.checked });
+    this.props.updateTodoItem(index, { completed });
   }
 
   destroy() {
     const { index } = this.props;
 
-    this.props.deleteItem(index);
+    this.props.deleteTodoItem(index);
   }
 
   render() {
-    const { item } = this.props;
-    const { value, completed, editing } = item;
+    const { todoItem } = this.props;
+    const { value, completed, editing } = todoItem;
     const className = classnames({ completed, editing });
 
     if (editing) {

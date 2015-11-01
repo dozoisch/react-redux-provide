@@ -3,11 +3,11 @@ import provide from 'react-redux-provide';
 
 @provide({
   list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  createItem: PropTypes.func.isRequired
+  pushItem: PropTypes.func.isRequired
 })
 export default class GoodTimes extends Component {
   addTime() {
-    this.props.createItem({
+    this.props.pushItem({
       time: Date.now()
     });
   }

@@ -22,35 +22,39 @@ describe('components', () => {
     describe('todo list', () => {
       it('should render correctly', () => {
         const { node, wrappedInstance } = render();
-        const list = node.childNodes[1];
-        const { length } = list.childNodes;
+        const todoList = node.childNodes[1];
+        const { length } = todoList.childNodes;
 
-        expect(list.tagName).toBe('UL');
+        expect(todoList.tagName).toBe('UL');
         expect(length).toBe(2);
 
         for (let i = 0; i < length; i++) {
-          let item = list.childNodes[i];
-          let label = item.querySelector('label');
+          let todoItem = todoList.childNodes[i];
+          let label = todoItem.querySelector('label');
 
-          expect(item.tagName).toBe('LI');
-          expect(label.textContent).toBe(wrappedInstance.props.list[i].value);
+          expect(todoItem.tagName).toBe('LI');
+          expect(label.textContent).toBe(
+            wrappedInstance.props.todoList[length - i - 1].value
+          );
         }
       });
 
       it('should filter items', () => {
         const { node, wrappedInstance } = render();
-        const list = node.childNodes[1];
+        const todoList = node.childNodes[1];
         const footer = node.childNodes[2];
-        const completedLink = footer.childNodes[1].childNodes[2].childNodes[0];
-        let item;
+        const activeLink = footer.childNodes[1].childNodes[1].childNodes[0];
+        let todoItem;
         let label;
 
-        Simulate.click(completedLink);
+        Simulate.click(activeLink);
         expect(node.childNodes[1].childNodes.length).toBe(1);
 
-        item = list.childNodes[0];
-        label = item.querySelector('label');
-        expect(label.textContent).toBe(wrappedInstance.props.list[1].value);
+        todoItem = todoList.childNodes[0];
+        label = todoItem.querySelector('label');
+        expect(label.textContent).toBe(
+          wrappedInstance.props.todoList[1].value
+        );
       });
     });
 

@@ -1,7 +1,9 @@
 import assignProviders from '../src/assignProviders';
-import * as list from 'react-redux-provide-list';
+import provideList from 'react-redux-provide-list';
 import Test from './components/Test';
 import TestItem from './components/TestItem';
+
+const list = provideList();
 
 const initialState = {
   list: [

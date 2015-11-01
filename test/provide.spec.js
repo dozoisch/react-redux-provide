@@ -23,7 +23,7 @@ describe('react-redux-provide', () => {
 
   it('should assign propTypes to the component class', () => {
     expect(Test.WrappedComponent.propTypes.list).toBeTruthy();
-    expect(Test.WrappedComponent.propTypes.createItem).toBeTruthy();
+    expect(Test.WrappedComponent.propTypes.unshiftItem).toBeTruthy();
   });
 
   it('should render correctly using assigned initialState', () => {
@@ -56,7 +56,7 @@ describe('react-redux-provide', () => {
     expect(wrappedInstance.props.setList).toBe(undefined);
     expect(wrappedInstance.props.updateList).toBe(undefined);
     expect(wrappedInstance.props.filterList).toBe(undefined);
-    expect(wrappedInstance.props.createItem).toBeTruthy();
+    expect(wrappedInstance.props.unshiftItem).toBeTruthy();
     expect(wrappedInstance.props.updateItem).toBe(undefined);
     expect(wrappedInstance.props.deleteitem).toBe(undefined);
     expect(wrappedInstance.props.item).toBe(undefined);
@@ -65,8 +65,8 @@ describe('react-redux-provide', () => {
 
   it('should trigger an action and update the view', () => {
     const { node, wrappedInstance } = render({ placeholder });
-    const { createItem } = wrappedInstance;
-    const spy = expect.spyOn(wrappedInstance, 'createItem');
+    const { unshiftItem } = wrappedInstance;
+    const spy = expect.spyOn(wrappedInstance, 'unshiftItem');
     const input = node.childNodes[0];
 
     input.value = 'another test';
@@ -77,7 +77,7 @@ describe('react-redux-provide', () => {
     Simulate.keyDown(input, { key: 'Enter' });
     expect(spy.calls.length).toBe(1);
 
-    createItem.call(wrappedInstance);
+    unshiftItem.call(wrappedInstance);
     expect(wrappedInstance.props.list.length).toBe(2);
     expect(node.childNodes.length).toBe(3);
     expect(node.childNodes[1].textContent).toBe(input.value);

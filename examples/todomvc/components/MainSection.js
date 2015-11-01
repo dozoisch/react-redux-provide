@@ -4,23 +4,29 @@ import TodoItem from './TodoItem';
 import Footer from './Footer';
 
 @provide({
-  list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  updateList: PropTypes.func.isRequired,
-  filter: PropTypes.func.isRequired
+  todoList: PropTypes.arrayOf(PropTypes.object).isRequired,
+  updateTodoList: PropTypes.func.isRequired,
+  filterMap: PropTypes.instanceOf(Map).isRequired
 })
 export default class MainSection extends Component {
+  getSelectedFilter() {
+    for (let filterItem of this.props.filterMap.values()) {
+      if (filterItem && filterItem.selected) {
+        return filterItem.filter;
+      }
+    }
+  }
+
   toggleAll() {
     const completed = this.refs.toggleAll.checked;
 
-    this.props.updateList(item => {
-      return { ...item, completed };
-    });
+    this.props.updateTodoList(todoItem => ({ ...todoItem, completed }));
   }
 
   render() {
-    const { list } = this.props;
-    const completedCount = list.reduce(
-      (count, item) => item.completed ? count + 1 : count, 0
+    const { todoList } = this.props;
+    const completedCount = todoList.reduce(
+      (count, todoItem) => todoItem.completed ? count + 1 : count, 0
     );
 
     return (
@@ -28,7 +34,7 @@ export default class MainSection extends Component {
         {this.renderToggleAll(completedCount)}
 
         <ul className="todo-list">
-          {this.renderItems()}
+          {this.renderTodoItems()}
         </ul>
         
         {this.renderFooter(completedCount)}
@@ -36,30 +42,31 @@ export default class MainSection extends Component {
     );
   }
 
-  renderItems() {
-    const items = [];
+  renderTodoItems() {
+    const todoItems = [];
+    const selectedFilter = this.getSelectedFilter();
 
-    this.props.list.forEach((item, index) => {
-      if (this.props.filter(item)) {
-        items.push(
+    this.props.todoList.forEach((todoItem, index) => {
+      if (selectedFilter(todoItem)) {
+        todoItems.unshift(
           <TodoItem key={index} index={index} />
         );
       }
     });
 
-    return items;
+    return todoItems;
   }
 
   renderToggleAll(completedCount) {
-    const { list } = this.props;
+    const { todoList } = this.props;
 
-    if (list.length) {
+    if (todoList.length) {
       return (
         <input
           ref="toggleAll"
           className="toggle-all"
           type="checkbox"
-          checked={completedCount === list.length}
+          checked={completedCount === todoList.length}
           onChange={::this.toggleAll}
         />
       );
@@ -67,10 +74,10 @@ export default class MainSection extends Component {
   }
 
   renderFooter(completedCount) {
-    const { list } = this.props;
-    const activeCount = list.length - completedCount;
+    const { todoList } = this.props;
+    const activeCount = todoList.length - completedCount;
 
-    if (list.length) {
+    if (todoList.length) {
       return (
         <Footer completedCount={completedCount} activeCount={activeCount} />
       );

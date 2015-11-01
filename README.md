@@ -52,16 +52,14 @@ The API surface area is naturally tiny.  There are just 3 exports, but you proba
 
 1.  Components can have multiple providers, but the provided `props` (`actions` and `reducers`) should be unique to each provider.
 
-2.  Components cannot have the same provider assigned multiple times.  You might be tempted to do this with a common provider such as [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list) combined with multiple stores, but it won't work!  You'll need to separate your logic into multiple components, which is a better design anyway.  :)
+2.  When assigning a provider to components, it will automatically create a new store for you if you haven't explicitly included a `store` key within your `provider` object.  Said store is shared throughout the components passed to `assignProviders`.  You can of course call `assignProviders` multiple times to create multiple stores as necessary.
 
-3.  When assigning a provider to components, it will automatically create a new store for you if you haven't explicitly included a `store` key within your `provider` object.  Said store is shared throughout the components passed to `assignProviders`.  You can of course call `assignProviders` multiple times to create multiple stores as necessary.
-
-4.  Specify *all* of your `propTypes`!  The `provide` decorator filters out any `props` not within your `propTypes`, which keeps things efficient and helps with avoiding unnecessary re-renders.  Plus, it's good design!
+3.  Specify *all* of your `propTypes`!  The `provide` decorator filters out any `props` not within your `propTypes`, which keeps things efficient and helps with avoiding unnecessary re-renders.  Plus, it's good design!
 
 
 ## Quick Example
 
-Basically, create some component with only the view in mind, plus whatever `props` you'd expect to use for triggering actions.  For this quick example, we know [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list) provides a `list` prop and a `createItem` function, so in our `@provide` decorator we'll make it clear that's what we want.
+Basically, create some component with only the view in mind, plus whatever `props` you'd expect to use for triggering actions.  For this quick example, we know [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list) provides a `list` prop and a `pushItem` function, so in our `@provide` decorator we'll make it clear that's what we want.
 
 From [examples/good-times/components/GoodTimes.js](https://github.com/loggur/react-redux-provide/blob/master/examples/good-times/components/GoodTimes.js):
 ```js
@@ -70,11 +68,11 @@ import provide from 'react-redux-provide';
 
 @provide({
   list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  createItem: PropTypes.func.isRequired
+  pushItem: PropTypes.func.isRequired
 })
 export default class GoodTimes extends Component {
   addTime() {
-    this.props.createItem({
+    this.props.pushItem({
       time: Date.now()
     });
   }
@@ -107,9 +105,9 @@ export default class GoodTimes extends Component {
   renderTimes() {
     return this.props.list.map(
       item => (
-      	<li key={item.time}>
-      	  {new Date(item.time).toString()}
-      	</li>
+        <li key={item.time}>
+          {new Date(item.time).toString()}
+        </li>
       )
     );
   }
@@ -120,14 +118,14 @@ Then when mounting the app, all we need to do is assign the provider(s) to the c
 
 ```js
 import { assignProviders } from 'react-redux-provide';
-import * as list from 'react-redux-provide-list';
+import provideList from 'react-redux-provide-list';
 import GoodTimes from './components/GoodTimes';
+
+const list = provideList();
 
 const initialState = {
   list: [
-    {
-      time: Date.now()
-    }
+    { time: Date.now() }
   ]
 };
 
@@ -150,7 +148,7 @@ render(<GoodTimes/>, document.getElementById('root'));
 
 ## Creating Providers
 
-A provider is just an object with a few properties.  At its core, it's your usual [`redux`](https://github.com/rackt/redux) `actions` and `reducers`, which you'll need at a bare minimum.  There are a few other things you can optionally include:
+A provider is just an object with a few properties.  At its core, it's your usual [`redux`](https://github.com/rackt/redux) `actions` and `reducers`, which you'll typically need at a bare minimum.  There are a few other things you can optionally include:
 
 - `name` - Defaults to its corresponding key within the `providers` argument of your `assignProviders` call.  This will show up in [`react-devtools`](https://github.com/facebook/react-devtools) - e.g., if you provide `list` and `map` to `SomeComponent`, in your dev tools, you'll see `SomeComponent` wrapped with another component called `ProvideSomeComponent(list,map)`.
 

@@ -26,31 +26,31 @@ describe('components', () => {
       expect(input.getAttribute('placeholder')).toBe('What needs to be done?');
     });
 
-    it('should call createItem if input value has length', () => {
+    it('should call pushTodoItem if input value has length', () => {
       const { node, wrappedInstance } = render();
-      const { createItem } = wrappedInstance;
+      const { pushTodoItem } = wrappedInstance;
 
-      wrappedInstance.createItem = expect.createSpy();
+      wrappedInstance.pushTodoItem = expect.createSpy();
       wrappedInstance.forceUpdate();
 
       wrappedInstance.refs.input.value = 'Run the tests';
       Simulate.blur(wrappedInstance.refs.input);
-      expect(wrappedInstance.createItem).toHaveBeenCalled();
-      createItem.call(wrappedInstance);
+      expect(wrappedInstance.pushTodoItem).toHaveBeenCalled();
+      pushTodoItem.call(wrappedInstance);
       expect(wrappedInstance.refs.input.value).toBe('');
     });
 
-    it('should call createItem if enter is pressed', () => {
+    it('should call pushTodoItem if enter is pressed', () => {
       const { node, wrappedInstance } = render();
 
-      wrappedInstance.createItem = expect.createSpy();
+      wrappedInstance.pushTodoItem = expect.createSpy();
       wrappedInstance.forceUpdate();
 
       Simulate.keyDown(wrappedInstance.refs.input);
-      expect(wrappedInstance.createItem.calls.length).toBe(0);
+      expect(wrappedInstance.pushTodoItem.calls.length).toBe(0);
 
       Simulate.keyDown(wrappedInstance.refs.input, { key: 'Enter' });
-      expect(wrappedInstance.createItem.calls.length).toBe(1);
+      expect(wrappedInstance.pushTodoItem.calls.length).toBe(1);
     });
   });
 });

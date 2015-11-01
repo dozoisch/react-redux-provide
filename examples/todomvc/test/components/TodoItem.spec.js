@@ -27,7 +27,7 @@ describe('components', () => {
       expect(input.checked).toBe(true);
 
       expect(label.tagName).toBe('LABEL');
-      expect(label.textContent).toBe('Run the tests');
+      expect(label.textContent).toBe('Use redux providers');
 
       expect(button.tagName).toBe('BUTTON');
       expect(button.className).toBe('destroy');
@@ -44,10 +44,10 @@ describe('components', () => {
       Simulate.change(checkbox);
       expect(wrappedInstance.toggle).toHaveBeenCalled();
 
-      expect(wrappedInstance.props.item.completed).toBe(true);
+      expect(wrappedInstance.props.todoItem.completed).toBe(true);
       checkbox.checked = false;
       toggle.call(wrappedInstance);
-      expect(wrappedInstance.props.item.completed).toBe(false);
+      expect(wrappedInstance.props.todoItem.completed).toBe(false);
     });
 
     it('should call destroy when clicking button', () => {
@@ -73,9 +73,9 @@ describe('components', () => {
       Simulate.doubleClick(label);
       expect(wrappedInstance.edit).toHaveBeenCalled();
 
-      expect(wrappedInstance.props.item.editing).toBeFalsy();
+      expect(wrappedInstance.props.todoItem.editing).toBeFalsy();
       edit.call(wrappedInstance);
-      expect(wrappedInstance.props.item.editing).toBe(true);
+      expect(wrappedInstance.props.todoItem.editing).toBe(true);
     });
 
     it('should render correctly when editing', () => {
@@ -87,7 +87,7 @@ describe('components', () => {
 
       expect(input.tagName).toBe('INPUT');
       expect(input.className).toBe('edit');
-      expect(input.value).toBe('Run the tests');
+      expect(input.value).toBe('Use redux providers');
     });
 
     it('should save value and stop editing when enter is pressed', () => {
@@ -107,8 +107,8 @@ describe('components', () => {
 
       input.value = value;
       save.call(wrappedInstance);
-      expect(wrappedInstance.props.item.value).toBe(value);
-      expect(wrappedInstance.props.item.editing).toBe(false);
+      expect(wrappedInstance.props.todoItem.value).toBe(value);
+      expect(wrappedInstance.props.todoItem.editing).toBe(false);
     });
   });
 });

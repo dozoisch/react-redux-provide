@@ -3,9 +3,9 @@ import provide from 'react-redux-provide';
 import classnames from 'classnames';
 
 @provide({
-  filterList: PropTypes.func.isRequired,
-  map: PropTypes.object.isRequired,
-  updateMap: PropTypes.func.isRequired
+  filterTodoList: PropTypes.func.isRequired,
+  filterMap: PropTypes.instanceOf(Map).isRequired,
+  updateFilterMap: PropTypes.func.isRequired
 })
 export default class Footer extends Component {
   static propTypes = {
@@ -14,7 +14,7 @@ export default class Footer extends Component {
   };
 
   clearCompleted() {
-    this.props.filterList(item => !item.completed);
+    this.props.filterTodoList(todoItem => !todoItem.completed);
   }
 
   render() {
@@ -43,24 +43,31 @@ export default class Footer extends Component {
   }
 
   renderFilters() {
-    return Object.keys(this.props.map).map(
-      filterName => (
+    const filters = [];
+
+    for (let [filterName, filterItem] of this.props.filterMap.entries()) {
+      filters.push(
         <li key={filterName}>
-          {this.renderFilterLink(filterName)}
+          {this.renderFilterLink(filterName, filterItem)}
         </li>
-      )
-    );
+      );
+    }
+
+    return filters;
   }
 
-  renderFilterLink(filterName) {
-    const { map, updateMap } = this.props;
+  renderFilterLink(filterName, filterItem) {
+    const { updateFilterMap } = this.props;
 
     return (
       <a
-        className={classnames({ selected: map[filterName].selected })}
+        className={classnames({ selected: filterItem.selected })}
         style={{ cursor: 'pointer' }}
-        onClick={() => updateMap(
-          (item, index) => ({ ...item, selected: filterName === index })
+        onClick={() => updateFilterMap(
+          ([someFilterName, someFilterItem]) => [
+            someFilterName,
+            { ...someFilterItem, selected: filterName === someFilterName }
+          ]
         )}
       >
         {filterName}

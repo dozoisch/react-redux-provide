@@ -1,12 +1,12 @@
 import { assignProviders } from 'react-redux-provide';
-import * as list from 'react-redux-provide-list';
+import provideList from 'react-redux-provide-list';
 import GoodTimes from './components/GoodTimes';
+
+const list = provideList();
 
 const initialState = {
   list: [
-    {
-      time: Date.now()
-    }
+    { time: Date.now() }
   ]
 };
 
