@@ -9,8 +9,9 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
  * @api public
  */
 export default function createProviderStore (provider, initialState) {
-  const { reducers, middleware } = provider;
+  const { reducers, middleware, enhancer } = provider;
   let create = createStore;
+  let store;
 
   if (middleware) {
     create = applyMiddleware.apply(null, [].concat(middleware))(createStore);
@@ -26,5 +27,11 @@ export default function createProviderStore (provider, initialState) {
     }
   }
 
-  return create(combineReducers(reducers), initialState);
+  store = create(combineReducers(reducers), initialState);
+
+  if (enhancer) {
+    [].concat(enhancer).forEach(enhance => enhance(store));
+  }
+
+  return store;
 }
