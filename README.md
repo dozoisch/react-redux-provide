@@ -152,7 +152,9 @@ A provider is just an object with a few properties.  At its core, it's your usua
 
 - `name` - Defaults to its corresponding key within the `providers` argument of your `assignProviders` call.  This will show up in [`react-devtools`](https://github.com/facebook/react-devtools) - e.g., if you provide `list` and `map` to `SomeComponent`, in your dev tools, you'll see `SomeComponent` wrapped with another component called `ProvideSomeComponent(list,map)`.
 
-- `middleware` - Include whatever middleware is used by your provider.  This can be either an array of middleware or a single middleware.
+- `middleware` - Include whatever middleware is used by your provider.  This can be either an array of middlewares or a single middleware.
+
+- `enhancer` - Include whatever enhancer is used by your provider's store.  This can be either an array of enhancers or a single enhancer.
 
 - `merge(stateProps, dispatchProps, parentProps)` - This incredibly useful function should return an object, which typically adds, removes, or replaces certain provided properties based on whatever logic you deem necessary.  For example, in [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list), if the component has an `index` prop passed to its parent and expects an `item` prop from the provider, the `merge` function will attempt to provide the `item` at that `index` within the `list` to the component.
 
