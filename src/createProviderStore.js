@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 
 /**
  * Creates a store for some provider.
@@ -10,11 +10,16 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
  */
 export default function createProviderStore (provider, initialState) {
   const { reducers, middleware, enhancer } = provider;
-  let create = createStore;
+  let enhancers = [];
+  let create;
   let store;
 
   if (middleware) {
-    create = applyMiddleware.apply(null, [].concat(middleware))(createStore);
+    enhancers.push(applyMiddleware.apply(null, [].concat(middleware)));
+  }
+
+  if (enhancer) {
+    enhancers = enhancers.concat(enhancer);
   }
 
   if (initialState) {
@@ -27,11 +32,11 @@ export default function createProviderStore (provider, initialState) {
     }
   }
 
-  store = create(combineReducers(reducers), initialState);
-
-  if (enhancer) {
-    [].concat(enhancer).forEach(enhance => enhance(store));
+  if (enhancers.length) {
+    create = compose(...enhancers)(createStore);
+  } else {
+    create = createStore;
   }
 
-  return store;
+  return create(combineReducers(reducers), initialState);
 }
