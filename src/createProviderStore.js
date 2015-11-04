@@ -12,7 +12,6 @@ export default function createProviderStore (provider, initialState) {
   const { reducers, middleware, enhancer } = provider;
   let enhancers = [];
   let create;
-  let store;
 
   if (middleware) {
     enhancers.push(applyMiddleware.apply(null, [].concat(middleware)));
