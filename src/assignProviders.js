@@ -18,18 +18,61 @@ export default function assignProviders (initialState, providers, components) {
 
   for (let name in providers) {
     let provider = providers[name];
-    let { store } = provider;
 
-    if (!store) {
-      store = createProviderStore(provider, initialState);
+    if (!provider.name) {
+      provider.name = name;
+    }
+
+    if (!provider.store) {
+      provider.store = createProviderStore(provider, initialState);
     }
 
     for (let componentName in components) {
-      let addProvider = components[componentName].addProvider;
-      
-      if (typeof addProvider === 'function') {
-        addProvider({ name, store, ...provider });
-      }
+      let component = components[componentName];
+
+      addValidProvider(provider, component);
     }
   }
+}
+
+/**
+ * Adds the provider to the component if valid.
+ *
+ * @param {Object} provider
+ * @param {Object} component
+ * @api private
+ */
+function addValidProvider (provider, component) {
+  const { WrappedComponent, addProvider } = component;
+
+  if (!WrappedComponent || typeof addProvider !== 'function') {
+    return false;
+  }
+
+  const { propTypes } = WrappedComponent;
+  const { actions = {}, reducers = {}, merge } = provider;
+  const merged = merge && merge(getReduced(reducers), {}, {}) || {};
+
+  for (let propKey in propTypes) {
+    if (propKey in actions || propKey in reducers || propKey in merged) {
+      addProvider(provider);
+      return;
+    }
+  }
+}
+
+/**
+ * Gets the default result of each reducer.
+ *
+ * @param {Object} reducers
+ * @api private
+ */
+function getReduced (reducers) {
+  const reduced = {};
+
+  for (let key in reducers) {
+    reduced[key] = reducers[key](undefined, {});
+  }
+
+  return reduced;
 }
