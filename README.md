@@ -41,11 +41,17 @@ npm install react-redux-provide --save
 
 ## Usage
 
-The API surface area is naturally tiny.  There are just 3 exports, but you probably only need to concern yourself with the following 2 functions:
+The API surface area is [naturally tiny](https://github.com/loggur/react-redux-provide/blob/master/src/index.js).  You typically only need to concern yourself with the two main exports:
 
-1.  `provide(propTypes)` - The decorator which allows you to assign providers to components.
+1.  `provide (Object propTypes)` - The decorator which allows you to assign providers to components.
 
-2.  `assignProviders(initialState?, providers, components)` - Assigns providers to components of course!  Optionally initialize the store's state.  Check [the source](https://github.com/loggur/react-redux-provide/blob/master/src/assignProviders.js) for exact usage.
+2.  `assignProviders (Optional Object initialState, Object providers, Object components)` - Assigns providers to components of course!  Optionally initialize the store's state.  Check [the source](https://github.com/loggur/react-redux-provide/blob/master/src/assignProviders.js) for exact usage.
+
+And the following two utilities:
+
+1.  `addMiddleware (Object providers, Array|Function middleware)` - adds middleware(s) to each provider
+
+2.  `addEnhancer (Object providers, Array|Function enhancer)` - adds enhancer(s) to each provider
 
 
 ## Caveats
