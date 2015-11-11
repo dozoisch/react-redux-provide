@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 
 /**
- * Creates a store for some provider.
+ * Creates and returns a store specifically for some provider.
  *
  * @param {Object} provider
  * @param {Object} initialState Optional

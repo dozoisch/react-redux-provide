@@ -47,11 +47,15 @@ The API surface area is [naturally tiny](https://github.com/loggur/react-redux-p
 
 2.  `assignProviders (Optional Object initialState, Object providers, Object components)` - Assigns providers to components of course!  Optionally initialize the store's state.  Check [the source](https://github.com/loggur/react-redux-provide/blob/master/src/assignProviders.js) for exact usage.
 
-And the following two utilities:
+And the following utilities:
 
-1.  `addMiddleware (Object providers, Array|Function middleware)` - adds middleware(s) to each provider
+1.  `addMiddleware (Object providers, Array|Function middleware)` - Adds middleware(s) to each provider.
 
-2.  `addEnhancer (Object providers, Array|Function enhancer)` - adds enhancer(s) to each provider
+2.  `addEnhancer (Object providers, Array|Function enhancer)` - Adds enhancer(s) to each provider.
+
+3.  `createProviderStore (Object provider, Optional Object initialState)` - Creates and returns a store specifically for some provider.
+
+4.  `shareStore (Object providers, Optional Object initialState)` - Creates and returns a shared store based on the combination of each provider and assigns it to them.
 
 
 ## Caveats
