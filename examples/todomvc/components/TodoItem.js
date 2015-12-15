@@ -2,14 +2,13 @@ import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
 import classnames from 'classnames';
 
-@provide({
-  todoItem: PropTypes.object.isRequired,
-  updateTodoItem: PropTypes.func.isRequired,
-  deleteTodoItem: PropTypes.func.isRequired
-})
+@provide
 export default class TodoItem extends Component {
   static propTypes = {
-    index: PropTypes.number.isRequired
+    index: PropTypes.number.isRequired,
+    todoItem: PropTypes.object.isRequired,
+    updateTodoItem: PropTypes.func.isRequired,
+    deleteTodoItem: PropTypes.func.isRequired
   };
 
   edit() {

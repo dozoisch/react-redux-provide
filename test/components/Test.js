@@ -2,13 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import provide from '../../src/provide';
 import TestItem from './TestItem';
 
-@provide({
-  list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  unshiftItem: PropTypes.func.isRequired
-})
+@provide
 export default class Test extends Component {
   static propTypes = {
-    placeholder: PropTypes.string.isRequired
+    placeholder: PropTypes.string.isRequired,
+    list: PropTypes.arrayOf(PropTypes.object).isRequired,
+    unshiftItem: PropTypes.func.isRequired
   };
 
   unshiftItem() {

@@ -3,12 +3,14 @@ import provide from 'react-redux-provide';
 import TodoItem from './TodoItem';
 import Footer from './Footer';
 
-@provide({
-  todoList: PropTypes.arrayOf(PropTypes.object).isRequired,
-  updateTodoList: PropTypes.func.isRequired,
-  filterMap: PropTypes.instanceOf(Map).isRequired
-})
+@provide
 export default class MainSection extends Component {
+  static propTypes = {
+    todoList: PropTypes.arrayOf(PropTypes.object).isRequired,
+    updateTodoList: PropTypes.func.isRequired,
+    filterMap: PropTypes.instanceOf(Map).isRequired
+  };
+  
   getSelectedFilter() {
     for (let filterItem of this.props.filterMap.values()) {
       if (filterItem && filterItem.selected) {

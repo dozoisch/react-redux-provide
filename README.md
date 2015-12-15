@@ -43,7 +43,7 @@ npm install react-redux-provide --save
 
 The API surface area is [naturally tiny](https://github.com/loggur/react-redux-provide/blob/master/src/index.js).  You typically only need to concern yourself with the two main exports:
 
-1.  `provide (Object propTypes)` - The decorator which allows you to assign providers to components.
+1.  `provide` - The decorator which allows you to assign providers to components.
 
 2.  `assignProviders (Optional Object initialState, Object providers, Object components)` - Assigns providers to components of course!  Optionally initialize the store's state.  Check [the source](https://github.com/loggur/react-redux-provide/blob/master/src/assignProviders.js) for exact usage.
 
@@ -64,8 +64,6 @@ And the following utilities:
 
 2.  When assigning a provider to components, it will automatically create a new store for you if you haven't explicitly included a `store` key within your `provider` object.  Said store is shared throughout the components passed to `assignProviders`.  You can of course call `assignProviders` multiple times to create multiple stores as necessary.
 
-3.  Specify *all* of your `propTypes`!  The `provide` decorator filters out any `props` not within your `propTypes`, which keeps things efficient and helps with avoiding unnecessary re-renders.  Plus, it's good design!
-
 
 ## Quick Example
 
@@ -76,11 +74,13 @@ From [examples/good-times/components/GoodTimes.js](https://github.com/loggur/rea
 import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
 
-@provide({
-  list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  pushItem: PropTypes.func.isRequired
-})
+@provide
 export default class GoodTimes extends Component {
+  static propTypes = {
+    list: PropTypes.arrayOf(PropTypes.object).isRequired,
+    pushItem: PropTypes.func.isRequired
+  };
+
   addTime() {
     this.props.pushItem({
       time: Date.now()
@@ -170,7 +170,7 @@ A provider is just an object with a few properties.  At its core, it's your usua
 
 - `store` - This is your typical `redux` store.  See the Caveats section above about automatically generated stores.  
 
-- `mapState` - Maps each reduced state to the provided `props`.  By default, it will map them all.  It's unlikely that you'll ever actually need to include this, as the provided `props` are filtered based on the component's `propTypes`.
+- `mapState` - Maps each reduced state to the provided `props`.  By default, it will map them all.  It's unlikely that you'll ever actually need to include this.
 
 - `mapDispatch` - It's unlikely that you'll need to include this as well.  This defaults to `dispatch => bindActionCreators(actions, dispatch)` or if it's an object, it will use `redux`'s `wrapActionCreators`.
 

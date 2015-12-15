@@ -1,13 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import provide from '../../src/provide';
 
-@provide({
-  item: PropTypes.object.isRequired,
-  updateItem: PropTypes.func.isRequired
-})
+@provide
 export default class TestItem extends Component {
   static propTypes = {
-    index: PropTypes.number.isRequired
+    index: PropTypes.number.isRequired,
+    item: PropTypes.object.isRequired,
+    updateItem: PropTypes.func.isRequired
   };
 
   update(value) {

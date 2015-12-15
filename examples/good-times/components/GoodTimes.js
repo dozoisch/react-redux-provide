@@ -1,11 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
 
-@provide({
-  list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  pushItem: PropTypes.func.isRequired
-})
+@provide
 export default class GoodTimes extends Component {
+  static propTypes = {
+    list: PropTypes.arrayOf(PropTypes.object).isRequired,
+    pushItem: PropTypes.func.isRequired
+  };
+  
   addTime() {
     this.props.pushItem({
       time: Date.now()

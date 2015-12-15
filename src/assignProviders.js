@@ -49,7 +49,7 @@ function addValidProvider (provider, component) {
     return false;
   }
 
-  const { propTypes } = WrappedComponent;
+  const { propTypes = {} } = WrappedComponent;
   const { actions = {}, reducers = {}, merge } = provider;
   const merged = merge && merge(getReduced(reducers), {}, {}) || {};
 

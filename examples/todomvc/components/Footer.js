@@ -2,15 +2,14 @@ import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
 import classnames from 'classnames';
 
-@provide({
-  filterTodoList: PropTypes.func.isRequired,
-  filterMap: PropTypes.instanceOf(Map).isRequired,
-  updateFilterMap: PropTypes.func.isRequired
-})
+@provide
 export default class Footer extends Component {
   static propTypes = {
     completedCount: PropTypes.number.isRequired,
-    activeCount: PropTypes.number.isRequired
+    activeCount: PropTypes.number.isRequired,
+    filterTodoList: PropTypes.func.isRequired,
+    filterMap: PropTypes.instanceOf(Map).isRequired,
+    updateFilterMap: PropTypes.func.isRequired
   };
 
   clearCompleted() {

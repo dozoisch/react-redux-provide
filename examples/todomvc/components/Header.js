@@ -1,10 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
 
-@provide({
-  pushTodoItem: PropTypes.func.isRequired
-})
+@provide
 export default class Header extends Component {
+  static propTypes = {
+    pushTodoItem: PropTypes.func.isRequired
+  };
+
   pushTodoItem() {
     const { input } = this.refs;
     const value = input.value.trim();
