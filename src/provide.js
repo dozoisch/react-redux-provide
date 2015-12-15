@@ -65,8 +65,8 @@ export default function provide (WrappedComponent) {
       merge = defaultMerge;
     }
 
-    const mapStateProps = mapState.length > 1;
-    const mapDispatchProps = mapDispatch.length > 1;
+    const mapStateProps = mapState.length !== 1;
+    const mapDispatchProps = mapDispatch.length !== 1;
 
     if (mapStateProps) {
       shouldUpdateStateProps = true;
@@ -151,7 +151,19 @@ export default function provide (WrappedComponent) {
       Object.assign(mergedProps, providerMergedProps);
     }
 
-    return mergedProps;
+    return filterPropTypes(mergedProps);
+  }
+
+  function filterPropTypes(props) {
+    const filtered = {};
+
+    for (let key in WrappedComponent.propTypes) {
+      if (props[key] !== undefined) {
+        filtered[key] = props[key];
+      }
+    }
+
+    return filtered;
   }
 
   const Provide = class extends Component {

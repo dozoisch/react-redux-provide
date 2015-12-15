@@ -64,6 +64,8 @@ And the following utilities:
 
 2.  When assigning a provider to components, it will automatically create a new store for you if you haven't explicitly included a `store` key within your `provider` object.  Said store is shared throughout the components passed to `assignProviders`.  You can of course call `assignProviders` multiple times to create multiple stores as necessary.
 
+3.  Specify *all* of your `propTypes`!  The `provide` decorator filters out any `props` not within your `propTypes`, which keeps things efficient and helps with avoiding unnecessary re-renders.  Plus, it's good design!
+
 
 ## Quick Example
 

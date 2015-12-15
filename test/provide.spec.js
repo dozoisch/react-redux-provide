@@ -39,6 +39,25 @@ describe('react-redux-provide', () => {
     expect(firstItem.textContent).toBe('test');
   });
 
+  it('should ignore undefined propTypes', () => {
+    const stuff = 'things';
+    const index = 0;
+    const { wrappedInstance } = render({ placeholder, stuff, index });
+
+    expect(wrappedInstance.props.placeholder).toBe(placeholder);
+    expect(wrappedInstance.props.stuff).toBe(undefined);
+    expect(wrappedInstance.props.index).toBe(undefined);
+
+    expect(wrappedInstance.props.setList).toBe(undefined);
+    expect(wrappedInstance.props.updateList).toBe(undefined);
+    expect(wrappedInstance.props.filterList).toBe(undefined);
+    expect(wrappedInstance.props.unshiftItem).toBeTruthy();
+    expect(wrappedInstance.props.updateItem).toBe(undefined);
+    expect(wrappedInstance.props.deleteitem).toBe(undefined);
+    expect(wrappedInstance.props.item).toBe(undefined);
+    expect(wrappedInstance.props.list).toBeTruthy();
+  });
+
   it('should trigger an action and update the view', () => {
     const { node, wrappedInstance } = render({ placeholder });
     const { unshiftItem } = wrappedInstance;
