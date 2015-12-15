@@ -55,7 +55,7 @@ And the following utilities:
 
 3.  `createProviderStore (Object provider, Optional Object initialState)` - Creates and returns a store specifically for some provider.
 
-4.  `shareStore (Object providers, Optional Object initialState)` - Creates and returns a shared store based on the combination of each provider and assigns it to them.
+4.  `shareStore (Object providers, Optional Object initialState)` - Creates and returns a shared store based on the combination of each provider and assigns it to them.  Especially useful when a provider's state depends on another provider's actions.
 
 
 ## Caveats
@@ -183,4 +183,4 @@ You'll probably notice that many providers have everything in a single file.  It
 
 You don't have to use generic provider packages.  Feel free to create a `providers` directory in your app and structure your exports however you like!
 
-You'll also notice that **no constants are exported**.  There's a good reason for this.  Your components should have no knowledge of the constants used within your actions and reducers, which leads to a maximum separation of concerns and is always the best design.  Your components should care about only 2 things: what to render and which actions to call.
+**Protip:**  Avoid sharing constants.  Typically, the only place you should (occasionally) share constants is within providers.  See [`bloggur`'s `entries` provider](https://github.com/loggur/bloggur/blob/master/providers/entries.js) for a good example of shared constants, as its state depends on actions within [`react-redux-provide-history`](https://github.com/loggur/react-redux-provide-history).  (Note: The `shareStore` utility function helps when you need providers to depend on one another.)  Your components should have no knowledge of the constants used within your actions and reducers, which leads to a maximum separation of concerns and is always the best design.  Your components should care about only 2 things: what to render and which actions to call.
