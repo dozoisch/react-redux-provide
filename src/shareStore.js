@@ -20,7 +20,7 @@ export default function shareStore (providers, initialState) {
     copyValues(combinedProvider, providers[providerName]);
   }
 
-  const sharedStore = createProviderStore(combinedProvider);
+  const sharedStore = createProviderStore(combinedProvider, initialState);
 
   for (let providerName in providers) {
     providers[providerName].store = sharedStore;
