@@ -16,22 +16,24 @@ const defaultMerge = (stateProps, dispatchProps, parentProps) => ({
 // Helps track hot reloading.
 let nextVersion = 0;
 
-export default function provide (WrappedComponent) {
+export default function provide(WrappedComponent) {
   const version = nextVersion++;
-  const providers = [];
+  const providers = WrappedComponent.providers || [];
   const pure = WrappedComponent.pure !== false;
   let shouldSubscribe = false;
   let doStatePropsDependOnOwnProps = false;
   let doDispatchPropsDependOnOwnProps = false;
 
-  function getDisplayName () {
+  WrappedComponent.providers = providers;
+
+  function getDisplayName() {
     return ''
       +'Provide'
       +(WrappedComponent.displayName || WrappedComponent.name || 'Component')
       +'('+providers.map(provider => provider.name).join(',')+')';
   }
 
-  function addProvider (provider) {
+  function addProvider(provider) {
     const { actions, reducers } = provider;
     let { mapState, mapDispatch, merge } = provider;
 
@@ -87,73 +89,6 @@ export default function provide (WrappedComponent) {
     Provide.displayName = getDisplayName();
   }
 
-  function computeStateProps (props) {
-    const stateProps = {};
-
-    for (let provider of providers) {
-      let { store } = provider;
-      let state = store.getState();
-      let providerStateProps = provider.mapStateProps
-        ? provider.mapState(state, props)
-        : provider.mapState(state);
-
-      if (!isPlainObject(providerStateProps)) {
-        throw new Error(
-          '`mapState` must return an object. Instead received %s.',
-          providerStateProps
-        );
-      }
-
-      Object.assign(stateProps, providerStateProps);
-    }
-
-    return stateProps;
-  }
-
-  function computeDispatchProps (props) {
-    const dispatchProps = {};
-
-    for (let provider of providers) {
-      let { store } = provider;
-      let { dispatch } = store;
-      let providerDispatchProps = provider.mapDispatchProps
-        ? provider.mapDispatch(dispatch, props)
-        : provider.mapDispatch(dispatch);
-
-      if (!isPlainObject(providerDispatchProps)) {
-        throw new Error(
-          '`mapDispatch` must return an object. Instead received %s.',
-          providerDispatchProps
-        );
-      }
-
-      Object.assign(dispatchProps, providerDispatchProps);
-    }
-
-    return dispatchProps;
-  }
-
-  function computeMergedProps (stateProps, dispatchProps, parentProps) {
-    const mergedProps = defaultMerge(stateProps, dispatchProps, parentProps);
-    
-    for (let provider of providers) {
-      let providerMergedProps = provider.merge(
-        stateProps, dispatchProps, mergedProps
-      );
-
-      if (!isPlainObject(providerMergedProps)) {
-        throw new Error(
-          '`merge` must return an object. Instead received %s.',
-          providerMergedProps
-        );
-      }
-
-      Object.assign(mergedProps, providerMergedProps);
-    }
-
-    return filterPropTypes(mergedProps);
-  }
-
   function filterPropTypes(props) {
     const filtered = {};
 
@@ -171,76 +106,34 @@ export default function provide (WrappedComponent) {
     static WrappedComponent = WrappedComponent;
     static addProvider = addProvider;
 
-    shouldComponentUpdate() {
-      return !pure || this.haveOwnPropsChanged || this.hasStoreStateChanged;
-    }
-
     constructor(props) {
       super(props);
       this.version = version;
-      this.state = { storeState: this.getStoreState() };
+      this.initProviders();
+      this.initState();
       this.clearCache();
     }
 
-    updateStatePropsIfNeeded() {
-      const nextStateProps = computeStateProps(this.store, this.props);
-      const { stateProps } = this;
-      if (stateProps && shallowEqual(nextStateProps, stateProps)) {
-        return false;
+    initProviders() {
+      this.providers = providers;
+    }
+
+    initState() {
+      this.state = { storeState: this.getStoreState() };
+    }
+
+    getStoreState() {
+      const storeState = {};
+
+      for (let provider of this.providers) {
+        Object.assign(storeState, provider.store.getState());
       }
 
-      this.stateProps = nextStateProps;
-      return true;
+      return storeState;
     }
 
-    updateDispatchPropsIfNeeded() {
-      const nextDispatchProps = computeDispatchProps(this.store, this.props);
-      const { dispatchProps } = this;
-      if (dispatchProps && shallowEqual(nextDispatchProps, dispatchProps)) {
-        return false;
-      }
-
-      this.dispatchProps = nextDispatchProps;
-      return true;
-    }
-
-    updateMergedProps() {
-      this.mergedProps = computeMergedProps(
-        this.stateProps,
-        this.dispatchProps,
-        this.props
-      );
-    }
-
-    computeNextState(props = this.props) {
-      return computeNextState(
-        this.stateProps,
-        this.dispatchProps,
-        props
-      );
-    }
-
-    isSubscribed() {
-      return typeof this.unsubscribe === 'function';
-    }
-
-    trySubscribe() {
-      if (shouldSubscribe && !this.unsubscribe) {
-        // TODO: make sure subscribing once per store
-        this.unsubscribe = providers.map(
-          provider => provider.store.subscribe(::this.handleChange)
-        );
-        this.handleChange();
-      }
-    }
-
-    tryUnsubscribe() {
-      if (this.unsubscribe) {
-        for (let unsubscribe of this.unsubscribe) {
-          unsubscribe();
-        }
-        this.unsubscribe = null;
-      }
+    getWrappedInstance() {
+      return this.refs.wrappedInstance;
     }
 
     componentDidMount() {
@@ -267,6 +160,29 @@ export default function provide (WrappedComponent) {
       this.renderedElement = null;
     }
 
+    isSubscribed() {
+      return typeof this.unsubscribe === 'function';
+    }
+
+    trySubscribe() {
+      if (shouldSubscribe && !this.unsubscribe) {
+        // TODO: make sure subscribing once per store
+        this.unsubscribe = this.providers.map(
+          provider => provider.store.subscribe(::this.handleChange)
+        );
+        this.handleChange();
+      }
+    }
+
+    tryUnsubscribe() {
+      if (this.unsubscribe) {
+        for (let unsubscribe of this.unsubscribe) {
+          unsubscribe();
+        }
+        this.unsubscribe = null;
+      }
+    }
+
     handleChange() {
       if (!this.unsubscribe) {
         return;
@@ -281,18 +197,105 @@ export default function provide (WrappedComponent) {
       }
     }
 
-    getStoreState() {
-      const storeState = {};
-
-      for (let provider of providers) {
-        Object.assign(storeState, provider.store.getState());
-      }
-
-      return storeState;
+    shouldComponentUpdate() {
+      return !pure || this.haveOwnPropsChanged || this.hasStoreStateChanged;
     }
 
-    getWrappedInstance() {
-      return this.refs.wrappedInstance;
+    updateStatePropsIfNeeded() {
+      const { stateProps } = this;
+      const nextStateProps = this.computeStateProps();
+      if (stateProps && shallowEqual(nextStateProps, stateProps)) {
+        return false;
+      }
+
+      this.stateProps = nextStateProps;
+      return true;
+    }
+
+    computeStateProps() {
+      const stateProps = {};
+
+      for (let provider of this.providers) {
+        let { store } = provider;
+        let state = store.getState();
+        let providerStateProps = provider.mapStateProps
+          ? provider.mapState(state, this.props)
+          : provider.mapState(state);
+
+        if (!isPlainObject(providerStateProps)) {
+          throw new Error(
+            '`mapState` must return an object. Instead received %s.',
+            providerStateProps
+          );
+        }
+
+        Object.assign(stateProps, providerStateProps);
+      }
+
+      return stateProps;
+    }
+
+    updateDispatchPropsIfNeeded() {
+      const { dispatchProps } = this;
+      const nextDispatchProps = this.computeDispatchProps();
+      if (dispatchProps && shallowEqual(nextDispatchProps, dispatchProps)) {
+        return false;
+      }
+
+      this.dispatchProps = nextDispatchProps;
+      return true;
+    }
+
+    computeDispatchProps() {
+      const dispatchProps = {};
+
+      for (let provider of this.providers) {
+        let { store } = provider;
+        let { dispatch } = store;
+        let providerDispatchProps = provider.mapDispatchProps
+          ? provider.mapDispatch(dispatch, this.props)
+          : provider.mapDispatch(dispatch);
+
+        if (!isPlainObject(providerDispatchProps)) {
+          throw new Error(
+            '`mapDispatch` must return an object. Instead received %s.',
+            providerDispatchProps
+          );
+        }
+
+        Object.assign(dispatchProps, providerDispatchProps);
+      }
+
+      return dispatchProps;
+    }
+
+    updateMergedProps() {
+      this.mergedProps = this.computeMergedProps(
+        this.stateProps,
+        this.dispatchProps,
+        this.props
+      );
+    }
+
+    computeMergedProps(stateProps, dispatchProps, parentProps) {
+      const mergedProps = defaultMerge(stateProps, dispatchProps, parentProps);
+
+      for (let provider of this.providers) {
+        let providerMergedProps = provider.merge(
+          stateProps, dispatchProps, mergedProps
+        );
+
+        if (!isPlainObject(providerMergedProps)) {
+          throw new Error(
+            '`merge` must return an object. Instead received %s.',
+            providerMergedProps
+          );
+        }
+
+        Object.assign(mergedProps, providerMergedProps);
+      }
+
+      return filterPropTypes(mergedProps);
     }
 
     render() {
@@ -348,7 +351,7 @@ export default function provide (WrappedComponent) {
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    Provide.prototype.componentWillUpdate = function componentWillUpdate () {
+    Provide.prototype.componentWillUpdate = function componentWillUpdate() {
       if (this.version === version) {
         return;
       }
