@@ -1,27 +1,36 @@
-import './init';
 import expect from 'expect';
 import React, { PropTypes } from 'react';
 import { Simulate } from 'react-addons-test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
+import providers from './providers/index';
 import Test from './components/Test';
 import TestItem from './components/TestItem';
 
-function render (props) {
-  return renderTest(Test, props);
-}
+const context = {
+  combinedProviders: [ providers ],
+  providers,
+  providedState: {
+    list: [
+      {
+        value: 'test'
+      }
+    ]
+  }
+};
 
-function renderItem (props) {
-  return renderTest(TestItem, props);
+function render (props) {
+  return renderTest(Test, { ...context, ...props });
 }
 
 const placeholder = 'Testing...';
 
 describe('react-redux-provide', () => {
   it('should have the correct displayName', () => {
-    expect(Test.displayName).toBe('ProvideTest(list)');
+    render({ placeholder });
+    expect(Test.displayName).toBe('ProvideTest(list,someCombinedProvider)');
   });
 
-  it('should render correctly using assigned initialState', () => {
+  it('should render correctly using providedState', () => {
     const { node } = render({ placeholder });
     const input = node.childNodes[0];
     const firstItem = node.childNodes[1];
@@ -79,23 +88,57 @@ describe('react-redux-provide', () => {
     expect(node.childNodes[2].textContent).toBe('test');
   });
 
-  it('should act as a single source of truth for all instances', () => {
-    const test = render({ placeholder });
-    const testItem = renderItem({ index: 0 });
+  it('should combine providers correctly', () => {
+    const { node, wrappedInstance } = render({ placeholder });
+    const index = 0;
+    const providedItem = wrappedInstance.refs[`item${index}`];
+    const item = providedItem.refs.wrappedInstance;
     const value = 'testing update...';
 
-    testItem.wrappedInstance.update(value);
+    expect(item.props.index).toBe(index);
+    expect(wrappedInstance.props.updatedIndex).toBe(-1);
 
-    expect(test.node.childNodes.length).toBe(3);
-    expect(test.wrappedInstance.props.list.length).toBe(2);
+    item.update(value);
 
-    expect(test.wrappedInstance.props.list[0].value).toBe(value);
-    expect(test.wrappedInstance.props.list[0].updated).toBe(true);
-    expect(testItem.wrappedInstance.props.item.value).toBe(value);
-    expect(testItem.wrappedInstance.props.item.updated).toBe(true);
+    expect(wrappedInstance.props.updatedIndex).toBe(index);
+    expect(node.childNodes.length).toBe(2);
+    expect(node.childNodes[1].textContent).toBe(value);
+    expect(wrappedInstance.props.list.length).toBe(1);
+    expect(wrappedInstance.props.list[0].value).toBe(value);
+    expect(item.props.item.value).toBe(value);
+  });
 
-    expect(test.node.childNodes.length).toBe(3);
-    expect(test.node.childNodes[1].textContent).toBe(value);
-    expect(testItem.node.textContent).toBe(value);
+  it('should only render when props have changed', () => {
+    const { component, wrappedInstance } = render({ placeholder });
+    const index = 0;
+    const providedItem = wrappedInstance.refs[`item${index}`];
+
+    // TODO: we should be able to improve the re-rendering algorithm
+
+    expect(component.prerenders).toBe(1);
+    expect(component.renders).toBe(1);
+    expect(providedItem.prerenders).toBe(1);
+    expect(providedItem.renders).toBe(1);
+
+    wrappedInstance.props.noop();
+
+    expect(component.prerenders).toBe(2);
+    expect(component.renders).toBe(1);
+    expect(providedItem.prerenders).toBe(2);
+    expect(providedItem.renders).toBe(2);
+
+    wrappedInstance.props.noop();
+
+    expect(component.prerenders).toBe(3);
+    expect(component.renders).toBe(1);
+    expect(providedItem.prerenders).toBe(3);
+    expect(providedItem.renders).toBe(3);
+
+    wrappedInstance.props.noop();
+
+    expect(component.prerenders).toBe(4);
+    expect(component.renders).toBe(1);
+    expect(providedItem.prerenders).toBe(4);
+    expect(providedItem.renders).toBe(4);
   });
 });

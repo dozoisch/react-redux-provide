@@ -3,9 +3,13 @@ import React from 'react';
 import { Simulate } from 'react-addons-test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
 import Header from '../../components/Header';
+import context from '../context';
 
 function render (props) {
-  return renderTest(Header, props);
+  return renderTest(Header, {
+    ...context,
+    ...props
+  });
 }
 
 describe('components', () => {

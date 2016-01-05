@@ -15,7 +15,6 @@ export default class GoodTimes extends Component {
   }
 
   render() {
-    console.log(Object.keys(this.props));
     return (
       <div className="good-times">
         {this.renderButton()}

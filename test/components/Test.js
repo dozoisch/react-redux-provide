@@ -7,7 +7,9 @@ export default class Test extends Component {
   static propTypes = {
     placeholder: PropTypes.string.isRequired,
     list: PropTypes.arrayOf(PropTypes.object).isRequired,
-    unshiftItem: PropTypes.func.isRequired
+    unshiftItem: PropTypes.func.isRequired,
+    updatedIndex: PropTypes.number.isRequired,
+    noop: PropTypes.func.isRequired
   };
 
   unshiftItem() {
@@ -44,7 +46,9 @@ export default class Test extends Component {
 
   renderItems() {
     return this.props.list.map(
-      (item, index) => <TestItem key={index} index={index} />
+      (item, index) => (
+        <TestItem ref={`item${index}`} key={index} index={index} />
+      )
     );
   }
 }

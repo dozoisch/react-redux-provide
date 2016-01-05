@@ -1,15 +1,14 @@
 import createProviderStore from './createProviderStore';
 
 /**
- * Creates and returns a shared store based on the combination of each
- * provider and assigns it to them.
+ * Creates and returns a shared store based on the combined providers.
  *
  * @param {Object} providers
  * @param {Object} initialState Optional
  * @return {Object}
  * @api public
  */
-export default function shareStore (providers, initialState) {
+export default function createdCombinedStore (providers, initialState) {
   const combinedProvider = {
     reducers: {},
     middleware: [],
@@ -20,13 +19,7 @@ export default function shareStore (providers, initialState) {
     copyValues(combinedProvider, providers[providerName]);
   }
 
-  const sharedStore = createProviderStore(combinedProvider, initialState);
-
-  for (let providerName in providers) {
-    providers[providerName].store = sharedStore;
-  }
-
-  return sharedStore;
+  return createProviderStore(combinedProvider, initialState);
 }
 
 function copyValues (combinedProvider, provider) {

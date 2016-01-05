@@ -3,12 +3,15 @@ import React from 'react';
 import { Simulate } from 'react-addons-test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
 import Footer from '../../components/Footer';
+import context from '../context';
 
-function render (propOverrides) {
-  return renderTest(Footer, Object.assign({
+function render (props) {
+  return renderTest(Footer, {
+    ...context,
     completedCount: 0,
-    activeCount: 0
-  }, propOverrides));
+    activeCount: 0,
+    ...props
+  });
 }
 
 describe('components', () => {

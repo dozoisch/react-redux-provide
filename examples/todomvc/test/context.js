@@ -1,11 +1,6 @@
-import 'babel-core/polyfill';
-import 'todomvc-app-css/index.css';
-import React from 'react';
-import { render } from 'react-dom';
-import { App } from './components/index';
-import providers from './providers/index';
+import providers from '../providers/index';
 
-export const context = {
+export default {
   providers,
   providedState: {
     todoList: [
@@ -29,5 +24,3 @@ export const context = {
     ])
   }
 };
-
-render(<App { ...context } />, document.getElementById('root'));

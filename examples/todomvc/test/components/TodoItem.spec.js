@@ -3,9 +3,13 @@ import React from 'react';
 import { Simulate } from 'react-addons-test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
 import TodoItem from '../../components/TodoItem';
+import context from '../context';
 
 function render () {
-  return renderTest(TodoItem, { index: 0 });
+  return renderTest(TodoItem, {
+    ...context,
+    index: 0
+  });
 }
 
 describe('components', () => {
@@ -78,20 +82,12 @@ describe('components', () => {
       expect(wrappedInstance.props.todoItem.editing).toBe(true);
     });
 
-    it('should render correctly when editing', () => {
-      const { node } = render();
-      const input = node.childNodes[0];
-
-      expect(node.tagName).toBe('LI');
-      expect(node.className).toBe('editing');
-
-      expect(input.tagName).toBe('INPUT');
-      expect(input.className).toBe('edit');
-      expect(input.value).toBe('Use redux providers');
-    });
-
-    it('should save value and stop editing when enter is pressed', () => {
+    it('should save input value and stop editing when pressing enter', () => {
       const { node, wrappedInstance } = render();
+      const label = node.childNodes[0].childNodes[1];
+
+      Simulate.doubleClick(label);
+
       const { save } = wrappedInstance;
       const input = node.childNodes[0];
       const value = 'Be awesome!';

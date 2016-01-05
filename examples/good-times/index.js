@@ -1,7 +1,16 @@
 import 'babel-core/polyfill';
-import './init';
 import React from 'react';
 import { render } from 'react-dom';
 import GoodTimes from './components/GoodTimes';
+import providers from './providers/index';
 
-render(<GoodTimes/>, document.getElementById('root'));
+const context = {
+  providers,
+  providedState: {
+    list: [
+      { time: Date.now() }
+    ]
+  }
+};
+
+render(<GoodTimes { ...context } />, document.getElementById('root'));
