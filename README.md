@@ -8,7 +8,9 @@ This small library allows you to:
 
 1. Build your entire app's view layer first - i.e., all your components become as "dumb" as possible.
 
-2. Decorate your components with `@provide`, which allows you to specify - as `propTypes` - exactly the data and actions said components need from [`redux`](https://github.com/rackt/redux), using as many stores and/or combining providers as necessary.  **Providers are automatically assigned to the components that need them.**
+2. Decorate your components with `@provide`, which allows you to specify - as `propTypes` - exactly the data and actions said components need from [`redux`](https://github.com/rackt/redux), using as many stores and/or combining providers as necessary.
+
+  **Note: Providers are automatically assigned to the components that need them.**
 
 3. Pass context as props at any level (though typically only the root component is necessary) to any component decorated with `@provide`.
 
@@ -88,6 +90,27 @@ The API surface area is [naturally tiny](https://github.com/loggur/react-redux-p
 4.  `createProviderStore (Object provider, Optional Object providedState)` - Creates and returns a store specifically for some provider.
 
 5.  `createCombinedStore (Object providers, Optional Object providedState)` - Creates and returns a shared store based on the combination of each provider.  Especially useful when a provider's state depends on another provider's actions.
+
+
+## Creating Providers
+
+A provider is just an object with a few properties:
+
+- `actions` - Your usual [`redux`](https://github.com/rackt/redux) `actions`.
+
+- `reducers` - Your usual [`redux`](https://github.com/rackt/redux) `reducers`.
+
+- `middleware` - Include whatever middleware is used by your provider.  This can be either an array of middlewares or a single middleware.
+
+- `enhancer` - Include whatever enhancer is used by your provider's store.  This can be either an array of enhancers or a single enhancer.
+
+- `merge (stateProps, dispatchProps, parentProps)` - This incredibly useful function should return an object, which typically adds, removes, or replaces certain provided properties based on whatever logic you deem necessary.  For example, in [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list), if the component has an `index` prop passed to its parent and expects an `item` prop from the provider, the `merge` function will attempt to provide the `item` at that `index` within the `list` to the component.
+
+- `store` - This is your typical `redux` store.  See the Caveats section above about automatically generated stores.
+
+- `mapState` - Maps each reduced state to the provided `props`.  By default, it will map them all.  It's unlikely that you'll ever actually need to include this.
+
+- `mapDispatch` - It's unlikely that you'll need to include this as well.  This defaults to `dispatch => bindActionCreators(actions, dispatch)` or if it's an object, it will use `redux`'s `wrapActionCreators`.
 
 
 ## Caveats
@@ -180,25 +203,6 @@ const context = {
 
 render(<GoodStuff { ...context } />, document.getElementById('root'));
 ```
-
-
-## Creating Providers
-
-A provider is just an object with a few properties.  At its core, it's your usual [`redux`](https://github.com/rackt/redux) `actions` and `reducers`, which you'll typically need at a bare minimum.  There are a few other things you can optionally include:
-
-- `name` - Defaults to its corresponding key within the `providers` prop.  This will show up in [`react-devtools`](https://github.com/facebook/react-devtools) - e.g., if you provide `list` and `map` to `SomeComponent`, in your dev tools, you'll see `SomeComponent` wrapped with another component called `ProvideSomeComponent(list,map)`.
-
-- `middleware` - Include whatever middleware is used by your provider.  This can be either an array of middlewares or a single middleware.
-
-- `enhancer` - Include whatever enhancer is used by your provider's store.  This can be either an array of enhancers or a single enhancer.
-
-- `merge (stateProps, dispatchProps, parentProps)` - This incredibly useful function should return an object, which typically adds, removes, or replaces certain provided properties based on whatever logic you deem necessary.  For example, in [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list), if the component has an `index` prop passed to its parent and expects an `item` prop from the provider, the `merge` function will attempt to provide the `item` at that `index` within the `list` to the component.
-
-- `store` - This is your typical `redux` store.  See the Caveats section above about automatically generated stores.  
-
-- `mapState` - Maps each reduced state to the provided `props`.  By default, it will map them all.  It's unlikely that you'll ever actually need to include this.
-
-- `mapDispatch` - It's unlikely that you'll need to include this as well.  This defaults to `dispatch => bindActionCreators(actions, dispatch)` or if it's an object, it will use `redux`'s `wrapActionCreators`.
 
 
 ## Notes

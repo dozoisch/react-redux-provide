@@ -26,15 +26,14 @@ const contextTypes = {
   combinedProviderStores: PropTypes.object
 };
 
-// Helps track hot reloading.
-let nextVersion = 0;
-
 export default function provide(WrappedComponent) {
-  const version = nextVersion++;
+  const instances = WrappedComponent.instances || new Set();
   const pure = WrappedComponent.pure !== false;
   let shouldSubscribe = false;
   let doStatePropsDependOnOwnProps = false;
   let doDispatchPropsDependOnOwnProps = false;
+
+  WrappedComponent.instances = instances;
 
   function getDisplayName(providers = {}) {
     return ''
@@ -72,7 +71,6 @@ export default function provide(WrappedComponent) {
 
     constructor(props, context) {
       super(props);
-      this.version = version;
       this.prerenders = 0;
       this.renders = 0;
       this.stores = new Set();
@@ -236,6 +234,7 @@ export default function provide(WrappedComponent) {
 
     componentDidMount() {
       this.trySubscribe();
+      instances.add(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -247,6 +246,7 @@ export default function provide(WrappedComponent) {
     componentWillUnmount() {
       this.tryUnsubscribe();
       this.clearCache();
+      instances.delete(this);
     }
 
     clearCache() {
@@ -259,7 +259,7 @@ export default function provide(WrappedComponent) {
     }
 
     isSubscribed() {
-      return typeof this.unsubscribe === 'function';
+      return this.unsubscribe && typeof this.unsubscribe[0] === 'function';
     }
 
     trySubscribe() {
@@ -484,18 +484,21 @@ export default function provide(WrappedComponent) {
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    Provide.prototype.componentWillUpdate = function componentWillUpdate() {
-      if (this.version === version) {
-        return;
-      }
+    for (let instance of instances) {
+      let { props, context } = instance;
+      let providedState = props.providedState || context.providedState || {};
 
-      // We are hot reloading!
-      this.version = version;
-
-      // Update the state and bindings.
-      this.trySubscribe();
-      this.clearCache();
-    };
+      instance.stores = new Set();
+      instance.storesStates = new WeakMap();
+      instance.providedState = providedState;
+      instance.initCombinedProviderStores(props, context);
+      instance.initProviders(props, context);
+      instance.initState(props, context);
+      instance.tryUnsubscribe();
+      instance.trySubscribe();
+      instance.clearCache();
+      instance.forceUpdate();
+    }
   }
 
   return hoistStatics(Provide, WrappedComponent);
