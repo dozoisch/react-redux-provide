@@ -17,7 +17,7 @@
   "dependencies": {
     "react": "^0.14.1",
     "react-dom": "^0.14.0",
-    "react-redux-provide": "^4.1.0",
+    "react-redux-provide": "^5.0.0",
     "react-redux-provide-list": "^0.4.0"
   },
   "devDependencies": {
