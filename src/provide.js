@@ -29,7 +29,7 @@ const contextTypes = {
 export default function provide(WrappedComponent) {
   const instances = WrappedComponent.instances || new Set();
   const pure = WrappedComponent.pure !== false;
-  let shouldSubscribe = false;
+  let doSubscribe = false;
   let doStatePropsDependOnOwnProps = false;
   let doDispatchPropsDependOnOwnProps = false;
 
@@ -133,8 +133,8 @@ export default function provide(WrappedComponent) {
             this.providers[name] = provider;
             this.addStore(provider.store);
 
-            if (provider.doSubscribe) {
-              shouldSubscribe = true;
+            if (provider.shouldSubscribe) {
+              doSubscribe = true;
             }
             if (provider.mapStateProps) {
               doStatePropsDependOnOwnProps = true;
@@ -142,7 +142,7 @@ export default function provide(WrappedComponent) {
             if (provider.mapDispatchProps) {
               doDispatchPropsDependOnOwnProps = true;
             }
-            
+
             break;
           }
         }
@@ -154,7 +154,7 @@ export default function provide(WrappedComponent) {
     initProvider(name, provider) {
       const { actions = {}, reducers = {} } = provider;
       let { mapState, mapDispatch, merge } = provider;
-      let doSubscribe = false;
+      let shouldSubscribe = false;
 
       if (typeof mapState === 'undefined') {
         mapState = (state) => {
@@ -169,7 +169,7 @@ export default function provide(WrappedComponent) {
       }
 
       if (typeof mapState === 'function') {
-        doSubscribe = true;
+        shouldSubscribe = true;
       } else {
         mapState = defaultMapState;
       }
@@ -192,7 +192,7 @@ export default function provide(WrappedComponent) {
       this.contextProviders[name] = this.setProviderStore({
         name,
         ...provider,
-        doSubscribe,
+        shouldSubscribe,
         mapState,
         mapStateProps,
         mapDispatch,
@@ -260,7 +260,7 @@ export default function provide(WrappedComponent) {
     }
 
     trySubscribe() {
-      if (shouldSubscribe && !this.unsubscribe) {
+      if (doSubscribe && !this.unsubscribe) {
         this.unsubscribe = Array.from(this.stores).map(
           store => store.subscribe(::this.handleChange)
         );
