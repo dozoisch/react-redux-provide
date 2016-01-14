@@ -16,14 +16,14 @@ const defaultMerge = (stateProps, dispatchProps, parentProps) => ({
 });
 
 const contextTypes = {
-  allProviders: PropTypes.object,
   providedState: PropTypes.object,
   providers: PropTypes.object,
   combinedProviders: PropTypes.oneOfType([
     PropTypes.object,
     PropTypes.arrayOf(PropTypes.object)
   ]),
-  combinedProviderStores: PropTypes.object
+  combinedProviderStores: PropTypes.object,
+  providerReady: PropTypes.arrayOf(PropTypes.func)
 };
 
 export default function provide(WrappedComponent) {
@@ -61,11 +61,11 @@ export default function provide(WrappedComponent) {
 
     getChildContext() {
       return {
-        allProviders: this.allProviders,
         providedState: this.providedState,
         providers: this.contextProviders,
         combinedProviders: this.contextCombinedProviders,
-        combinedProviderStores: this.contextCombinedProviderStores
+        combinedProviderStores: this.contextCombinedProviderStores,
+        providerReady: this.providerReady
       };
     }
 
@@ -76,6 +76,7 @@ export default function provide(WrappedComponent) {
       this.stores = new Set();
       this.storesStates = new WeakMap();
       this.providedState = props.providedState || context.providedState || {};
+      this.providerReady = props.providerReady || context.providerReady;
       this.initCombinedProviderStores(props, context);
       this.initProviders(props, context);
       this.initState(props, context);
@@ -83,7 +84,7 @@ export default function provide(WrappedComponent) {
     }
 
     initCombinedProviderStores(props, context) {
-      if (context.combinedProviderStores) {
+      if (!props.providers && context.combinedProviderStores) {
         this.contextCombinedProviders = context.combinedProviders;
         this.contextCombinedProviderStores = context.combinedProviderStores;
         return;
@@ -104,60 +105,56 @@ export default function provide(WrappedComponent) {
         for (let name in providers) {
           this.contextCombinedProviderStores[name] = store;
         }
-
-        this.addStore(store);
       }
     }
 
     initProviders(props, context) {
-      const allProviders = props.providers || context.allProviders || {};
+      const { propTypes = {} } = WrappedComponent;
 
-      this.allProviders = allProviders;
-      this.contextProviders = context.providers || {};
+      if (props.providers) {
+        this.contextProviders = {};
+
+        for (let name in props.providers) {
+          this.initProvider(name, props.providers[name]);
+        }
+      } else {
+        this.contextProviders = context.providers;
+      }
+
       this.providers = {};
 
-      for (let name in allProviders) {
-        this.addValidProvider(name, allProviders[name]);
+      for (let name in this.contextProviders) {
+        let provider = this.contextProviders[name];
+        let { actions = {}, reducers = {}, merge } = provider;
+        let merged = merge && merge(getReduced(reducers), {}, {}) || {};
+
+        for (let propKey in propTypes) {
+          if (propKey in actions || propKey in reducers || propKey in merged) {
+            this.providers[name] = provider;
+            this.addStore(provider.store);
+
+            if (provider.doSubscribe) {
+              shouldSubscribe = true;
+            }
+            if (provider.mapStateProps) {
+              doStatePropsDependOnOwnProps = true;
+            }
+            if (provider.mapDispatchProps) {
+              doDispatchPropsDependOnOwnProps = true;
+            }
+            
+            break;
+          }
+        }
       }
 
       Provide.displayName = getDisplayName(this.providers);
     }
 
-    addValidProvider(name, provider) {
-      const { propTypes = {} } = WrappedComponent;
-      const { actions = {}, reducers = {}, merge } = provider;
-      const merged = merge && merge(getReduced(reducers), {}, {}) || {};
-
-      for (let propKey in propTypes) {
-        if (propKey in actions || propKey in reducers || propKey in merged) {
-          this.addProvider(name, provider);
-          return;
-        }
-      }
-    }
-
-    addProvider(name, provider) {
-      const { providers, contextProviders } = this;
-
-      if (contextProviders[name]) {
-        providers[name] = contextProviders[name];
-        this.addStore(providers[name].store);
-
-        if (typeof providers[name].mapState === 'function') {
-          shouldSubscribe = true;
-        }
-        if (providers[name].mapState.length !== 1) {
-          doStatePropsDependOnOwnProps = true;
-        }
-        if (providers[name].mapDispatch.length !== 1) {
-          doDispatchPropsDependOnOwnProps = true;
-        }
-
-        return;
-      }
-
+    initProvider(name, provider) {
       const { actions = {}, reducers = {} } = provider;
       let { mapState, mapDispatch, merge } = provider;
+      let doSubscribe = false;
 
       if (typeof mapState === 'undefined') {
         mapState = (state) => {
@@ -172,7 +169,7 @@ export default function provide(WrappedComponent) {
       }
 
       if (typeof mapState === 'function') {
-        shouldSubscribe = true;
+        doSubscribe = true;
       } else {
         mapState = defaultMapState;
       }
@@ -191,17 +188,11 @@ export default function provide(WrappedComponent) {
 
       const mapStateProps = mapState.length !== 1;
       const mapDispatchProps = mapDispatch.length !== 1;
-
-      if (mapStateProps) {
-        doStatePropsDependOnOwnProps = true;
-      }
-      if (mapDispatchProps) {
-        doDispatchPropsDependOnOwnProps = true;
-      }
       
-      contextProviders[name] = providers[name] = this.setProviderStore({
+      this.contextProviders[name] = this.setProviderStore({
         name,
         ...provider,
+        doSubscribe,
         mapState,
         mapStateProps,
         mapDispatch,
@@ -217,15 +208,21 @@ export default function provide(WrappedComponent) {
 
     setProviderStore(provider) {
       if (!provider.store) {
-        if (this.contextCombinedProviderStores[provider.name]) {
-          provider.store = this.contextCombinedProviderStores[provider.name];
-        } else {
-          provider.store = createProviderStore(provider, this.providedState);
-          this.addStore(provider.store);
-        }
+        provider.store = this.contextCombinedProviderStores[provider.name]
+          || createProviderStore(provider, this.providedState);
+
+        this.setProviderReady(provider);
       }
 
       return provider;
+    }
+
+    setProviderReady(provider) {
+      if (this.providerReady) {
+        for (let ready of this.providerReady) {
+          ready(provider);
+        }
+      }
     }
 
     initState(props, context) {
@@ -321,6 +318,7 @@ export default function provide(WrappedComponent) {
     updateStatePropsIfNeeded() {
       const { stateProps } = this;
       const nextStateProps = this.computeStateProps();
+
       if (stateProps && shallowEqual(nextStateProps, stateProps)) {
         return false;
       }
