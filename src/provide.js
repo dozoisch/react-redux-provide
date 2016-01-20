@@ -26,20 +26,22 @@ const contextTypes = {
   providerReady: PropTypes.arrayOf(PropTypes.func)
 };
 
+const wrappedInstances = {};
+
 export default function provide(WrappedComponent) {
-  const instances = WrappedComponent.instances || new Set();
+  const wrappedName = WrappedComponent.displayName || WrappedComponent.name;
+  const instances = wrappedInstances[wrappedName] || new Set();
   const pure = WrappedComponent.pure !== false;
   let doSubscribe = false;
-  let doStatePropsDependOnOwnProps = false;
-  let doDispatchPropsDependOnOwnProps = false;
+  let statePropsDepend = false;
+  let dispatchPropsDepend = false;
 
-  WrappedComponent.instances = instances;
+  if (!wrappedInstances[wrappedName]) {
+    wrappedInstances[wrappedName] = instances;
+  }
 
   function getDisplayName(providers = {}) {
-    return ''
-      +'Provide'
-      +(WrappedComponent.displayName || WrappedComponent.name || 'Component')
-      +'('+Object.keys(providers).join(',')+')';
+    return `Provide${wrappedName}(${Object.keys(providers).join(',')})`;
   }
 
   function getReduced(reducers) {
@@ -71,7 +73,7 @@ export default function provide(WrappedComponent) {
 
     constructor(props, context) {
       super(props);
-      this.prerenders = 0;
+      this.prerenders = 1;
       this.renders = 0;
       this.stores = new Set();
       this.storesStates = new WeakMap();
@@ -80,7 +82,6 @@ export default function provide(WrappedComponent) {
       this.initCombinedProviderStores(props, context);
       this.initProviders(props, context);
       this.initState(props, context);
-      this.clearCache();
     }
 
     initCombinedProviderStores(props, context) {
@@ -137,10 +138,10 @@ export default function provide(WrappedComponent) {
               doSubscribe = true;
             }
             if (provider.mapStateProps) {
-              doStatePropsDependOnOwnProps = true;
+              statePropsDepend = true;
             }
             if (provider.mapDispatchProps) {
-              doDispatchPropsDependOnOwnProps = true;
+              dispatchPropsDepend = true;
             }
 
             break;
@@ -227,97 +228,14 @@ export default function provide(WrappedComponent) {
 
     initState(props, context) {
       this.state = { storesStates: this.storesStates };
+      this.setStateProps(props);
+      this.setDispatchProps(props);
+      this.setMergedProps(props);
     }
 
-    componentDidMount() {
-      this.trySubscribe();
-      instances.add(this);
-    }
-
-    componentWillReceiveProps(nextProps) {
-      if (!pure || !shallowEqual(nextProps, this.props)) {
-        this.haveOwnPropsChanged = true;
-      }
-    }
-
-    componentWillUnmount() {
-      this.tryUnsubscribe();
-      this.clearCache();
-      instances.delete(this);
-    }
-
-    clearCache() {
-      this.dispatchProps = null;
-      this.stateProps = null;
-      this.mergedProps = null;
-      this.haveOwnPropsChanged = true;
-      this.hasStoreStateChanged = true;
-      this.renderedElement = null;
-    }
-
-    isSubscribed() {
-      return this.unsubscribe && typeof this.unsubscribe[0] === 'function';
-    }
-
-    trySubscribe() {
-      if (doSubscribe && !this.unsubscribe) {
-        this.unsubscribe = Array.from(this.stores).map(
-          store => store.subscribe(::this.handleChange)
-        );
-        this.handleChange();
-      }
-    }
-
-    tryUnsubscribe() {
-      if (this.unsubscribe) {
-        for (let unsubscribe of this.unsubscribe) {
-          unsubscribe();
-        }
-        this.unsubscribe = null;
-      }
-    }
-
-    handleChange() {
-      if (!this.unsubscribe) {
-        return;
-      }
-
-      if (!pure || this.storesDidChange()) {
-        this.hasStoreStateChanged = true;
-        this.setState({ storesStates: this.storesStates });
-      }
-    }
-
-    storesDidChange() {
-      const { stores, storesStates } = this;
-      let changed = false;
-
-      this.storesStates = new WeakMap();
-
-      for (let store of stores) {
-        let prevStoreState = storesStates.get(store);
-        let storeState = store.getState();
-
-        if (
-          prevStoreState !== storeState
-          && !shallowEqual(prevStoreState, storeState)
-        ) {
-          changed = true;
-        }
-
-        this.storesStates.set(store, storeState);
-      }
-
-      return changed;
-    }
-
-    shouldComponentUpdate() {
-      return !pure || this.haveOwnPropsChanged || this.hasStoreStateChanged;
-    }
-
-    updateStatePropsIfNeeded() {
+    setStateProps(props) {
       const { stateProps } = this;
-      const nextStateProps = this.computeStateProps();
+      const nextStateProps = this.computeStateProps(props);
 
       if (stateProps && shallowEqual(nextStateProps, stateProps)) {
         return false;
@@ -327,15 +245,14 @@ export default function provide(WrappedComponent) {
       return true;
     }
 
-    computeStateProps() {
+    computeStateProps(props) {
       const stateProps = {};
 
       for (let name in this.providers) {
         let provider = this.providers[name];
-        let { store } = provider;
-        let state = store.getState();
+        let state = provider.store.getState();
         let providerStateProps = provider.mapStateProps
-          ? provider.mapState(state, this.props)
+          ? provider.mapState(state, props)
           : provider.mapState(state);
 
         if (!isPlainObject(providerStateProps)) {
@@ -351,9 +268,9 @@ export default function provide(WrappedComponent) {
       return stateProps;
     }
 
-    updateDispatchPropsIfNeeded() {
+    setDispatchProps(props) {
       const { dispatchProps } = this;
-      const nextDispatchProps = this.computeDispatchProps();
+      const nextDispatchProps = this.computeDispatchProps(props);
       if (dispatchProps && shallowEqual(nextDispatchProps, dispatchProps)) {
         return false;
       }
@@ -362,15 +279,14 @@ export default function provide(WrappedComponent) {
       return true;
     }
 
-    computeDispatchProps() {
+    computeDispatchProps(props) {
       const dispatchProps = {};
 
       for (let name in this.providers) {
         let provider = this.providers[name];
-        let { store } = provider;
-        let { dispatch } = store;
+        let { dispatch } = provider.store;
         let providerDispatchProps = provider.mapDispatchProps
-          ? provider.mapDispatch(dispatch, this.props)
+          ? provider.mapDispatch(dispatch, props)
           : provider.mapDispatch(dispatch);
 
         if (!isPlainObject(providerDispatchProps)) {
@@ -386,13 +302,11 @@ export default function provide(WrappedComponent) {
       return dispatchProps;
     }
 
-    updateMergedProps() {
-      const { mergedProps } = this;
+    setMergedProps(props) {
+      const { stateProps, dispatchProps, mergedProps } = this;
 
       this.mergedProps = this.computeMergedProps(
-        this.stateProps,
-        this.dispatchProps,
-        this.props
+        stateProps, dispatchProps, props
       );
 
       return !mergedProps || !shallowEqual(mergedProps, this.mergedProps);
@@ -427,57 +341,115 @@ export default function provide(WrappedComponent) {
       return filtered;
     }
 
-    render() {
-      const {
-        haveOwnPropsChanged,
-        hasStoreStateChanged,
-        renderedElement
-      } = this;
+    componentDidMount() {
+      this.trySubscribe();
+      instances.add(this);
+    }
 
-      let shouldUpdateStateProps = true;
-      let shouldUpdateDispatchProps = true;
-      let haveStatePropsChanged = false;
-      let haveDispatchPropsChanged = false;
-      let haveMergedPropsChanged = false;
+    componentWillUnmount() {
+      this.tryUnsubscribe();
+      instances.delete(this);
+    }
 
-      this.haveOwnPropsChanged = false;
-      this.hasStoreStateChanged = false;
+    componentWillReceiveProps(nextProps) {
+      if (!pure || !shallowEqual(nextProps, this.props)) {
+        this.propsChanged = true;
+      }
+    }
 
-      if (pure && renderedElement) {
-        shouldUpdateStateProps = hasStoreStateChanged
-          || (haveOwnPropsChanged && doStatePropsDependOnOwnProps);
-        shouldUpdateDispatchProps = haveOwnPropsChanged
-          && doDispatchPropsDependOnOwnProps;
+    isSubscribed() {
+      return this.unsubscribe && typeof this.unsubscribe[0] === 'function';
+    }
+
+    trySubscribe() {
+      if (doSubscribe && !this.unsubscribe) {
+        this.unsubscribe = Array.from(this.stores).map(
+          store => store.subscribe(::this.handleChange)
+        );
+        this.handleChange();
+      }
+    }
+
+    tryUnsubscribe() {
+      if (this.unsubscribe) {
+        for (let unsubscribe of this.unsubscribe) {
+          unsubscribe();
+        }
+        this.unsubscribe = null;
+      }
+    }
+
+    handleChange() {
+      if (!this.unsubscribe) {
+        return;
       }
 
-      if (shouldUpdateStateProps) {
-        haveStatePropsChanged = this.updateStatePropsIfNeeded();
+      if (!pure || this.storesDidChange()) {
+        this.storesChanged = true;
+        this.setState({ storesStates: this.storesStates });
       }
-      if (shouldUpdateDispatchProps) {
-        haveDispatchPropsChanged = this.updateDispatchPropsIfNeeded();
+    }
+
+    storesDidChange() {
+      const { stores, storesStates } = this;
+      let changed = false;
+
+      this.storesStates = new WeakMap();
+
+      for (let store of stores) {
+        let prevStoreState = storesStates.get(store);
+        let storeState = store.getState();
+
+        if (
+          prevStoreState !== storeState
+          && !shallowEqual(prevStoreState, storeState)
+        ) {
+          changed = true;
+        }
+
+        this.storesStates.set(store, storeState);
       }
 
-      if (
-        haveStatePropsChanged ||
-        haveDispatchPropsChanged ||
-        haveOwnPropsChanged
-      ) {
-        haveMergedPropsChanged = this.updateMergedProps();
+      return changed;
+    }
+
+    shouldComponentUpdate(props) {
+      const { propsChanged, storesChanged } = this;
+      let statePropsChanged = false;
+      let dispatchPropsChanged = false;
+      let mergedPropsChanged = false;
+
+      if (!pure) {
+        return true;
+      }
+
+      if (!propsChanged && !storesChanged) {
+        return false;
+      }
+
+      if (storesChanged || (propsChanged && statePropsDepend)) {
+        statePropsChanged = this.setStateProps(props);
+      }
+      if (propsChanged && dispatchPropsDepend) {
+        dispatchPropsChanged = this.setDispatchProps(props);
+      }
+      if (statePropsChanged || dispatchPropsChanged || propsChanged) {
+        mergedPropsChanged = this.setMergedProps(props);
       }
 
       this.prerenders++;
+      this.propsChanged = false;
+      this.storesChanged = false;
 
-      if (!haveMergedPropsChanged && renderedElement) {
-        return renderedElement;
-      }
+      return mergedPropsChanged;
+    }
 
-      this.renderedElement = (
-        <WrappedComponent ref="wrappedInstance" {...this.mergedProps} />
-      );
-
+    render() {
       this.renders++;
 
-      return this.renderedElement;
+      return (
+        <WrappedComponent ref="wrappedInstance" {...this.mergedProps} />
+      );
     }
   }
 
@@ -494,7 +466,6 @@ export default function provide(WrappedComponent) {
       instance.initState(props, context);
       instance.tryUnsubscribe();
       instance.trySubscribe();
-      instance.clearCache();
       instance.forceUpdate();
     }
   }
