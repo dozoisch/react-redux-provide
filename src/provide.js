@@ -29,9 +29,9 @@ const contextTypes = {
 const wrappedInstances = {};
 
 export default function provide(WrappedComponent) {
-  const wrappedName = WrappedComponent.displayName || WrappedComponent.name;
-  const instances = wrappedInstances[wrappedName] || new Set();
-  const pure = WrappedComponent.pure !== false;
+  let wrappedName = WrappedComponent.displayName || WrappedComponent.name;
+  let instances = wrappedInstances[wrappedName] || new Set();
+  let pure = WrappedComponent.pure !== false;
   let doSubscribe = false;
   let statePropsDepend = false;
   let dispatchPropsDepend = false;
@@ -82,6 +82,22 @@ export default function provide(WrappedComponent) {
       this.initCombinedProviderStores(props, context);
       this.initProviders(props, context);
       this.initState(props, context);
+    }
+
+    setWrappedComponent(newWrappedComponent) {
+      const prevWrappedName = wrappedName;
+
+      WrappedComponent = newWrappedComponent;
+      Provide.WrappedComponent = WrappedComponent;
+      wrappedName = WrappedComponent.displayName || WrappedComponent.name;
+      if (prevWrappedName !== wrappedName) {
+        wrappedInstances[wrappedName] = instances;
+        delete wrappedInstances[prevWrappedName];
+      }
+      pure = WrappedComponent.pure !== false;
+      doSubscribe = false;
+      statePropsDepend = false;
+      dispatchPropsDepend = false;
     }
 
     initCombinedProviderStores(props, context) {
@@ -457,10 +473,13 @@ export default function provide(WrappedComponent) {
     for (let instance of instances) {
       let { props, context } = instance;
       let providedState = props.providedState || context.providedState || {};
+      let providerReady = props.providerReady || context.providerReady;
 
       instance.stores = new Set();
       instance.storesStates = new WeakMap();
       instance.providedState = providedState;
+      instance.providerReady = providerReady;
+      instance.setWrappedComponent(WrappedComponent);
       instance.initCombinedProviderStores(props, context);
       instance.initProviders(props, context);
       instance.initState(props, context);
