@@ -1,4 +1,4 @@
-export default function createKeyConcat (key) {
+export default function createKeyConcat (key, unshift) {
   return function (providers, value) {
     for (let providerName in providers) {
       let provider = providers[providerName];
@@ -9,7 +9,11 @@ export default function createKeyConcat (key) {
         provider[key] = [ provider[key] ];
       }
 
-      provider[key] = provider[key].concat(value);
+      if (unshift) {
+        provider[key] = [].concat(value).concat(provider[key]);
+      } else {
+        provider[key] = provider[key].concat(value);
+      }
     }
   }
 }

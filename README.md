@@ -83,13 +83,17 @@ The API surface area is [naturally tiny](https://github.com/loggur/react-redux-p
     }
     ```
 
-2.  `addMiddleware (Object providers, Array|Function middleware)` - Adds middleware(s) to each provider.
+2.  `pushMiddleware (Object providers, Array|Function middleware)` - Adds middleware(s) to the end of each provider's chain of middlewares.
 
-3.  `addEnhancer (Object providers, Array|Function enhancer)` - Adds enhancer(s) to each provider.
+3.  `unshiftMiddleware (Object providers, Array|Function middleware)` - Adds middleware(s) to the beginning of each provider's chain of middlewares.
 
-4.  `createProviderStore (Object provider, Optional Object providedState)` - Creates and returns a store specifically for some provider.
+4.  `pushEnhancer (Object providers, Array|Function enhancer)` - Adds enhancer(s) to the end of each provider's chain of enhancers.
 
-5.  `createCombinedStore (Object providers, Optional Object providedState)` - Creates and returns a shared store based on the combination of each provider.  Especially useful when a provider's state depends on another provider's actions.
+5.  `unshiftEnhancer (Object providers, Array|Function enhancer)` - Adds enhancer(s) to the beginning of each provider's chain of enhancers.
+
+6.  `createProviderStore (Object provider, Optional Object providedState)` - Creates and returns a store specifically for some provider.
+
+7.  `createCombinedStore (Object providers, Optional Object providedState)` - Creates and returns a shared store based on the combination of each provider.  Especially useful when a provider's state depends on another provider's actions.
 
 
 ## Creating Providers

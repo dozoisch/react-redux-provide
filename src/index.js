@@ -1,14 +1,18 @@
 import provide from './provide';
 import createProviderStore from './createProviderStore';
 import createCombinedStore from './createCombinedStore';
-import addMiddleware from './addMiddleware';
-import addEnhancer from './addEnhancer';
+import pushMiddleware from './pushMiddleware';
+import unshiftMiddleware from './unshiftMiddleware';
+import pushEnhancer from './pushEnhancer';
+import unshiftEnhancer from './unshiftEnhancer';
 
 export default provide;
 export {
   provide,
   createProviderStore,
   createCombinedStore,
-  addMiddleware,
-  addEnhancer
+  pushMiddleware,
+  unshiftMiddleware,
+  pushEnhancer,
+  unshiftEnhancer
 };
