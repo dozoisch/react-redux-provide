@@ -322,7 +322,11 @@ export default function provide(WrappedComponent) {
       const { stateProps, dispatchProps, mergedProps } = this;
 
       this.mergedProps = this.computeMergedProps(
-        stateProps, dispatchProps, props
+        stateProps,
+        dispatchProps,
+        WrappedComponent.defaultProps
+          ? { ...WrappedComponent.defaultProps, ...props }
+          : props
       );
 
       return !mergedProps || !shallowEqual(mergedProps, this.mergedProps);
