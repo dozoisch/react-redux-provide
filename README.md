@@ -108,7 +108,7 @@ A provider is just an object with a few properties:
 
 - `enhancer` - Include whatever enhancer is used by your provider's store.  This can be either an array of enhancers or a single enhancer.
 
-- `merge (stateProps, dispatchProps, parentProps)` - This incredibly useful function should return an object, which typically adds, removes, or replaces certain provided properties based on whatever logic you deem necessary.  For example, in [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list), if the component has an `index` prop passed to its parent and expects an `item` prop from the provider, the `merge` function will attempt to provide the `item` at that `index` within the `list` to the component.
+- `merge (stateProps, dispatchProps, parentProps)` - This incredibly useful function should return an object, which typically adds, removes, or replaces certain provided properties based on whatever logic you deem necessary.  For example, in [`provide-array`](https://github.com/loggur/provide-array), if the component has an `index` prop passed to its parent and expects an `item` prop from the provider, the `merge` function will attempt to provide the `item` at that `index` within the `list` to the component.
 
 - `store` - This is your typical `redux` store.  See the Caveats section above about automatically generated stores.
 
@@ -128,7 +128,7 @@ A provider is just an object with a few properties:
 
 ## Quick Example
 
-Basically, create some component with only the view in mind, plus whatever `props` you'd expect to use for triggering actions.  For this quick example, we know [`react-redux-provide-list`](https://github.com/loggur/react-redux-provide-list) provides a `list` prop and a `pushItem` function, so after using the `@provide` decorator, all we have to do is specify `list` and `pushItem` within our component's `propTypes`.
+Basically, create some component with only the view in mind, plus whatever `props` you'd expect to use for triggering actions.  For this quick example, we know [`provide-array`](https://github.com/loggur/provide-array) provides a `list` prop and a `pushItem` function, so after using the `@provide` decorator, all we have to do is specify `list` and `pushItem` within our component's `propTypes`.
 
 From [examples/good-times/components/GoodTimes.js](https://github.com/loggur/react-redux-provide/blob/master/examples/good-times/components/GoodTimes.js):
 ```js
@@ -189,10 +189,10 @@ Then when rendering the app, all we need to do is pass the provider(s) and the s
 
 ```js
 import { render } from 'react-dom';
-import provideList from 'react-redux-provide-list';
+import provideArray from 'provide-array';
 import GoodStuff from './components/GoodStuff';
 
-const list = provideList();
+const list = provideArray();
 
 const context = {
   providers: { list },
@@ -213,6 +213,6 @@ render(<GoodStuff { ...context } />, document.getElementById('root'));
 
 You'll probably notice that many providers have everything in a single file.  It makes sense for most simple use-cases, but you can of course structure everything however you want since each provider is ultimately just a single object.
 
-You don't have to use generic provider packages (e.g., [`list`](https://github.com/loggur/react-redux-provide-list), [`map`](https://github.com/loggur/react-redux-provide-map), etc.), as they only exist to help with really common use-cases.  For most apps, it works best to create a `providers` directory with an index that exports a `providers` object containing each provider, then we can simply import the object and pass it to the root component of the app when rendering.
+You don't have to use generic provider packages (e.g., [`list`](https://github.com/loggur/provide-array), [`map`](https://github.com/loggur/provide-map), etc.), as they only exist to help with really common use-cases.  For most apps, it works best to create a `providers` directory with an index that exports a `providers` object containing each provider, then we can simply import the object and pass it to the root component of the app when rendering.
 
-**Protip:**  Avoid sharing constants.  Typically, the only place you should (occasionally) share constants is within providers.  See [`bloggur`'s `entries` provider](https://github.com/loggur/bloggur/blob/master/providers/entries.js) for a good example of shared constants, as its state depends on actions within [`react-redux-provide-page`](https://github.com/loggur/react-redux-provide-page).  Your components should have no knowledge of the constants used within your actions and reducers, which leads to a maximum separation of concerns and is always the best design.  Your components should care about only 2 things: what to render and which actions to call.
+**Protip:**  Avoid sharing constants.  Typically, the only place you should (occasionally) share constants is within providers.  See [`bloggur`'s `entries` provider](https://github.com/loggur/bloggur/blob/master/providers/entries.js) for a good example of shared constants, as its state depends on actions within [`provide-page`](https://github.com/loggur/provide-page).  Your components should have no knowledge of the constants used within your actions and reducers, which leads to a maximum separation of concerns and is always the best design.  Your components should care about only 2 things: what to render and which actions to call.

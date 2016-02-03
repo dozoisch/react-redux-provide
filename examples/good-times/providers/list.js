@@ -1,5 +1,5 @@
-import provideList from 'react-redux-provide-list';
+import provideArray from 'provide-array';
 
-const list = provideList();
+const list = provideArray();
 
 export default list;

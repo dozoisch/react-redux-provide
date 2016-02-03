@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
+import isPlainObject from 'is-plain-object';
 import { bindActionCreators } from 'redux';
 import shallowEqual from 'react-redux/lib/utils/shallowEqual';
-import isPlainObject from 'react-redux/lib/utils/isPlainObject';
 import wrapActionCreators from 'react-redux/lib/utils/wrapActionCreators';
 import createProviderStore from './createProviderStore';
 import createCombinedStore from './createCombinedStore';

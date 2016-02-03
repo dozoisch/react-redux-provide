@@ -1,4 +1,4 @@
-import provideMap from 'react-redux-provide-map';
+import provideMap from 'provide-map';
 
 const filterMap = provideMap('filterMap', 'filterItem', 'filterName');
 

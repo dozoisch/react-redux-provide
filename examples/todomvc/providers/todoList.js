@@ -1,5 +1,5 @@
-import provideList from 'react-redux-provide-list';
+import provideArray from 'provide-array';
 
-const todoList = provideList('todoList', 'todoItem');
+const todoList = provideArray('todoList', 'todoItem');
 
 export default todoList;

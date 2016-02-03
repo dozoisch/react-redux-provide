@@ -37,6 +37,7 @@
   "homepage": "https://github.com/loggur/react-redux-provide#readme",
   "dependencies": {
     "hoist-non-react-statics": "^1.0.3",
+    "is-plain-object": "^2.0.1",
     "react": "^0.14.0",
     "react-redux": "^4.0.0",
     "redux": "^3.0.0"
@@ -50,10 +51,10 @@
     "istanbul": "^0.3.17",
     "jsdom": "~5.4.3",
     "mocha": "^2.2.5",
+    "provide-array": "^0.5.0",
     "react-addons-test-utils": "^0.14.0",
     "react-dom": "^0.14.0",
-    "react-redux-provide": "^5.0.0",
-    "react-redux-provide-list": "^0.4.1",
+    "react-redux-provide": "^5.2.0",
     "react-redux-provide-test-utils": "^0.1.3",
     "react-tools": "^0.10.0",
     "rimraf": "^2.3.4",
