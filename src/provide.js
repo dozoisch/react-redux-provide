@@ -27,6 +27,7 @@ const contextTypes = {
 };
 
 const wrappedInstances = {};
+let rootInstance = null;
 
 export default function provide(WrappedComponent) {
   let wrappedName = WrappedComponent.displayName || WrappedComponent.name;
@@ -73,8 +74,17 @@ export default function provide(WrappedComponent) {
 
     constructor(props, context) {
       super(props);
+
+      if (!context.providers) {
+        rootInstance = this;
+      }
+
       this.prerenders = 1;
       this.renders = 0;
+      this.initialize(props, context);
+    }
+
+    initialize(props, context) {
       this.stores = new Set();
       this.storesStates = new WeakMap();
       this.providedState = props.providedState || context.providedState || {};
@@ -82,6 +92,16 @@ export default function provide(WrappedComponent) {
       this.initCombinedProviderStores(props, context);
       this.initProviders(props, context);
       this.initState(props, context);
+    }
+
+    reinitialize(props, context, newWrappedComponent) {
+      if (newWrappedComponent) {
+        this.setWrappedComponent(newWrappedComponent);
+      }
+      this.initialize(props, context);
+      this.tryUnsubscribe();
+      this.trySubscribe();
+      this.forceUpdate();
     }
 
     setWrappedComponent(newWrappedComponent) {
@@ -433,6 +453,17 @@ export default function provide(WrappedComponent) {
       return changed;
     }
 
+    getCurrentProvidedState() {
+      const { contextProviders } = this;
+      const providedState = {};
+
+      for (let name in contextProviders) {
+        Object.assign(providedState, contextProviders[name].store.getState());
+      }
+
+      return providedState;
+    }
+
     shouldComponentUpdate(props) {
       const { propsChanged, storesChanged } = this;
       let statePropsChanged = false;
@@ -475,23 +506,41 @@ export default function provide(WrappedComponent) {
 
   if (process.env.NODE_ENV !== 'production') {
     for (let instance of instances) {
-      let { props, context } = instance;
-      let providedState = props.providedState || context.providedState || {};
-      let providerReady = props.providerReady || context.providerReady;
+      const { props, context } = instance;
 
-      instance.stores = new Set();
-      instance.storesStates = new WeakMap();
-      instance.providedState = providedState;
-      instance.providerReady = providerReady;
-      instance.setWrappedComponent(WrappedComponent);
-      instance.initCombinedProviderStores(props, context);
-      instance.initProviders(props, context);
-      instance.initState(props, context);
-      instance.tryUnsubscribe();
-      instance.trySubscribe();
-      instance.forceUpdate();
+      instance.reinitialize(props, context, WrappedComponent);
     }
   }
 
   return hoistStatics(Provide, WrappedComponent);
+}
+
+export function reloadProviders({ providers, combinedProviders }) {
+  rootInstance.reinitialize({
+    ...rootInstance.props,
+    providedState: rootInstance.getCurrentProvidedState(),
+    providers,
+    combinedProviders
+  }, rootInstance.context);
+
+  const {
+    contextProviders,
+    contextCombinedProviders,
+    contextCombinedProviderStores
+  } = rootInstance;
+
+  for (let wrappedName in wrappedInstances) {
+    let instances = wrappedInstances[wrappedName];
+
+    for (let instance of instances) {
+      let { props, context } = instance;
+
+      if (instance !== rootInstance) {
+        context.providers = contextProviders;
+        context.combinedProviders = contextCombinedProviders;
+        context.combinedProviderStores = contextCombinedProviderStores;
+        instance.reinitialize(props, context);
+      }
+    }
+  }
 }

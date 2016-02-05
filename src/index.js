@@ -1,4 +1,4 @@
-import provide from './provide';
+import provide, { reloadProviders } from './provide';
 import createProviderStore from './createProviderStore';
 import createCombinedStore from './createCombinedStore';
 import pushMiddleware from './pushMiddleware';
@@ -9,6 +9,7 @@ import unshiftEnhancer from './unshiftEnhancer';
 export default provide;
 export {
   provide,
+  reloadProviders,
   createProviderStore,
   createCombinedStore,
   pushMiddleware,
