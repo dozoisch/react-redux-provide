@@ -6,7 +6,7 @@
 
 This small library allows you to:
 
-1. Build your entire app's view layer first - i.e., all your components become as "dumb" as possible.
+1. Build your entire app's view layer first - i.e., all your components should do is render the state of the app and occasionally trigger actions.
 
 2. Decorate your components with `@provide`, which allows you to specify - as `propTypes` - exactly the data and actions said components need from [`redux`](https://github.com/rackt/redux), using as many stores and/or combining providers as necessary.
 
@@ -94,6 +94,8 @@ The API surface area is [naturally tiny](https://github.com/loggur/react-redux-p
 6.  `createProviderStore (Object provider, Optional Object providedState)` - Creates and returns a store specifically for some provider.
 
 7.  `createCombinedStore (Object providers, Optional Object providedState)` - Creates and returns a shared store based on the combination of each provider.  Especially useful when a provider's state depends on another provider's actions.
+
+8.  `reloadProviders (Object props)` - Useful for hot reloading of providers.  Only your updated `providers` and/or `combinedProviders` are extracted from `props`.  The state of your app and your stores will remain intact.  :)
 
 
 ## Creating Providers
@@ -207,6 +209,11 @@ const context = {
 
 render(<GoodStuff { ...context } />, document.getElementById('root'));
 ```
+
+
+## Hot Reloading Providers Example
+
+See [`bloggur/src/renderApp.js`](https://github.com/loggur/bloggur/blob/master/src/renderApp.js) for an example of how to hot reload providers using `webpack`'s hot module replacement.  All you have to do is `import { reloadProviders } from 'react-redux-provide'` and pass your updated `{ providers, combinedProviders }` to it.  **Note:** You'll need to manually pass the path of each provider you want to be hot reloadable within an array to `module.hot.accept`.  See [webpack #1910](https://github.com/webpack/webpack/issues/1910).
 
 
 ## Notes
