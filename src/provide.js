@@ -133,6 +133,19 @@ export default function provide(WrappedComponent) {
         combinedProviders = [ combinedProviders ];
       }
 
+      if (this.contextCombinedProviderStores) {
+        const removed = new WeakSet();
+
+        for (let name in this.contextCombinedProviderStores) {
+          let store = this.contextCombinedProviderStores[name];
+
+          if (store && store.remove && !removed.has(store)) {
+            store.remove();
+            removed.add(store);
+          }
+        }
+      }
+
       this.contextCombinedProviders = combinedProviders;
       this.contextCombinedProviderStores = {};
 
@@ -149,6 +162,19 @@ export default function provide(WrappedComponent) {
       const { propTypes = {} } = WrappedComponent;
 
       if (props.providers) {
+        if (this.contextProviders) {
+          const removed = new WeakSet();
+
+          for (let name in this.contextProviders) {
+            let { store } = this.contextProviders[name];
+
+            if (store && store.remove && !removed.has(store)) {
+              store.remove();
+              removed.add(store);
+            }
+          }
+        }
+
         this.contextProviders = {};
 
         for (let name in props.providers) {
