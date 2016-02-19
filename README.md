@@ -192,7 +192,7 @@ Then when rendering the app, all we need to do is pass the provider(s) and the s
 ```js
 import { render } from 'react-dom';
 import provideArray from 'provide-array';
-import GoodStuff from './components/GoodStuff';
+import GoodTimes from './components/GoodTimes';
 
 const list = provideArray();
 
@@ -207,7 +207,7 @@ const context = {
   }
 };
 
-render(<GoodStuff { ...context } />, document.getElementById('root'));
+render(<GoodTimes { ...context } />, document.getElementById('root'));
 ```
 
 
