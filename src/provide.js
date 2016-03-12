@@ -30,6 +30,7 @@ const wrappedInstances = {};
 let rootInstance = null;
 
 export default function provide(WrappedComponent) {
+  const stateless = typeof WrappedComponent.prototype.render === 'undefined';
   let wrappedName = WrappedComponent.displayName || WrappedComponent.name;
   let instances = wrappedInstances[wrappedName] || new Set();
   let pure = WrappedComponent.pure !== false;
@@ -524,9 +525,13 @@ export default function provide(WrappedComponent) {
     render() {
       this.renders++;
 
-      return (
-        <WrappedComponent ref="wrappedInstance" {...this.mergedProps} />
-      );
+      return stateless
+        ? (
+          <WrappedComponent {...this.mergedProps} />
+        )
+        : (
+          <WrappedComponent ref="wrappedInstance" {...this.mergedProps} />
+        );
     }
   }
 
