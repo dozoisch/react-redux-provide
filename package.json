@@ -1,6 +1,6 @@
 {
   "name": "react-redux-provide",
-  "version": "5.2.2",
+  "version": "5.2.3",
   "description": "Wrap components with a smart component and later assign providers (i.e., stores and action creators) to it.",
   "main": "./lib/index.js",
   "scripts": {
