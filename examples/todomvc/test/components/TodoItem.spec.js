@@ -3,11 +3,11 @@ import React from 'react';
 import { Simulate } from 'react-addons-test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
 import TodoItem from '../../components/TodoItem';
-import context from '../context';
+import defaultProps from '../../defaultProps';
 
 function render () {
   return renderTest(TodoItem, {
-    ...context,
+    ...defaultProps,
     index: 0
   });
 }

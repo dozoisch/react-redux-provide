@@ -4,7 +4,7 @@ import Header from './Header';
 import MainSection from './MainSection';
 import TodoItem from './TodoItem';
 
-export default {
+export {
   App,
   Footer,
   Header,

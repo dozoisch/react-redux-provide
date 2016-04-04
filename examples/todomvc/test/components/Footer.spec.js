@@ -3,11 +3,11 @@ import React from 'react';
 import { Simulate } from 'react-addons-test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
 import Footer from '../../components/Footer';
-import context from '../context';
+import defaultProps from '../../defaultProps';
 
 function render (props) {
   return renderTest(Footer, {
-    ...context,
+    ...defaultProps,
     completedCount: 0,
     activeCount: 0,
     ...props
@@ -100,7 +100,7 @@ describe('components', () => {
 
       wrappedInstance.clearCompleted = expect.createSpy();
       wrappedInstance.forceUpdate();
-
+      
       Simulate.click(clear);
       expect(wrappedInstance.clearCompleted).toHaveBeenCalled();
     });

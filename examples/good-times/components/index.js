@@ -1,5 +1,5 @@
 import GoodTimes from './GoodTimes';
 
-export default {
+export {
   GoodTimes
 };

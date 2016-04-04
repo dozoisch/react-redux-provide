@@ -5,11 +5,11 @@ import { renderTest } from 'react-redux-provide-test-utils';
 import MainSection from '../../components/MainSection';
 import TodoItem from '../../components/TodoItem';
 import Footer from '../../components/Footer';
-import context from '../context';
+import defaultProps from '../../defaultProps';
 
 function render (props) {
   return renderTest(MainSection, {
-    ...context,
+    ...defaultProps,
     ...props
   });
 }

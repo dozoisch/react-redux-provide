@@ -1,4 +1,4 @@
-export default function createKeyConcat (key, unshift) {
+export default function createKeyConcat(key, unshift) {
   return function (providers, value) {
     for (let providerName in providers) {
       let provider = providers[providerName];

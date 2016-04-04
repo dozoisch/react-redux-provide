@@ -1,20 +1,19 @@
 import React, { Component, PropTypes } from 'react';
-import provide from 'react-redux-provide';
 import classnames from 'classnames';
 
-@provide
 export default class Footer extends Component {
   static propTypes = {
     completedCount: PropTypes.number.isRequired,
     activeCount: PropTypes.number.isRequired,
     filterTodoList: PropTypes.func.isRequired,
     filterMap: PropTypes.instanceOf(Map).isRequired,
-    updateFilterMap: PropTypes.func.isRequired
+    selectFilter: PropTypes.func.isRequired,
+    selectedFilterName: PropTypes.string.isRequired
   };
 
-  clearCompleted() {
+  clearCompleted = () => {
     this.props.filterTodoList(todoItem => !todoItem.completed);
-  }
+  };
 
   render() {
     return (
@@ -56,18 +55,13 @@ export default class Footer extends Component {
   }
 
   renderFilterLink(filterName, filterItem) {
-    const { updateFilterMap } = this.props;
+    const { selectedFilterName, selectFilter } = this.props;
 
     return (
       <a
-        className={classnames({ selected: filterItem.selected })}
+        className={classnames({ selected: filterName === selectedFilterName })}
         style={{ cursor: 'pointer' }}
-        onClick={() => updateFilterMap(
-          ([someFilterName, someFilterItem]) => [
-            someFilterName,
-            { ...someFilterItem, selected: filterName === someFilterName }
-          ]
-        )}
+        onClick={() => selectFilter(filterName)}
       >
         {filterName}
       </a>
@@ -81,7 +75,7 @@ export default class Footer extends Component {
       return (
         <button
           className="clear-completed"
-          onClick={::this.clearCompleted}
+          onClick={this.clearCompleted}
         >
           Clear completed
         </button>

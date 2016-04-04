@@ -1,19 +1,23 @@
 import provide, { reloadProviders } from './provide';
+import instantiateProvider from './instantiateProvider';
 import createProviderStore from './createProviderStore';
-import createCombinedStore from './createCombinedStore';
+import createKeyConcat from './createKeyConcat';
 import pushMiddleware from './pushMiddleware';
 import unshiftMiddleware from './unshiftMiddleware';
 import pushEnhancer from './pushEnhancer';
 import unshiftEnhancer from './unshiftEnhancer';
+import shallowEqual from './shallowEqual';
 
 export default provide;
 export {
   provide,
   reloadProviders,
+  instantiateProvider,
   createProviderStore,
-  createCombinedStore,
+  createKeyConcat,
   pushMiddleware,
   unshiftMiddleware,
   pushEnhancer,
-  unshiftEnhancer
+  unshiftEnhancer,
+  shallowEqual
 };

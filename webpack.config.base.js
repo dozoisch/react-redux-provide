@@ -16,11 +16,11 @@ module.exports = {
       commonjs: 'redux',
       amd: 'redux'
     },
-    'react-redux': {
-      root: 'ReactRedux',
-      commonjs2: 'react-redux',
-      commonjs: 'react-redux',
-      amd: 'react-redux'
+    'redux-replicate': {
+      root: 'ReduxReplicate',
+      commonjs2: 'redux-replicate',
+      commonjs: 'redux-replicate',
+      amd: 'redux-replicate'
     }
   },
   module: {

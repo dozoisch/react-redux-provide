@@ -1,7 +1,5 @@
-import list from './list';
-import someCombinedProvider from './someCombinedProvider';
+import test from './test';
 
-export default {
-  list,
-  someCombinedProvider
+export {
+  test
 };

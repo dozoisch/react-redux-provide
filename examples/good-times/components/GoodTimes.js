@@ -1,18 +1,26 @@
 import React, { Component, PropTypes } from 'react';
-import provide from 'react-redux-provide';
 
-@provide
 export default class GoodTimes extends Component {
   static propTypes = {
     list: PropTypes.arrayOf(PropTypes.object).isRequired,
-    pushItem: PropTypes.func.isRequired
+    pushItem: PropTypes.func.isRequired,
+    setRoll: PropTypes.func.isRequired,
+    roll: PropTypes.any
   };
-  
-  addTime() {
+
+  addTime = () => {
     this.props.pushItem({
       time: Date.now()
     });
-  }
+  };
+
+  setRoll = event => {
+    if (event) {
+      event.preventDefault();
+    }
+
+    this.props.setRoll(window.prompt('Let the good times what?'));
+  };
 
   render() {
     return (
@@ -33,8 +41,9 @@ export default class GoodTimes extends Component {
       <input
         type="button"
         style={style}
-        value="Let the good times roll"
-        onClick={::this.addTime}
+        value={`Let the good times ${this.props.roll}`}
+        onClick={this.addTime}
+        onContextMenu={this.setRoll}
       />
     );
   }

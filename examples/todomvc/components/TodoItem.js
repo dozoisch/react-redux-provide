@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import provide from 'react-redux-provide';
 import classnames from 'classnames';
 
-@provide
 export default class TodoItem extends Component {
   static propTypes = {
     index: PropTypes.number.isRequired,
@@ -11,13 +9,13 @@ export default class TodoItem extends Component {
     deleteTodoItem: PropTypes.func.isRequired
   };
 
-  edit() {
+  edit = () => {
     const { index } = this.props;
 
     this.props.updateTodoItem(index, { editing: true });
-  }
+  };
 
-  save() {
+  save = () => {
     const { index } = this.props;
     const value = this.refs.input.value;
 
@@ -26,26 +24,26 @@ export default class TodoItem extends Component {
     } else {
       this.props.deleteTodoItem(index);
     }
-  }
+  };
 
-  saveOnEnter(event) {
+  saveOnEnter = (event) => {
     if (event.key === 'Enter') {
       this.save();
     }
-  }
+  };
 
-  toggle() {
+  toggle = () => {
     const { index } = this.props;
     const completed = this.refs.checkbox.checked;
 
     this.props.updateTodoItem(index, { completed });
-  }
+  };
 
-  destroy() {
+  destroy = () => {
     const { index } = this.props;
 
     this.props.deleteTodoItem(index);
-  }
+  };
 
   render() {
     const { todoItem } = this.props;
@@ -61,8 +59,8 @@ export default class TodoItem extends Component {
             type="text"
             defaultValue={value}
             autoFocus={true}
-            onBlur={::this.save}
-            onKeyDown={::this.saveOnEnter}
+            onBlur={this.save}
+            onKeyDown={this.saveOnEnter}
           />
         </li>
       );
@@ -75,16 +73,16 @@ export default class TodoItem extends Component {
               className="toggle"
               type="checkbox"
               checked={completed}
-              onChange={::this.toggle}
+              onChange={this.toggle}
             />
 
-            <label onDoubleClick={::this.edit}>
+            <label onDoubleClick={this.edit}>
               {value}
             </label>
 
             <button
               className="destroy"
-              onClick={::this.destroy}
+              onClick={this.destroy}
             />
           </div>
         </li>

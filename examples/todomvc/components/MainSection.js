@@ -1,29 +1,20 @@
 import React, { Component, PropTypes } from 'react';
-import provide from 'react-redux-provide';
 import TodoItem from './TodoItem';
 import Footer from './Footer';
 
-@provide
 export default class MainSection extends Component {
   static propTypes = {
     todoList: PropTypes.arrayOf(PropTypes.object).isRequired,
+    selectedFilter: PropTypes.func.isRequired,
     updateTodoList: PropTypes.func.isRequired,
     filterMap: PropTypes.instanceOf(Map).isRequired
   };
-  
-  getSelectedFilter() {
-    for (let filterItem of this.props.filterMap.values()) {
-      if (filterItem && filterItem.selected) {
-        return filterItem.filter;
-      }
-    }
-  }
 
-  toggleAll() {
+  toggleAll = () => {
     const completed = this.refs.toggleAll.checked;
 
     this.props.updateTodoList(todoItem => ({ ...todoItem, completed }));
-  }
+  };
 
   render() {
     const { todoList } = this.props;
@@ -45,8 +36,8 @@ export default class MainSection extends Component {
   }
 
   renderTodoItems() {
+    const { selectedFilter } = this.props;
     const todoItems = [];
-    const selectedFilter = this.getSelectedFilter();
 
     this.props.todoList.forEach((todoItem, index) => {
       if (selectedFilter(todoItem)) {
@@ -69,7 +60,7 @@ export default class MainSection extends Component {
           className="toggle-all"
           type="checkbox"
           checked={completedCount === todoList.length}
-          onChange={::this.toggleAll}
+          onChange={this.toggleAll}
         />
       );
     }

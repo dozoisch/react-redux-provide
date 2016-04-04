@@ -1,18 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import provide from '../../src/provide';
 
-@provide
-export default class TestItem extends Component {
+class TestItem extends Component {
   static propTypes = {
     index: PropTypes.number.isRequired,
     item: PropTypes.object.isRequired,
     updateItem: PropTypes.func.isRequired,
-    noopCount: PropTypes.number.isRequired
+    count: PropTypes.number.isRequired
   };
 
-  update(value) {
+  update = (value) => {
     this.props.updateItem(this.props.index, { value });
-  }
+  };
 
   render() {
     return (
@@ -22,3 +21,5 @@ export default class TestItem extends Component {
     );
   }
 }
+
+export default provide(TestItem);

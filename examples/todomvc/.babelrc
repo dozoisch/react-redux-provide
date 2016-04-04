@@ -1,19 +1,31 @@
 {
-  "stage": 0,
+  "presets": [
+    "es2015",
+    "react",
+    "stage-0"
+  ],
+  "plugins": [
+    "transform-runtime",
+    ["react-transform", {
+      "transforms": [{
+        "transform": "react-redux-provide/lib/transform"
+      }]
+    }]
+  ],
   "env": {
     "development": {
       "plugins": [
-        "react-transform"
-      ],
-      "extra": {
-        "react-transform": {
+        "transform-runtime",
+        ["react-transform", {
           "transforms": [{
+            "transform": "react-redux-provide/lib/transform"
+          }, {
             "transform": "react-transform-hmr",
             "imports": ["react"],
             "locals":  ["module"]
           }]
-        }
-      }
+        }]
+      ]
     }
   }
 }
