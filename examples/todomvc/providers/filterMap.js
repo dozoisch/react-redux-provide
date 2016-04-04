@@ -43,7 +43,7 @@ filterMap.merge = {
   selectedFilter: {
     keys: ['selectedFilterName'],
     get({ filterMap, selectedFilterName }) {
-      return filterMap.get(selectedFilterName) || () => true;
+      return filterMap.get(selectedFilterName) || (() => true);
     }
   }
 };

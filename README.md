@@ -58,7 +58,7 @@ export default { actions, reducers, merge, middleware, enhancer };
 
 ### actions
 
-Object containing [React actions](http://redux.js.org/docs/basics/Actions.html).
+Object containing [Redux actions](http://redux.js.org/docs/basics/Actions.html).
 
   ```js
   const PUSH_ITEM = 'PUSH_ITEM';
@@ -74,7 +74,7 @@ Object containing [React actions](http://redux.js.org/docs/basics/Actions.html).
 
 Object containing [Redux reducers](http://redux.js.org/docs/basics/Reducers.html).
 
-  *Note:* Components will only be updated whenever a relevant reducer returns a new state - i.e., when `state !== nextState`.
+  **Note:** Components will only be updated whenever a relevant reducer returns a new state - i.e., when `state !== nextState`.
 
   ```js
   const reducers = {
@@ -299,31 +299,31 @@ Now how do we tie everything together?  Easy!  Two methods:
 
   ```json
   {
-    "stage": 0,
-    "plugins": [
-      "react-transform"
+    "presets": [
+      "es2015",
+      "react",
+      "stage-0"
     ],
-    "extra": {
-      "react-transform": {
+    "plugins": [
+      ["react-transform", {
         "transforms": [{
           "transform": "react-redux-provide/lib/transform"
         }]
-      }
-    },
+      }]
+    ],
     "env": {
       "development": {
         "plugins": [
-          "react-transform"
-        ],
-        "extra": {
-          "react-transform": {
+          ["react-transform", {
             "transforms": [{
+              "transform": "react-redux-provide/lib/transform"
+            }, {
               "transform": "react-transform-hmr",
               "imports": ["react"],
               "locals":  ["module"]
             }]
-          }
-        }
+          }]
+        ]
       }
     }
   }
@@ -335,6 +335,7 @@ Now how do we tie everything together?  Easy!  Two methods:
   // src/components/CurrentCount.js
 
   import React, { Component, PropTypes } from 'react';
+  import provide from 'react-redux-provide';
 
   class CurrentCount extends Component {
     static propTypes = {
@@ -359,7 +360,9 @@ Now how do we tie everything together?  Easy!  Two methods:
   // src/components/CurrentCount.js
 
   import React, { Component, PropTypes } from 'react';
+  import provide from 'react-redux-provide';
 
+  @provide
   export default class CurrentCount extends Component {
     static propTypes = {
       count: PropTypes.number.isRequired
@@ -380,18 +383,14 @@ And now when rendering the application, all we have to do is include a `provider
 ```js
 import React from 'react';
 import { render } from 'react-dom';
-import counter from './providers/counter';
-import App from './components/App';
+import * as providers from './providers/index';
+import { App } from './components/index';
 
 function renderApp(props, element = document.getElementById('root')) {
   return render(<App { ...props } />, element);
 }
 
-renderApp({
-  providers: {
-    counter
-  }
-});
+renderApp({ providers });
 
 export default renderApp;
 ```
@@ -401,8 +400,9 @@ We can also customize each provider's initial state.
 ```js
 renderApp({
   providers: {
+    ...providers,
     counter: {
-      ...counter,
+      ...providers.counter,
       state: {
         count: 42
       }
@@ -425,8 +425,7 @@ Adds middleware(s) to the end of each provider's chain of middlewares.  Useful w
   ```js
   import { pushMiddleware } from 'react-redux-provide';
   import someMiddleware from 'some-middleware';
-  import theme from './providers/theme';
-  import user from './providers/user';
+  import { theme, user } from './providers/index';
 
   pushMiddleware({ theme, user }, someMiddleware);
   ```
@@ -438,8 +437,7 @@ Adds middleware(s) to the beginning of each provider's chain of middlewares.  Us
   ```js
   import { unshiftMiddleware } from 'react-redux-provide';
   import someMiddleware from 'some-middleware';
-  import theme from './providers/theme';
-  import user from './providers/user';
+  import { theme, user } from './providers/index';
 
   unshiftMiddleware({ theme, user }, someMiddleware);
   ```
@@ -451,8 +449,7 @@ Adds enhancer(s) to the end of each provider's chain of enhancers.  Useful when 
   ```js
   import { pushEnhancer } from 'react-redux-provide';
   import someEnhancer from 'some-enhancer';
-  import theme from './providers/theme';
-  import user from './providers/user';
+  import { theme, user } from './providers/index';
 
   pushEnhancer({ theme, user }, someEnhancer);
   ```
@@ -464,8 +461,7 @@ Adds enhancer(s) to the beginning of each provider's chain of enhancers.  Useful
   ```js
   import { unshiftEnhancer } from 'react-redux-provide';
   import someEnhancer from 'some-enhancer';
-  import theme from './providers/theme';
-  import user from './providers/user';
+  import { theme, user } from './providers/index';
 
   unshiftEnhancer({ theme, user }, someEnhancer);
   ```
@@ -790,37 +786,13 @@ export default {
 ```
 
 
-Now let's tie everything together!  It usually works best to start with the following four modules:
-
-- `init.js` - Useful for polyfills or anything that needs to be executed first.
-
-  ```js
-  // src/init.js
-
-  import 'babel-polyfill';
-
-  /**
-   * Fixes things like `React.PropTypes.instanceOf(Map)` wrongly invalidating.
-   */
-  if (typeof window !== 'undefined') {
-    window.Map = Map;
-    window.Set = Set;
-    window.WeakMap = WeakMap;
-    window.WeakSet = WeakSet;
-  } else {
-    global.Map = Map;
-    global.Set = Set;
-    global.WeakMap = WeakMap;
-    global.WeakSet = WeakSet;
-  }
-  ```
+Now let's tie everything together!  It usually works best to start with the following three modules:
 
 - `renderApp.js` - Exports a function which immediately runs on the client and mounts the application to the DOM.  If you're using a bundler like [webpack](https://webpack.github.io), this is the main entry.
 
   ```js
   // src/renderApp.js
 
-  import './init';
   import React from 'react';
   import { render } from 'react-dom';
   import App from './components/App';
@@ -840,7 +812,6 @@ Now let's tie everything together!  It usually works best to start with the foll
   ```js
   // src/renderAppToString.js
 
-  import './init';
   import React from 'react';
   import { renderToString } from 'react-dom/server';
   import App from './components/App';

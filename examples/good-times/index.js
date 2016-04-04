@@ -1,4 +1,3 @@
-import './init';
 import React from 'react';
 import { render } from 'react-dom';
 import { reloadProviders } from 'react-redux-provide';
