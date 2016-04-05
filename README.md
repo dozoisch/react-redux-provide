@@ -170,6 +170,8 @@ Optional object used for overriding the store's initial state.  This is typicall
   });
   ```
 
+Additionally, if `window.clientStates` exists and contains a key matching the provider key, its value will be merged into the store's initial state.
+
 ### key
 
 Optional string or function.  Defaults to its respective `key` within the `providers` object.  See the [example below](#quick-example) for more about the `providers` object.
@@ -197,6 +199,16 @@ Optional string or function.  Defaults to its respective `key` within the `provi
 ### replication
 
 Optional object or array of objects.  Uses [`redux-replicate`](https://github.com/loggur/redux-replicate) under the hood.  Each object should contain keys that match the arguments expected by `redux-replicate` - i.e., `{ key, reducerKeys, replicator }`.
+
+### onReady
+
+Optional function or array of functions to be called immediately after the provider and its optional replicators have initialized.  The provider instance will be passed to the function(s).
+
+  ```js
+  function onReady(providerInstance) {
+    console.log(providerInstance);
+  }
+  ```
 
 
 ## Quick example
@@ -466,6 +478,36 @@ Adds enhancer(s) to the beginning of each provider's chain of enhancers.  Useful
   unshiftEnhancer({ theme, user }, someEnhancer);
   ```
 
+### pushOnReady (Object providers, Function|Array readyCallback)
+
+Adds function(s) to the end of each provider's array of ready callbacks.  Useful when you want to do something after a provider as been instantiated, specific to your application.
+
+  ```js
+  import { pushOnReady } from 'react-redux-provide';
+  import * as providers from './providers/index';
+
+  pushOnReady(providers, providerInstance => {
+    const { key, store } = providerInstance;
+
+    console.log(key, store);
+  });
+  ```
+
+### unshiftOnReady (Object providers, Function|Array readyCallback)
+
+Adds function(s) to the beginning of each provider's array of ready callbacks.  Useful when you want to do something after a provider as been instantiated, specific to your application.
+
+  ```js
+  import { pushOnReady } from 'react-redux-provide';
+  import * as providers from './providers/index';
+
+  pushOnReady(providers, providerInstance => {
+    const { key, store } = providerInstance;
+
+    console.log(key, store);
+  });
+  ```
+
 ### reloadProviders (Object providers)
 
 Useful for hot reloading of providers.  The state of your app and your stores will remain intact!
@@ -490,7 +532,7 @@ Useful for hot reloading of providers.  The state of your app and your stores wi
 - Providers are composable objects!  You can combine as many providers as you need.  This is great when you have core functionality you would like to implement within multiple providers.
 
   ```js
-  // src/providers/private-resource.js
+  // src/providers/privateResource.js
 
   import provideResource from 'provide-resource';
   import provideAuthentication from 'provide-authentication';
@@ -795,7 +837,7 @@ Now let's tie everything together!  It usually works best to start with the foll
 
   import React from 'react';
   import { render } from 'react-dom';
-  import App from './components/App';
+  import { App } from './components/index';
   import defaultProps from './defaultProps';
 
   function renderApp(props, element = document.getElementById('root')) {
@@ -814,7 +856,7 @@ Now let's tie everything together!  It usually works best to start with the foll
 
   import React from 'react';
   import { renderToString } from 'react-dom/server';
-  import App from './components/App';
+  import { App } from './components/index';
   import defaultProps from './defaultProps';
 
   function renderAppToString(props = defaultProps) {
@@ -827,9 +869,7 @@ Now let's tie everything together!  It usually works best to start with the foll
 - `defaultProps.js` - Exports the default `props` to be passed to `renderApp` and `renderAppToString`.  These `props` are usually extended per request.
 
   ```js
-  import user from './providers/user';
-  import page from './providers/page';
-  import theme from './providers/theme';
+  import { user, page, theme } from './providers/index';
   import themesFiles from './themes/files';   // map of theme js and css files
 
   const min = process.env.MIN_EXT || '';      // '.min' in production

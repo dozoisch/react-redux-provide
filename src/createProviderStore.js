@@ -1,6 +1,20 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import replicate from 'redux-replicate';
 
+function getInitialState({ key, state }) {
+  if (typeof window !== 'undefined' && window.clientStates) {
+    const clientState = window.clientStates[key];
+
+    if (typeof clientState !== 'undefined') {
+      delete window.clientStates[key];
+
+      return { state, ...clientState };
+    }
+  }
+
+  return state;
+}
+
 /**
  * Creates and returns a store specifically for some provider instance.
  *
@@ -15,6 +29,7 @@ export default function createProviderStore(providerInstance) {
   let enhancers = [];
   let create;
   let store;
+  let state;
   let setState;
 
   function unshiftReplication({ key, reducerKeys, replicator }) {
@@ -57,7 +72,10 @@ export default function createProviderStore(providerInstance) {
     };
   });
 
-  store = create(combineReducers(watchedReducers), providerInstance.state);
+  store = create(
+    combineReducers(watchedReducers),
+    getInitialState(providerInstance)
+  );
 
   // we use a custom `watch` method with instead of a replicator
   // since it's slightly more efficient and every clock cycle counts,

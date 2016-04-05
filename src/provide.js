@@ -63,11 +63,17 @@ export default function provide(ComponentClass) {
     }
 
     getProviders(props, context) {
-      return this.providers || props.providers || context.providers || {};
+      return this.providers
+        || props.providers
+        || context.providers
+        || {};
     }
 
     getProviderInstances(props, context) {
-      return this.providerInstances || context.providerInstances || {};
+      return this.providerInstances
+        || props.providerInstances
+        || context.providerInstances
+        || {};
     }
 
     initialize(props, context) {

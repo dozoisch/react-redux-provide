@@ -1,7 +1,7 @@
 export default function createKeyConcat(key, unshift) {
   return function (providers, value) {
-    for (let providerName in providers) {
-      let provider = providers[providerName];
+    for (let providerKey in providers) {
+      let provider = providers[providerKey];
 
       if (!provider[key]) {
         provider[key] = [];
