@@ -7,6 +7,19 @@
 # If you happen to read this between commits, this README is currently incomplete!  It should be complete within the next day or two.  :)
 
 
+## Table of contents
+
+1.  [Installation](#installation)
+2.  [What does this do?](#what-does-this-do)
+3.  [What is a provider?](#what-is-a-provider)
+4.  [Quick example](#quick-example)
+5.  [Primary exports](#primary-exports)
+6.  [Protips](#protips)
+7.  [Tutorial](#tutorial)
+8.  [Replication](#replication)
+9.  [Replicators](#replicators)
+
+
 ## Installation
 
 ```
