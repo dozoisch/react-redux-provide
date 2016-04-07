@@ -8,7 +8,7 @@ function getInitialState({ key, state }) {
     if (typeof clientState !== 'undefined') {
       delete window.clientStates[key];
 
-      return { state, ...clientState };
+      return { ...state, ...clientState };
     }
   }
 

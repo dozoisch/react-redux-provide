@@ -9,14 +9,15 @@ import createProviderStore from './createProviderStore';
  * @api public
  */
 export default function instantiateProvider(providerKey, provider) {
-  const providerInstance = Object.create(provider);
+  const providerInstance = Object.create(provider, {
+    key: { writable: true, configurable: true, value: providerKey }
+  });
   const store = createProviderStore(providerInstance);
   const actions = providerInstance.actions;
   const actionCreators = {};
   let { onReady } = providerInstance;
   let readyCallback;
 
-  providerInstance.key = providerKey;
   providerInstance.store = store;
   providerInstance.actionCreators = actionCreators;
 
