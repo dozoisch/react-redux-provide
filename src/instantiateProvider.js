@@ -15,7 +15,7 @@ export default function instantiateProvider(providerKey, provider) {
   const store = createProviderStore(providerInstance);
   const actions = providerInstance.actions;
   const actionCreators = {};
-  let { onReady } = providerInstance;
+  let { onInstantiated, onReady } = providerInstance;
   let readyCallback;
 
   providerInstance.store = store;
@@ -27,12 +27,20 @@ export default function instantiateProvider(providerKey, provider) {
     };
   }
 
+  if (onInstantiated) {
+    if (!Array.isArray(onInstantiated)) {
+      onInstantiated = [ onInstantiated ];
+    }
+
+    onInstantiated.forEach(fn => fn(providerInstance));
+  }
+
   if (onReady) {
     if (!Array.isArray(onReady)) {
       onReady = [ onReady ];
     }
 
-    readyCallback = () => onReady.forEach(ready => ready(providerInstance));
+    readyCallback = () => onReady.forEach(fn => fn(providerInstance));
 
     if (!providerInstance.replication || store.initializedReplication) {
       readyCallback();

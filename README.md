@@ -215,6 +215,16 @@ Optional string or function.  Defaults to its respective `key` within the `provi
 
 Optional object or array of objects.  Uses [`redux-replicate`](https://github.com/loggur/redux-replicate) under the hood.  Each object should contain keys that match the arguments expected by `redux-replicate` - i.e., `{ key, reducerKeys, replicator }`.
 
+### onInstantiated
+
+Optional function or array of functions to be called immediately after the provider has been instantiated and before its optional replicators have initialized.  The provider instance will be passed to the function(s).
+
+  ```js
+  function onInstantiated(providerInstance) {
+    console.log(providerInstance);
+  }
+  ```
+
 ### onReady
 
 Optional function or array of functions to be called immediately after the provider and its optional replicators have initialized.  The provider instance will be passed to the function(s).
@@ -445,72 +455,52 @@ renderApp({
 
 The default export which accepts a React class and returns the class wrapped with a higher-order component designed to share and manage application state via `context`.  Only use this if you aren't using the Babel plugin.
 
-### pushMiddleware (Object providers, Function|Array middleware)
+### pushMiddleware|unshiftMiddleware (Object providers, Function|Array middleware)
 
-Adds middleware(s) to the end of each provider's chain of middlewares.  Useful when you want to apply middleware to many providers at once, specific to your application.
+Adds middleware(s) to each provider's chain of middlewares.  Useful when you want to apply middleware to many providers at once, specific to your application.
 
   ```js
-  import { pushMiddleware } from 'react-redux-provide';
-  import someMiddleware from 'some-middleware';
+  import { pushMiddleware, unshiftMiddleware } from 'react-redux-provide';
+  import firstMiddleware from 'first-middleware';
+  import lastMiddleware from 'last-middleware';
   import { theme, user } from './providers/index';
 
-  pushMiddleware({ theme, user }, someMiddleware);
+  unshiftMiddleware({ theme, user }, firstMiddleware);
+  pushMiddleware({ theme, user }, lastMiddleware);
   ```
 
-### unshiftMiddleware (Object providers, Function|Array middleware)
+### pushEnhancer|unshiftEnhancer (Object providers, Function|Array enhancer)
 
-Adds middleware(s) to the beginning of each provider's chain of middlewares.  Useful when you want to apply middleware to many providers at once, specific to your application.
+Adds enhancer(s) to each provider's chain of enhancers.  Useful when you want to apply enhancers to many providers at once, specific to your application.
 
   ```js
-  import { unshiftMiddleware } from 'react-redux-provide';
-  import someMiddleware from 'some-middleware';
+  import { pushEnhancer, unshiftEnhancer } from 'react-redux-provide';
+  import firstEnhancer from 'first-enhancer';
+  import lastEnhancer from 'last-enhancer';
   import { theme, user } from './providers/index';
 
-  unshiftMiddleware({ theme, user }, someMiddleware);
+  unshiftEnhancer({ theme, user }, firstEnhancer);
+  pushEnhancer({ theme, user }, lastEnhancer);
   ```
 
-### pushEnhancer (Object providers, Function|Array enhancer)
+### pushOnInstantiated|unshiftOnInstantiated (Object providers, Function|Array callback)
 
-Adds enhancer(s) to the end of each provider's chain of enhancers.  Useful when you want to apply enhancers to many providers at once, specific to your application.
-
-  ```js
-  import { pushEnhancer } from 'react-redux-provide';
-  import someEnhancer from 'some-enhancer';
-  import { theme, user } from './providers/index';
-
-  pushEnhancer({ theme, user }, someEnhancer);
-  ```
-
-### unshiftEnhancer (Object providers, Function|Array enhancer)
-
-Adds enhancer(s) to the beginning of each provider's chain of enhancers.  Useful when you want to apply enhancers to many providers at once, specific to your application.
+Adds function(s) to each provider's array of `onInstantiated` callbacks.  Useful when you want to do something as each provider is instantiated, specific to your application.
 
   ```js
-  import { unshiftEnhancer } from 'react-redux-provide';
-  import someEnhancer from 'some-enhancer';
-  import { theme, user } from './providers/index';
-
-  unshiftEnhancer({ theme, user }, someEnhancer);
-  ```
-
-### pushOnReady (Object providers, Function|Array readyCallback)
-
-Adds function(s) to the end of each provider's array of ready callbacks.  Useful when you want to do something after a provider as been instantiated, specific to your application.
-
-  ```js
-  import { pushOnReady } from 'react-redux-provide';
+  import { pushOnInstantiated } from 'react-redux-provide';
   import * as providers from './providers/index';
 
-  pushOnReady(providers, providerInstance => {
+  pushOnInstantiated(providers, providerInstance => {
     const { key, store } = providerInstance;
 
     console.log(key, store);
   });
   ```
 
-### unshiftOnReady (Object providers, Function|Array readyCallback)
+### pushOnReady|unshiftOnReady (Object providers, Function|Array callback)
 
-Adds function(s) to the beginning of each provider's array of ready callbacks.  Useful when you want to do something after a provider as been instantiated, specific to your application.
+Adds function(s) to each provider's array of `onReady` callbacks.  Useful when you want to do something as soon as each provider and its optional replicators are ready, specific to your application.
 
   ```js
   import { pushOnReady } from 'react-redux-provide';
