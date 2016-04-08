@@ -305,7 +305,16 @@ export default function provide(ComponentClass) {
 }
 
 export function reloadProviders(providers) {
-  const { providerInstances } = rootInstance;
+  const { providers: oldProviders, providerInstances } = rootInstance;
+
+  for (let providerKey in providers) {
+    let provider = providers[providerKey];
+    let oldProvider = oldProviders[providerKey];
+
+    if (!providers.replication && oldProvider && oldProvider.replication) {
+      provider.replication = oldProvider.replication;
+    }
+  }
 
   for (let providerKey in providerInstances) {
     let state = providerInstances[providerKey].store.getState();
