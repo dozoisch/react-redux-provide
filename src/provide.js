@@ -84,7 +84,7 @@ export default function provide(ComponentClass) {
       
       this.providers = providers;
       this.providerInstances = providerInstances;
-      this.componentProps = { ...props };
+      this.componentProps = { ...props, __wrapper: this };
 
       if (!this.componentProps.ref && ComponentClass.prototype.render) {
         this.componentProps.ref = 'wrappedInstance';
@@ -271,7 +271,6 @@ export default function provide(ComponentClass) {
 
     Provide.prototype.reinitialize = function(props, context, NextClass) {
       if (NextClass) {
-        delete NextClass.Provide;
         this.setComponentClass(NextClass);
       }
 

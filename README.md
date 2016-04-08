@@ -47,6 +47,8 @@ This tiny library allows you to *effortlessly* and *automatically*:
 
 - Eliminates the need for any extraneous dependencies within components, which makes all components and providers instantly distributable and reusable.  Components get the relevant Redux stores' states and action creators as `props` via [React's `context`](https://facebook.github.io/react/docs/context.html).
 
+- Hot reload your providers in development with no extra configuration!  Just use [`react-transform-hmr`](https://github.com/gaearon/react-transform-hmr).
+
 
 ## What is a provider?
 
