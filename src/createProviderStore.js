@@ -1,15 +1,25 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import replicate from 'redux-replicate';
 
-function getInitialState({ key, state }) {
+function getClientState({ key, state }) {
   if (typeof window !== 'undefined' && window.clientStates) {
     const clientState = window.clientStates[key];
 
     if (typeof clientState !== 'undefined') {
-      delete window.clientStates[key];
-
-      return { ...state, ...clientState };
+      return clientState;
     }
+  }
+
+  return null;
+}
+
+function getInitialState({ key, state }) {
+  const clientState = getClientState({ key, state });
+
+  if (clientState) {
+    delete window.clientStates[key];
+
+    return state ? { ...state, ...clientState } : clientState;
   }
 
   return state;
@@ -34,7 +44,12 @@ export default function createProviderStore(providerInstance) {
 
   function unshiftReplication({ key, reducerKeys, replicator }) {
     enhancers.unshift(
-      replicate(key || providerInstance.key, reducerKeys, replicator)
+      replicate(
+        key || providerInstance.key,
+        reducerKeys,
+        replicator,
+        getClientState(providerInstance)
+      )
     );
   }
 

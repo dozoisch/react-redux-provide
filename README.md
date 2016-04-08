@@ -183,7 +183,7 @@ Optional object used for overriding the store's initial state.  This is typicall
   });
   ```
 
-Additionally, if `window.clientStates` exists and contains a key matching the provider key, its value will be merged into the store's initial state.
+Additionally, if `window.clientStates` exists and contains a key matching the provider key, its value will be merged into the store's initial state.  This is used when initializing the state of the providers' stores on the client.
 
 ### key
 
