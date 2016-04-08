@@ -83,6 +83,8 @@ Object containing [Redux actions](http://redux.js.org/docs/basics/Actions.html).
   };
   ```
 
+**Note:** When providing each action creator to React components, the result of the action creator is automatically wrapped with `providerInstance.store.dispatch`, so with the above example, when you call `this.props.pushItem(item)`, you're ultimately calling `providerInstance.store.dispatch(actions.pushItem(item))`.
+
 ### reducers
 
 Object containing [Redux reducers](http://redux.js.org/docs/basics/Reducers.html).
