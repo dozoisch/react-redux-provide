@@ -283,11 +283,11 @@ export default class IncrementButtons extends Component {
   render() {
     return (
       <div className="IncrementButtons">
-        <button onClick={this.props.increment}>
+        <button onClick={() => this.props.increment()}>
           Increment
         </button>
 
-        <button onClick={this.props.incrementAsync}>
+        <button onClick={() => this.props.incrementAsync()}>
           Increment asynchronously
         </button>
       </div>
