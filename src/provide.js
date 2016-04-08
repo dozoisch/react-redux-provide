@@ -59,6 +59,7 @@ export default function provide(ComponentClass) {
       this.mergers = {};
       this.unsubscribe = [];
       this.componentName = componentName;
+      this.unmounted = typeof window === 'undefined';
       this.initialize(props, context);
     }
 
