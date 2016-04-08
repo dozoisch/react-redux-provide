@@ -330,43 +330,29 @@ export default class CurrentCount extends Component {
 
 Now how do we tie everything together?  Easy!  Two methods:
 
-1.  The easiest and recommended method is to use this library's `transform` module with [`babel-plugin-react-transform`](https://github.com/gaearon/babel-plugin-react-transform).  It will automatically wrap all of your React classes with the `provide` function.  This allows all of your components to be packaged independently of this library.  There's also a chance that future React versions will support this type of transformation without the need for a plugin, so this is definitely the recommended method!
+1.  The easiest and recommended method is to use this library's `install` module, which automatically wraps all of your React classes with the `provide` function.  This allows all of your components to be packaged independently of this library.  There's also a chance that future React versions will support this type of enhancement, so this is definitely the recommended method!
   
-  All you do is add `react-redux-provide/lib/transform` to your Babel config.  It's probably best to make it the first transform.  Also note that the plugin should be applied to all environments, so we put it at the top level.
+  All you do is `import 'react-redux-provide/lib/install'` at the top of your main entry (or entries).
 
-  ```json
-  {
-    "presets": [
-      "es2015",
-      "react",
-      "stage-0"
-    ],
-    "plugins": [
-      ["react-transform", {
-        "transforms": [{
-          "transform": "react-redux-provide/lib/transform"
-        }]
-      }]
-    ],
-    "env": {
-      "development": {
-        "plugins": [
-          ["react-transform", {
-            "transforms": [{
-              "transform": "react-redux-provide/lib/transform"
-            }, {
-              "transform": "react-transform-hmr",
-              "imports": ["react"],
-              "locals":  ["module"]
-            }]
-          }]
-        ]
-      }
-    }
+  ```js
+  // src/renderApp.js
+
+  import 'react-redux-provide/lib/install';
+  import React from 'react';
+  import { render } from 'react-dom';
+  import { App } from './components/index';
+  import defaultProps from './defaultProps';
+
+  function renderApp(props, element = document.getElementById('root')) {
+    return render(<App { ...props } />, element);
   }
+
+  renderApp(defaultProps);
+
+  export default renderApp;
   ```
 
-2.  If you would rather not use the Babel plugin, you can manually wrap each component with the `provide` function.  In this case, your components will look something like this:
+2.  If you would rather not use the `install` module, you can manually wrap each component with the `provide` function.  In this case, your components will look something like this:
 
   ```js
   // src/components/CurrentCount.js
@@ -453,7 +439,7 @@ renderApp({
 
 ### provide
 
-The default export which accepts a React class and returns the class wrapped with a higher-order component designed to share and manage application state via `context`.  Only use this if you aren't using the Babel plugin.
+The default export which accepts a React class and returns the class wrapped with a higher-order component designed to share and manage application state via `context`.  Only use this if you aren't using the `install` module.
 
 ### pushMiddleware|unshiftMiddleware (Object providers, Function|Array middleware)
 

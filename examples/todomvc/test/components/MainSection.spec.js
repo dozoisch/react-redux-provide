@@ -1,3 +1,4 @@
+import 'react-redux-provide/lib/install';
 import expect from 'expect';
 import React from 'react';
 import { Simulate } from 'react-addons-test-utils';

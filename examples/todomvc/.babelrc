@@ -4,20 +4,11 @@
     "react",
     "stage-0"
   ],
-  "plugins": [
-    ["react-transform", {
-      "transforms": [{
-        "transform": "react-redux-provide/lib/transform"
-      }]
-    }]
-  ],
   "env": {
     "development": {
       "plugins": [
         ["react-transform", {
           "transforms": [{
-            "transform": "react-redux-provide/lib/transform"
-          }, {
             "transform": "react-transform-hmr",
             "imports": ["react"],
             "locals":  ["module"]

@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import provide from '../../src/provide';
 import TestItem from './TestItem';
 
-class Test extends Component {
+export default class Test extends Component {
   static propTypes = {
     placeholder: PropTypes.string.isRequired,
     list: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -50,5 +49,3 @@ class Test extends Component {
     );
   }
 }
-
-export default provide(Test);

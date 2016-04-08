@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import provide from '../../src/provide';
 
-class TestItem extends Component {
+export default class TestItem extends Component {
   static propTypes = {
     index: PropTypes.number.isRequired,
     item: PropTypes.object.isRequired,
@@ -21,5 +20,3 @@ class TestItem extends Component {
     );
   }
 }
-
-export default provide(TestItem);

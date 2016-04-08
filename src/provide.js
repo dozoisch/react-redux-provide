@@ -271,6 +271,7 @@ export default function provide(ComponentClass) {
 
     Provide.prototype.reinitialize = function(props, context, NextClass) {
       if (NextClass) {
+        delete NextClass.Provide;
         this.setComponentClass(NextClass);
       }
 

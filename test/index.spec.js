@@ -1,3 +1,4 @@
+import '../src/install';
 import expect from 'expect';
 import React, { PropTypes } from 'react';
 import { Simulate } from 'react-addons-test-utils';
@@ -20,7 +21,7 @@ const defaultProps = {
   }
 };
 
-function render (props) {
+function render(props) {
   return renderTest(Test, { ...defaultProps, ...props });
 }
 
@@ -28,8 +29,8 @@ const placeholder = 'Testing...';
 
 describe('react-redux-provide', () => {
   it('should have the correct displayName', () => {
-    render({ placeholder });
-    expect(Test.displayName).toBe('ProvideTest(test)');
+    const { component } = render({ placeholder });
+    expect(component.constructor.displayName).toBe('ProvideTest(test)');
   });
 
   it('should render correctly', () => {
