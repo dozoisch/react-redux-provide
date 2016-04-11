@@ -281,6 +281,8 @@ export default { actions, reducers, middleware };
 
 Now let's see how easy it is to manipulate the `count` state!  We simply declare `propTypes` for `actions` that we want, and components will receive action creators as `props`.  For example, to dispatch the `INCREMENT` action asynchronously, all we need to do is declare `incrementAsync` within our `propTypes` and eventually call `this.props.incrementAsync()`.
 
+**Note:** When providing each action creator to React components, the result of the action creator is automatically wrapped with `providerInstance.store.dispatch`, so with the following example, when you call `this.props.increment()`, you're ultimately calling `providerInstance.store.dispatch(actions.increment())`.
+
 ```js
 // src/components/IncrementButtons.js
 

@@ -72,7 +72,7 @@ export default class TodoItem extends Component {
               ref="checkbox"
               className="toggle"
               type="checkbox"
-              checked={completed}
+              checked={completed || false}
               onChange={this.toggle}
             />
 

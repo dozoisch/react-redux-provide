@@ -42,7 +42,7 @@
     "is-plain-object": "^2.0.1",
     "react": "^0.14.0 || ^15.0.0-0",
     "redux": "^3.0.0",
-    "redux-replicate": "^1.0.4"
+    "redux-replicate": "^1.0.5"
   },
   "devDependencies": {
     "babel-cli": "^6.6.0",

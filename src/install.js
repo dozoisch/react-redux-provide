@@ -41,5 +41,9 @@ React.createElement = function(ComponentClass, props, children) {
   props = props || {};
   props.__provided = true;
 
+  if (typeof children === 'undefined') {
+    children = props.children;
+  }
+
   return createElement.call(this, ComponentClass.Provide, props, children);
 };
