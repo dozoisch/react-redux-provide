@@ -18,10 +18,9 @@ function render (props) {
 describe('components', () => {
   describe('Footer', () => {
     it('should render correctly', () => {
-      const { component, wrappedInstance, node } = render();
+      const { wrappedInstance, node } = render();
 
-      expect(component instanceof Footer).toBe(true);
-      expect(wrappedInstance).toBeTruthy();
+      expect(wrappedInstance instanceof Footer).toBe(true);
       expect(node.tagName).toBe('FOOTER');
       expect(node.className).toBe('footer');
     });

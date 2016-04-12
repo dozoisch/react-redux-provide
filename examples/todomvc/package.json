@@ -4,8 +4,16 @@
   "description": "Redux TodoMVC example using providers",
   "scripts": {
     "start": "node server.js",
-    "test": "NODE_ENV=test mocha --recursive --compilers js:babel-register --require babel-polyfill --require react-redux-provide-test-utils/lib/setup.js",
+    "test": "better-npm-run test",
     "test:watch": "npm test -- --watch"
+  },
+  "betterScripts": {
+    "test": {
+      "command": "mocha --compilers js:babel-register --recursive --require babel-polyfill --require react-redux-provide-test-utils/lib/setup.js",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -34,6 +42,7 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.7.0",
+    "better-npm-run": "^0.0.8",
     "expect": "^1.8.0",
     "express": "^4.13.3",
     "mocha": "^2.2.5",
