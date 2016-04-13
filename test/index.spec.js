@@ -73,26 +73,72 @@ describe('react-redux-provide', () => {
   });
 
   it('should only render when props have changed', () => {
-    const { component, wrappedInstance } = render({ placeholder });
-    const index = 0;
-    const providedItem = wrappedInstance.refs[`item${index}`];
+    const { node, component, wrappedInstance } = render({ placeholder });
+    const input = node.childNodes[0];
+    let providedItem0 = wrappedInstance.refs.item0;
+    let providedItem1;
+    let value;
 
     expect(component.renders).toBe(1);
-    expect(providedItem.renders).toBe(1);
+    expect(providedItem0.renders).toBe(1);
 
     wrappedInstance.props.incrementCount();
 
     expect(component.renders).toBe(1);
-    expect(providedItem.renders).toBe(2);
+    expect(providedItem0.renders).toBe(2);
 
     wrappedInstance.props.incrementCount();
 
     expect(component.renders).toBe(1);
-    expect(providedItem.renders).toBe(3);
+    expect(providedItem0.renders).toBe(3);
 
     wrappedInstance.props.incrementCount();
 
     expect(component.renders).toBe(1);
-    expect(providedItem.renders).toBe(4);
+    expect(providedItem0.renders).toBe(4);
+
+    expect(providedItem0.wrappedInstance.props.item.value).toBe('test');
+    expect(node.childNodes[1].textContent).toBe('test');
+
+    value = 'one last test';
+    input.value = value;
+    Simulate.keyDown(input, { key: 'Enter' });
+
+    providedItem1 = wrappedInstance.refs.item1;
+
+    expect(wrappedInstance.props.list.length).toBe(2);
+    expect(providedItem0.wrappedInstance.props.item.value).toBe(value);
+    expect(node.childNodes.length).toBe(3);
+    expect(node.childNodes[1].textContent).toBe(value);
+    expect(node.childNodes[2].textContent).toBe('test');
+
+    expect(component.renders).toBe(2);
+    expect(providedItem0.renders).toBe(5);
+    expect(providedItem1.renders).toBe(1);
+
+    value = 'should not re-render other items';
+    providedItem0.wrappedInstance.props.updateItem(0, { value });
+
+    expect(wrappedInstance.props.list.length).toBe(2);
+    expect(providedItem0.wrappedInstance.props.item.value).toBe(value);
+    expect(node.childNodes.length).toBe(3);
+    expect(node.childNodes[1].textContent).toBe(value);
+    expect(node.childNodes[2].textContent).toBe('test');
+
+    expect(component.renders).toBe(3);
+    expect(providedItem0.renders).toBe(6);
+    expect(providedItem1.renders).toBe(1);
+
+    providedItem1.wrappedInstance.props.updateItem(1, { value });
+
+    expect(wrappedInstance.props.list.length).toBe(2);
+    expect(providedItem0.wrappedInstance.props.item.value).toBe(value);
+    expect(node.childNodes.length).toBe(3);
+    expect(node.childNodes[1].textContent).toBe(value);
+    expect(node.childNodes[2].textContent).toBe(value);
+
+    expect(component.renders).toBe(4);
+    expect(providedItem0.renders).toBe(6);
+    expect(providedItem1.renders).toBe(2);
   });
 });
