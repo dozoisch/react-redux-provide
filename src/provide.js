@@ -168,7 +168,7 @@ export default function provide(ComponentClass) {
                     // we store the merger temporarily so that we may
                     // `get` the value only after the action has completed
                     this.mergers[mergeKey] = merger;
-                    this.doUpdate = true;
+                    this.doMerge = true;
                   }
                 )
               );
@@ -182,25 +182,28 @@ export default function provide(ComponentClass) {
           if (reducerKeys.length || mergeKeys.length) {
             this.unsubscribe.push(
               store.subscribe(() => {
-                if (this.doUpdate) {
+                if (this.doMerge) {
                   const state = store.getState();
 
                   // this is where we `get` any new values which depend on
                   // some state, possibly merged with props and/or context
                   for (let mergeKey in this.mergers) {
                     let { get } = this.mergers[mergeKey];
+                    let value = get(state, this.componentProps, context);
 
-                    // TODO: only update when necessary
-                    this.componentProps[mergeKey] = get(
-                      state, this.componentProps, context
-                    );
+                    if (this.componentProps[mergeKey] !== value) {
+                      this.componentProps[mergeKey] = value;
+                      this.doUpdate = true;
+                    }
 
                     delete this.mergers[mergeKey];
                   }
 
-                  if (!this.unmounted) {
-                    this.forceUpdate();
-                  }
+                  this.doMerge = false;
+                }
+
+                if (this.doUpdate && !this.unmounted) {
+                  this.forceUpdate();
                 }
               })
             );
