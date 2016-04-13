@@ -19,27 +19,6 @@ filterMap.reducers.selectedFilterName = (state = '', action) => {
 };
 
 filterMap.merge = {
-  filterMapSize: {
-    keys: ['filterMap'],
-    get({ filterMap }) {
-      return filterMap.size;
-    }
-  },
-
-  hasFilterItem: {
-    keys: ['filterMap'],
-    get({ filterMap }, { filterName }) {
-      return filterMap.has(filterName);
-    }
-  },
-
-  filterItem: {
-    keys: ['filterMap'],
-    get({ filterMap }, { filterName }) {
-      return filterMap.get(filterName) || null;
-    }
-  },
-
   selectedFilter: {
     keys: ['selectedFilterName'],
     get({ filterMap, selectedFilterName }) {
