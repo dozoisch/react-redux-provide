@@ -84,6 +84,7 @@ export default function provide(ComponentClass) {
       
       this.providers = providers;
       this.providerInstances = providerInstances;
+      this.originalProps = props;
       this.componentProps = { ...props, __wrapper: this };
 
       if (!this.componentProps.ref && ComponentClass.prototype.render) {
@@ -130,7 +131,9 @@ export default function provide(ComponentClass) {
 
           // assign relevant action creators to wrapped component's props
           for (let actionKey of actionKeys) {
-            this.componentProps[actionKey] = actionCreators[actionKey];
+            if (!this.originalProps[actionKey]) {
+              this.componentProps[actionKey] = actionCreators[actionKey];
+            }
           }
 
           // copy the relevant states to the wrapped component's props
@@ -138,16 +141,18 @@ export default function provide(ComponentClass) {
           // and raise the `doUpdate` flag to indicate that the component
           // should be updated after the action has taken place
           for (let reducerKey of reducerKeys) {
-            this.componentProps[reducerKey] = state[reducerKey];
+            if (!this.originalProps[reducerKey]) {
+              this.componentProps[reducerKey] = state[reducerKey];
 
-            this.unsubscribe.push(
-              store.watch(
-                reducerKey, nextState => {
-                  this.componentProps[reducerKey] = nextState;
-                  this.doUpdate = true;
-                }
-              )
-            );
+              this.unsubscribe.push(
+                store.watch(
+                  reducerKey, nextState => {
+                    this.componentProps[reducerKey] = nextState;
+                    this.doUpdate = true;
+                  }
+                )
+              );
+            }
           }
 
           // some of the wrapped component's props might depend on some state,
@@ -155,23 +160,25 @@ export default function provide(ComponentClass) {
           // so we watch for changes to certain `keys`
           // and only update props when those `keys` have changed
           for (let mergeKey of mergeKeys) {
-            let merger = providerInstance.merge[mergeKey];
+            if (!this.originalProps[mergeKey]) {
+              let merger = providerInstance.merge[mergeKey];
 
-            this.componentProps[mergeKey] = merger.get(
-              state, this.componentProps, context
-            );
-
-            for (let reducerKey of merger.keys) {
-              this.unsubscribe.push(
-                store.watch(
-                  reducerKey, nextState => {
-                    // we store the merger temporarily so that we may
-                    // `get` the value only after the action has completed
-                    this.mergers[mergeKey] = merger;
-                    this.doMerge = true;
-                  }
-                )
+              this.componentProps[mergeKey] = merger.get(
+                state, this.componentProps, context
               );
+
+              for (let reducerKey of merger.keys) {
+                this.unsubscribe.push(
+                  store.watch(
+                    reducerKey, nextState => {
+                      // we store the merger temporarily so that we may
+                      // `get` the value only after the action has completed
+                      this.mergers[mergeKey] = merger;
+                      this.doMerge = true;
+                    }
+                  )
+                );
+              }
             }
           }
 
