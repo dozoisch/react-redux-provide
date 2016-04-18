@@ -308,8 +308,11 @@ export default function provide(ComponentClass) {
   return hoistStatics(Provide, ComponentClass);
 }
 
-export function reloadProviders(providers) {
-  const { providers: oldProviders, providerInstances } = rootInstance;
+export function reloadProviders(providers, providerInstances = {}) {
+  const {
+    providers: oldProviders,
+    providerInstances: oldProviderInstances
+  } = rootInstance;
 
   for (let providerKey in providers) {
     let provider = providers[providerKey];
@@ -320,8 +323,8 @@ export function reloadProviders(providers) {
     }
   }
 
-  for (let providerKey in providerInstances) {
-    let state = providerInstances[providerKey].store.getState();
+  for (let providerKey in oldProviderInstances) {
+    let state = oldProviderInstances[providerKey].store.getState();
 
     if (providers[providerKey]) {
       providers[providerKey].state = state;

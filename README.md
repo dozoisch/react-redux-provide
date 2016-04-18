@@ -503,7 +503,7 @@ Adds function(s) to each provider's array of `onReady` callbacks.  Useful when y
   });
   ```
 
-### reloadProviders (Object providers)
+### reloadProviders (Object providers, Optional Object providerInstances)
 
 Useful for hot reloading of providers.  The state of your app and your stores will remain intact!
 
