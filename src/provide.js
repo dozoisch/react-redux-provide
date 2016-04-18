@@ -308,7 +308,7 @@ export default function provide(ComponentClass) {
   return hoistStatics(Provide, ComponentClass);
 }
 
-export function reloadProviders(providers, providerInstances = {}) {
+export function reloadProviders(providers, providerInstances) {
   const {
     providers: oldProviders,
     providerInstances: oldProviderInstances
@@ -329,10 +329,12 @@ export function reloadProviders(providers, providerInstances = {}) {
     if (providers[providerKey]) {
       providers[providerKey].state = state;
     }
+
+    delete oldProviderInstances[providerKey];
   }
 
   rootInstance.providers = providers;
-  rootInstance.providerInstances = {};
+  rootInstance.providerInstances = providerInstances || oldProviderInstances;
   rootInstance.reinitialize(rootInstance.props, rootInstance.context);
 
   for (let componentName in componentInstances) {
