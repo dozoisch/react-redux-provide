@@ -22,7 +22,7 @@ function getInitialState({ key, state }) {
     return state ? { ...state, ...clientState } : clientState;
   }
 
-  return state;
+  return state || {};
 }
 
 /**
