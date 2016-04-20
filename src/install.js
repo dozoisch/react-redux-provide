@@ -7,6 +7,12 @@ React.createElement = function(ComponentClass, props, ...args) {
     return createElement.apply(this, arguments);
   }
 
+  const name = ComponentClass.displayName || ComponentClass.name;
+
+  if (name === 'Route' && props.component) {
+    props.component = provide(props.component);
+  }
+
   if (!ComponentClass.Provide) {
     ComponentClass.Provide = provide(ComponentClass);
 
