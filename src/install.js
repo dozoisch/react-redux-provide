@@ -2,7 +2,7 @@ import React from 'react';
 import provide from './provide';
 
 const { createElement } = React;
-React.createElement = function(ComponentClass, props, children) {
+React.createElement = function(ComponentClass, props, ...args) {
   if (typeof ComponentClass === 'string' || props && props.__provided) {
     return createElement.apply(this, arguments);
   }
@@ -41,9 +41,5 @@ React.createElement = function(ComponentClass, props, children) {
   props = props || {};
   props.__provided = true;
 
-  if (typeof children === 'undefined') {
-    children = props.children;
-  }
-
-  return createElement.call(this, ComponentClass.Provide, props, children);
+  return createElement.call(this, ComponentClass.Provide, props, ...args);
 };
