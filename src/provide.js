@@ -85,7 +85,9 @@ export default function provide(ComponentClass) {
       this.providers = providers;
       this.providerInstances = providerInstances;
       this.originalProps = props;
-      this.componentProps = { ...props, __wrapper: this };
+      this.componentProps = {
+        ...ComponentClass.defaultProps, ...props, __wrapper: this
+      };
 
       if (!this.componentProps.ref && ComponentClass.prototype.render) {
         this.componentProps.ref = 'wrappedInstance';
