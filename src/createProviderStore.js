@@ -42,14 +42,15 @@ export default function createProviderStore(providerInstance) {
   let state;
   let setState;
 
-  function unshiftReplication({ key, reducerKeys, replicator }) {
+  function unshiftReplication({ key, reducerKeys, queryable, replicator }) {
     enhancers.unshift(
-      replicate(
-        key || providerInstance.key,
+      replicate({
+        key: key || providerInstance.key,
         reducerKeys,
+        queryable,
         replicator,
-        getClientState(providerInstance)
-      )
+        clientState: getClientState(providerInstance)
+      })
     );
   }
 
