@@ -1,8 +1,15 @@
-export default function createKeyConcat(key, unshift, subKey) {
+export default function createKeyConcat(keys, unshift) {
+  let key = keys;
+  let getTarget = provider => provider;
+
+  if (Array.isArray(keys)) {
+    key = keys.pop();
+    getTarget = provider => keys.reduce((obj, key) => obj[key], provider);
+  }
+
   return function (providers, value) {
     for (let providerKey in providers) {
-      let provider = providers[providerKey];
-      let target = subKey ? provider[subKey] : provider;
+      let target = getTarget(providers[providerKey]);
 
       if (target) {
         if (!target[key]) {

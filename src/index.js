@@ -18,8 +18,8 @@ const unshiftOnReady = createKeyConcat('onReady', true);
 
 const pushReplication = createKeyConcat('replication');
 const unshiftReplication = createKeyConcat('replication', true);
-const pushReplicator = createKeyConcat('replication', false, 'replicator');
-const unshiftReplicator = createKeyConcat('replication', true, 'replicator');
+const pushReplicator = createKeyConcat(['replication', 'replicator']);
+const unshiftReplicator = createKeyConcat(['replication', 'replicator'], true);
 
 export default provide;
 export {
