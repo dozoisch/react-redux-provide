@@ -217,6 +217,10 @@ Optional string or function.  Defaults to its respective `key` within the `provi
 
 Optional object or array of objects.  Uses [`redux-replicate`](https://github.com/loggur/redux-replicate) under the hood.  Each object should contain keys that match the arguments expected by `redux-replicate` - i.e., `{ key, reducerKeys, replicator }`.
 
+### clientStateKeys
+
+Optional array of `reducerKeys`.  This isn't used directly by `react-redux-provide`, but it is the recommended way to specify which `reducerKeys` should be sent to the client by the server.  See [`provide-page`](https://github.com/loggur/provide-page) for an example of how this is used.
+
 ### onInstantiated
 
 Optional function or array of functions to be called immediately after the provider has been instantiated and before its optional replicators have initialized.  The provider instance will be passed to the function(s).
