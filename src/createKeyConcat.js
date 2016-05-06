@@ -1,18 +1,21 @@
-export default function createKeyConcat(key, unshift) {
+export default function createKeyConcat(key, unshift, subKey) {
   return function (providers, value) {
     for (let providerKey in providers) {
       let provider = providers[providerKey];
+      let target = subKey ? provider[subKey] : provider;
 
-      if (!provider[key]) {
-        provider[key] = [];
-      } else if (!Array.isArray(provider[key])) {
-        provider[key] = [ provider[key] ];
-      }
-
-      if (unshift) {
-        provider[key] = [].concat(value).concat(provider[key]);
-      } else {
-        provider[key] = provider[key].concat(value);
+      if (target) {
+        if (!target[key]) {
+          target[key] = [];
+        } else if (!Array.isArray(target[key])) {
+          target[key] = [ target[key] ];
+        }
+  
+        if (unshift) {
+          target[key] = [].concat(value).concat(target[key]);
+        } else {
+          target[key] = target[key].concat(value);
+        }
       }
     }
   }

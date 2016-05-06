@@ -16,6 +16,11 @@ const unshiftOnInstantiated = createKeyConcat('onInstantiated', true);
 const pushOnReady = createKeyConcat('onReady');
 const unshiftOnReady = createKeyConcat('onReady', true);
 
+const pushReplication = createKeyConcat('replication');
+const unshiftReplication = createKeyConcat('replication', true);
+const pushReplicator = createKeyConcat('replication', false, 'replicator');
+const unshiftReplicator = createKeyConcat('replication', true, 'replicator');
+
 export default provide;
 export {
   provide,
@@ -35,5 +40,10 @@ export {
   unshiftOnInstantiated,
 
   pushOnReady,
-  unshiftOnReady
+  unshiftOnReady,
+
+  pushReplication,
+  unshiftReplication,
+  pushReplicator,
+  unshiftReplicator
 };

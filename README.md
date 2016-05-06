@@ -503,6 +503,44 @@ Adds function(s) to each provider's array of `onReady` callbacks.  Useful when y
   });
   ```
 
+### pushReplication|unshiftReplication (Object providers, Function|Array replication)
+
+Adds replication to each provider.  Useful when you want to apply replication to many providers at once, specific to your application.
+
+  ```js
+  import { pushReplication, unshiftReplication } from 'react-redux-provide';
+  import firstReplication from './replication/first';
+  import lastReplication from './replication/last';
+  import { theme, user } from './providers/index';
+
+  unshiftReplication({ theme, user }, firstReplication);
+  pushReplication({ theme, user }, lastReplication);
+  ```
+
+### pushReplicator|unshiftReplicator (Object providers, Function|Array replicator)
+
+Adds replicator(s) to the each provider's `replication` property, if it exists.  Especially useful when client and server have nearly the same replication but require different replicators.  It's common for packaged providers to include a `replication` property without a `replicator` so that it's easy to know which `reducerKeys` should typically be replicated while leaving the actual (and optional) replicator up to the developer.
+
+  ```js
+  // client
+
+  import { pushReplicator } from 'react-redux-provide';
+  import localforage from 'redux-replicate-localforage';
+  import * as providers from './providers/index';
+
+  pushReplication(providers, localforage);
+  ```
+
+  ```js
+  // server
+
+  import { pushReplicator } from 'react-redux-provide';
+  import rethink from 'redux-replicate-rethink';
+  import * as providers from './providers/index';
+
+  pushReplication(providers, rethink);
+  ```
+
 ### reloadProviders (Object providers, Optional Object providerInstances)
 
 Useful for hot reloading of providers.  The state of your app and your stores will remain intact!
