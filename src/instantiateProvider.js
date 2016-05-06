@@ -44,7 +44,7 @@ export default function instantiateProvider(providerKey, provider) {
 
     if (!providerInstance.replication || store.initializedReplication) {
       readyCallback();
-    } else {
+    } else if (store.onReady) {
       store.onReady(readyCallback);
     }
   }
