@@ -8,7 +8,8 @@ let rootInstance = null;
 
 const contextTypes = {
   providers: PropTypes.object,
-  providerInstances: PropTypes.object
+  providerInstances: PropTypes.object,
+  rerender: PropTypes.func
 };
 
 export default function provide(ComponentClass) {
@@ -18,21 +19,65 @@ export default function provide(ComponentClass) {
 
   let componentName = ComponentClass.displayName || ComponentClass.name;
 
-  function getDisplayName(displayedProviderKeys = []) {
-    return `Provide${componentName}(${displayedProviderKeys.join(',')})`;
+  function getDisplayName(providers = {}) {
+    return `Provide${componentName}(${Object.keys(providers).join(',')})`;
   }
 
-  function getRelevantKeys(object = {}) {
-    const { propTypes = {} } = ComponentClass;
+  function getRelevantKeys(a = {}, b = ComponentClass.propTypes) {
     const relevantKeys = [];
 
-    for (let key in propTypes) {
-      if (key in object) {
-        relevantKeys.push(key);
+    if (typeof b === 'object') {
+      for (let key in b) {
+        if (key in a) {
+          relevantKeys.push(key);
+        }
       }
     }
 
     return relevantKeys;
+  }
+
+  // finds the first `handleQuery` function within replicators
+  function getQueryHandler({ replication }) {
+    if (replication) {
+      if (!Array.isArray(replication)) {
+        replication = [ replication ];
+      }
+
+      for (let { replicator } of replication) {
+        if (replicator) {
+          if (!Array.isArray(replicator)) {
+            replicator = [ replicator ];
+          }
+
+          for (let { handleQuery } of replicator) {
+            if (handleQuery) {
+              return handleQuery;
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function getMergedResult(results) {
+    let mergedResult = null;
+
+    for (let providerKey in results) {
+      let result = results[providerKey];
+
+      if (Array.isArray(result)) {
+        mergedResult = [ ...(mergedResult || []), ...result ];
+      } else if (result && typeof result === 'object') {
+        mergedResult = { ...(mergedResult || {}), ...result };
+      } else {
+        mergedResult = result;
+      }
+    }
+
+    return mergedResult;
   }
 
   const Provide = class extends Component {
@@ -43,9 +88,37 @@ export default function provide(ComponentClass) {
     static childContextTypes = contextTypes;
 
     getChildContext() {
-      const { providers, providerInstances } = this;
+      return {
+        providers: this.getProviders(),
+        providerInstances: this.getProviderInstances(),
+        rerender: this.getRerender()
+      };
+    }
 
-      return { providers, providerInstances };
+    getProviders(props = this.props, context = this.context) {
+      this.providers = this.providers
+        || props.providers
+        || context.providers
+        || {};
+
+      return this.providers;
+    }
+
+    getProviderInstances(props = this.props, context = this.context) {
+      this.providerInstances = this.providerInstances
+        || props.providerInstances
+        || context.providerInstances
+        || {};
+
+      return this.providerInstances;
+    }
+
+    getRerender(props = this.props, context = this.context) {
+      this.rerender = this.rerender
+        || props.rerender
+        || context.rerender;
+
+      return this.rerender;
     }
 
     constructor(props, context) {
@@ -56,176 +129,60 @@ export default function provide(ComponentClass) {
       }
 
       this.renders = 0;
-      this.mergers = {};
-      this.unsubscribe = [];
       this.componentName = componentName;
-      this.unmounted = typeof window === 'undefined';
+      this.unmounted = true;
       this.initialize(props, context);
-    }
-
-    getProviders(props, context) {
-      return this.providers
-        || props.providers
-        || context.providers
-        || {};
-    }
-
-    getProviderInstances(props, context) {
-      return this.providerInstances
-        || props.providerInstances
-        || context.providerInstances
-        || {};
     }
 
     initialize(props, context) {
       const providers = this.getProviders(props, context);
-      const providerInstances = this.getProviderInstances(props, context);
-      const displayedProviderKeys = [];
-      
-      this.providers = providers;
-      this.providerInstances = providerInstances;
-      this.originalProps = props;
-      this.componentProps = {
-        ...ComponentClass.defaultProps, ...props, __wrapper: this
-      };
 
-      if (!this.componentProps.ref && ComponentClass.prototype.render) {
-        this.componentProps.ref = 'wrappedInstance';
-      }
-
-      // big block of code here but it's pretty straightforward!
       for (let key in providers) {
         let provider = providers[key];
-        let providerKey = provider.key || key;
-        let providerInstance = providerInstances[providerKey];
-        let isStaticProvider = typeof providerKey !== 'function';
-        let actionKeys = getRelevantKeys(provider.actions);
-        let reducerKeys = getRelevantKeys(provider.reducers);
-        let mergeKeys = getRelevantKeys(provider.merge);
-        let actionCreators = null;
-        let store = null;
-        let state = null;
+        let shouldSubscribe = false;
 
-        // go ahead and instantiate the provider if its key isn't a function
-        if (isStaticProvider && !providerInstance) {
-          providerInstance = instantiateProvider(providerKey, provider);
-          providerInstances[providerKey] = providerInstance;
+        if (!provider.key) {
+          provider.key = key;
         }
 
-        // if we've found any keys relevant to this component
-        if (actionKeys.length || reducerKeys.length || mergeKeys.length) {
-          if (isStaticProvider) {
-            displayedProviderKeys.push(providerKey);
-          } else {
-            displayedProviderKeys.push(key);
-            providerKey = providerKey({ ...this, props, context });
-            providerInstance = providerInstances[providerKey];
+        this.assignActionCreators(props, context, provider);
 
-            if (!providerInstance) {
-              providerInstance = instantiateProvider(providerKey, provider);
-              providerInstances[providerKey] = providerInstance;
-            }
-          }
+        if (this.assignReducers(props, context, provider)) {
+          shouldSubscribe = true;
+        }
 
-          actionCreators = providerInstance.actionCreators;
-          store = providerInstance.store;
-          state = store.getState();
+        if (this.assignMergers(props, context, provider)) {
+          shouldSubscribe = true;
+        }
 
-          // assign relevant action creators to wrapped component's props
-          for (let actionKey of actionKeys) {
-            if (!this.originalProps[actionKey]) {
-              this.componentProps[actionKey] = actionCreators[actionKey];
-            }
-          }
-
-          // copy the relevant states to the wrapped component's props
-          // and whenever some state changes, update (mutate) the wrapped props
-          // and raise the `doUpdate` flag to indicate that the component
-          // should be updated after the action has taken place
-          for (let reducerKey of reducerKeys) {
-            if (!this.originalProps[reducerKey]) {
-              this.componentProps[reducerKey] = state[reducerKey];
-
-              this.unsubscribe.push(
-                store.watch(
-                  reducerKey, nextState => {
-                    this.componentProps[reducerKey] = nextState;
-                    this.doUpdate = true;
-                  }
-                )
-              );
-            }
-          }
-
-          // some of the wrapped component's props might depend on some state,
-          // possibly merged with props and/or context,
-          // so we watch for changes to certain `keys`
-          // and only update props when those `keys` have changed
-          for (let mergeKey of mergeKeys) {
-            if (!this.originalProps[mergeKey]) {
-              let merger = providerInstance.merge[mergeKey];
-
-              this.componentProps[mergeKey] = merger.get(
-                state, this.componentProps, context
-              );
-
-              for (let reducerKey of merger.keys) {
-                this.unsubscribe.push(
-                  store.watch(
-                    reducerKey, nextState => {
-                      // we store the merger temporarily so that we may
-                      // `get` the value only after the action has completed
-                      this.mergers[mergeKey] = merger;
-                      this.doMerge = true;
-                    }
-                  )
-                );
-              }
-            }
-          }
-
-          // if any states are relevant, we subscribe to the store;
-          // and since we're reflecting any changes to relevant states
-          // by mutating `componentProps` and raising the `doUpdate` flag,
-          // it's more efficient to simply call `forceUpdate` here
-          if (reducerKeys.length || mergeKeys.length) {
-            this.unsubscribe.push(
-              store.subscribe(() => {
-                if (this.doMerge) {
-                  const state = store.getState();
-
-                  // this is where we `get` any new values which depend on
-                  // some state, possibly merged with props and/or context
-                  for (let mergeKey in this.mergers) {
-                    let { get } = this.mergers[mergeKey];
-                    let value = get(state, this.componentProps, context);
-
-                    if (this.componentProps[mergeKey] !== value) {
-                      this.componentProps[mergeKey] = value;
-                      this.doUpdate = true;
-                    }
-
-                    delete this.mergers[mergeKey];
-                  }
-
-                  this.doMerge = false;
-                }
-
-                if (this.doUpdate && !this.unmounted) {
-                  this.forceUpdate();
-                }
-              })
-            );
-          }
+        if (shouldSubscribe) {
+          this.subscribeToProvider(props, context, provider);
         }
       }
 
-      Provide.displayName = getDisplayName(displayedProviderKeys);
+      //this.handleQueries(props, context);
+      this.setDisplayName(props, context);
     }
 
     deinitialize() {
-      while (this.unsubscribe.length) {
-        this.unsubscribe.shift()();
+      this.unsubscribe();
+
+      delete this.relevantProviders;
+      delete this.queryingProviders;
+      delete this.componentProps;
+      delete this.fauxInstance;
+      delete this.subscriptions;
+      delete this.mergers;
+      delete this.wrappedInstance;
+    }
+
+    unsubscribe() {
+      const subscriptions = this.getSubscriptions();
+
+      while (subscriptions.length) {
+        let unsubscribe = subscriptions.shift();
+
+        unsubscribe();
       }
     }
 
@@ -235,6 +192,10 @@ export default function provide(ComponentClass) {
         this.initialize(nextProps, this.context);
         this.receivedNewProps = true;
       }
+    }
+
+    componentDidMount() {
+      this.unmounted = typeof window === 'undefined';
     }
 
     componentWillUnmount() {
@@ -248,19 +209,278 @@ export default function provide(ComponentClass) {
         return true;
       }
 
-      // see comments within `initialize` for why we return false here
       return false;
     }
 
     render() {
-      this.doUpdate = false;
-      this.renders++;
+      return this.getWrappedInstance();
+    }
 
-      this.wrappedInstance = (
-        <ComponentClass { ...this.componentProps } />
-      );
+    setDisplayName(props, context) {
+      Provide.displayName = getDisplayName({
+        ...this.getRelevantProviders(),
+        ...this.getQueryingProviders()
+      });
+    }
+
+    getRelevantProviders() {
+      if (!this.relevantProviders) {
+        this.relevantProviders = {};
+      }
+
+      return this.relevantProviders;
+    }
+
+    getQueryingProviders() {
+      if (!this.queryingProviders) {
+        this.queryingProviders = {};
+      }
+
+      return this.queryingProviders;
+    }
+
+    getComponentProps(props = this.props, context = this.context) {
+      if (!this.componentProps) {
+        this.componentProps = {
+          ...ComponentClass.defaultProps, ...props, __wrapper: this
+        };
+
+        if (!this.componentProps.ref && ComponentClass.prototype.render) {
+          this.componentProps.ref = 'wrappedInstance';
+        }
+      }
+
+      return this.componentProps;
+    }
+
+    getFauxInstance(props, context) {
+      if (!this.fauxInstance) {
+        const componentProps = this.getComponentProps(props, context);
+
+        this.fauxInstance = { ...this, props: componentProps };
+      }
+
+      this.fauxInstance.context = context;
+
+      return this.fauxInstance;
+    }
+
+    getSubscriptions() {
+      if (!this.subscriptions) {
+        this.subscriptions = [];
+      }
+
+      return this.subscriptions;
+    }
+
+    getMergers() {
+      if (!this.mergers) {
+        this.mergers = {};
+      }
+
+      return this.mergers;
+    }
+
+    getWrappedInstance() {
+      if (!this.wrappedInstance || this.doUpdate) {
+        this.renders++;
+        this.doUpdate = false;
+        this.wrappedInstance = (
+          <ComponentClass { ...this.getComponentProps() } />
+        );
+      }
 
       return this.wrappedInstance;
+    }
+
+    getProviderInstance(props, context, provider) {
+      const relevantProviders = this.getRelevantProviders();
+      const providerInstances = this.getProviderInstances(props, context);
+      let providerKey = provider.key;
+      let isStaticProvider = typeof providerKey !== 'function';
+
+      if (!isStaticProvider) {
+        // get actual `providerKey`
+        providerKey = providerKey(this.getFauxInstance(props, context));
+        // if actual `providerKey` matches `key`, treat as static provider
+        isStaticProvider = providerKey === provider.key;
+      }
+
+      let providerInstance = providerInstances[providerKey];
+
+      if (!providerInstance) {
+        providerInstance = instantiateProvider(providerKey, provider);
+        providerInstance.isStatic = isStaticProvider;
+        providerInstance.key = providerKey;
+        providerInstances[providerKey] = providerInstance;
+      }
+
+      relevantProviders[providerKey] = true;
+
+      return providerInstance;
+    }
+
+    assignActionCreators(props, context, provider) {
+      const actionKeys = getRelevantKeys(provider.actions);
+
+      if (!actionKeys.length) {
+        return false;
+      }
+
+      const componentProps = this.getComponentProps(props, context);
+      const { actionCreators } = this.getProviderInstance(
+        props, context, provider
+      );
+
+      // assign relevant action creators to wrapped component's props
+      for (let actionKey of actionKeys) {
+        if (!props[actionKey]) {
+          componentProps[actionKey] = actionCreators[actionKey];
+        }
+      }
+
+      return true;
+    }
+
+    assignReducers(props, context, provider) {
+      const reducerKeys = getRelevantKeys(provider.reducers);
+
+      if (!reducerKeys.length) {
+        return false;
+      }
+
+      const subscriptions = this.getSubscriptions();
+      const componentProps = this.getComponentProps(props, context);
+      const { store } = this.getProviderInstance(
+        props, context, provider
+      );
+      const state = store.getState();
+
+      // copy the relevant states to the wrapped component's props
+      // and whenever some state changes, update (mutate) the wrapped props
+      // and raise the `doUpdate` flag to indicate that the component
+      // should be updated after the action has taken place
+      for (let reducerKey of reducerKeys) {
+        if (!props[reducerKey]) {
+          componentProps[reducerKey] = state[reducerKey];
+
+          subscriptions.push(
+            store.watch(
+              reducerKey, nextState => {
+                componentProps[reducerKey] = nextState;
+                this.doUpdate = true;
+              }
+            )
+          );
+        }
+      }
+
+      return true;
+    }
+
+    assignMergers(props, context, provider) {
+      const mergeKeys = getRelevantKeys(provider.merge);
+
+      if (!mergeKeys.length) {
+        return false;
+      }
+
+      const mergers = this.getMergers();
+      const subscriptions = this.getSubscriptions();
+      const componentProps = this.getComponentProps(props, context);
+      const { merge, store } = this.getProviderInstance(
+        props, context, provider
+      );
+      const state = store.getState();
+
+      // some of the wrapped component's props might depend on some state,
+      // possibly merged with props and/or context,
+      // so we watch for changes to certain `keys`
+      // and only update props when those `keys` have changed
+      for (let mergeKey of mergeKeys) {
+        if (!props[mergeKey]) {
+          let merger = merge[mergeKey];
+
+          componentProps[mergeKey] = merger.get(
+            state, componentProps, context
+          );
+
+          for (let reducerKey of merger.keys) {
+            subscriptions.push(
+              store.watch(
+                reducerKey, nextState => {
+                  // we store the merger temporarily so that we may
+                  // `get` the value only after the action has completed
+                  mergers[mergeKey] = merger;
+                  this.doMerge = true;
+                }
+              )
+            );
+          }
+        }
+      }
+
+      return true;
+    }
+
+    subscribeToProvider(props, context, provider) {
+      const subscriptions = this.getSubscriptions();
+      const { store } = this.getProviderInstance(
+        props, context, provider
+      );
+
+      // if any states are relevant, we subscribe to the provider's store;
+      // and since we're reflecting any changes to relevant states
+      // by mutating `componentProps` and raising the `doUpdate` flag,
+      // it's more efficient to simply call `forceUpdate` here
+      subscriptions.push(
+        store.subscribe(() => {
+          if (this.doMerge) {
+            const mergers = this.getMergers();
+            const componentProps = this.getComponentProps(props, context);
+            const state = store.getState();
+
+            // this is where we `get` any new values which depend on
+            // some state, possibly merged with props and/or context
+            for (let mergeKey in mergers) {
+              let { get } = mergers[mergeKey];
+              let value = get(state, componentProps, context);
+
+              if (componentProps[mergeKey] !== value) {
+                componentProps[mergeKey] = value;
+                this.doUpdate = true;
+              }
+
+              delete mergers[mergeKey];
+            }
+
+            this.doMerge = false;
+          }
+
+          if (this.doUpdate) {
+            this.handleQueriesOrUpdate(props, context);
+          }
+        })
+      );
+    }
+
+    handleQueriesOrUpdate(props, context) {
+      if (this.hasDynamicQuery) {
+        this.handleQueries(props, context);
+        return;
+      }
+
+      const rerender = this.getRerender(props, context);
+
+      if (rerender) {
+        rerender();
+      } else if (!this.unmounted) {
+        this.forceUpdate();
+      }
+    }
+
+    handleQueries(props, context) {
+      // TODO
     }
   }
 
@@ -272,6 +492,7 @@ export default function provide(ComponentClass) {
     }
 
     Provide.prototype.componentDidMount = function() {
+      this.unmounted = typeof window === 'undefined';
       instances.add(this);
     }
 
