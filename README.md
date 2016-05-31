@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/react-redux-provide.svg?style=flat-square)](https://www.npmjs.com/package/react-redux-provide)
 
 
-# This README is currently incomplete!  It should be complete within the week day or two, after query handling is working.  :)
+# This README is currently incomplete!  It should be complete within the week or two, after query handling is working.  :)
 
 
 ## Table of contents
