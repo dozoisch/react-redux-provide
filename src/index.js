@@ -3,23 +3,31 @@ import instantiateProvider from './instantiateProvider';
 import createProviderStore from './createProviderStore';
 import createKeyConcat from './createKeyConcat';
 import shallowEqual from './shallowEqual';
+import {
+  pushMiddleware,
+  unshiftMiddleware,
 
-const pushMiddleware = createKeyConcat('middleware');
-const unshiftMiddleware = createKeyConcat('middleware', true);
+  pushEnhancer,
+  unshiftEnhancer,
 
-const pushEnhancer = createKeyConcat('enhancer');
-const unshiftEnhancer = createKeyConcat('enhancer', true);
+  pushOnInstantiated,
+  unshiftOnInstantiated,
 
-const pushOnInstantiated = createKeyConcat('onInstantiated');
-const unshiftOnInstantiated = createKeyConcat('onInstantiated', true);
+  pushOnReady,
+  unshiftOnReady,
 
-const pushOnReady = createKeyConcat('onReady');
-const unshiftOnReady = createKeyConcat('onReady', true);
+  pushReplication,
+  unshiftReplication,
 
-const pushReplication = createKeyConcat('replication');
-const unshiftReplication = createKeyConcat('replication', true);
-const pushReplicator = createKeyConcat(['replication', 'replicator']);
-const unshiftReplicator = createKeyConcat(['replication', 'replicator'], true);
+  pushReplicator,
+  unshiftReplicator,
+
+  pushWait,
+  unshiftWait,
+
+  pushClear,
+  unshiftClear
+} from './keyConcats';
 
 export default provide;
 export {
@@ -44,6 +52,13 @@ export {
 
   pushReplication,
   unshiftReplication,
+
   pushReplicator,
-  unshiftReplicator
+  unshiftReplicator,
+
+  pushWait,
+  unshiftWait,
+
+  pushClear,
+  unshiftClear
 };

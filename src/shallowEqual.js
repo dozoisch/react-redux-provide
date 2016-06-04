@@ -3,7 +3,7 @@ export default function shallowEqual(objA, objB) {
     return true;
   }
 
-  if (typeof objA !== 'object' || typeof objB !== 'object') {
+  if (!objA || typeof objA !== 'object' || !objB || typeof objB !== 'object') {
     return false;
   }
 
