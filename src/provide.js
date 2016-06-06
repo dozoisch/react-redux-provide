@@ -1,7 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
-import instantiateProvider from './instantiateProvider';
 import shallowEqual from './shallowEqual';
+import getRelevantKeys from './getRelevantKeys';
+import instantiateProvider from './instantiateProvider';
+import handleQueries from './handleQueries';
 
 const componentInstances = {};
 const isServerSide = typeof window === 'undefined';
@@ -10,8 +12,8 @@ let rootInstance = null;
 const contextTypes = {
   providers: PropTypes.object,
   providerInstances: PropTypes.object,
-  providerActiveQueries: PropTypes.object,
-  providerQueryResults: PropTypes.object
+  activeQueries: PropTypes.object,
+  queryResults: PropTypes.object
 };
 
 export default function provide(ComponentClass) {
@@ -20,71 +22,10 @@ export default function provide(ComponentClass) {
   }
 
   let componentName = ComponentClass.displayName || ComponentClass.name;
+  const { propTypes } = ComponentClass;
 
   function getDisplayName(providers = {}) {
     return `Provide${componentName}(${Object.keys(providers).join(',')})`;
-  }
-
-  function getRelevantKeys(a = {}, b = ComponentClass.propTypes) {
-    const relevantKeys = [];
-
-    if (typeof b === 'object') {
-      for (let key in b) {
-        if (key in a) {
-          relevantKeys.push(key);
-        }
-      }
-    }
-
-    return relevantKeys;
-  }
-
-  // finds the first `handleQuery` function within replicators
-  function getQueryHandler(provider) {
-    let { replication } = provider;
-
-    if (replication) {
-      if (!Array.isArray(replication)) {
-        replication = [ replication ];
-      }
-
-      for (let { replicator, reducerKeys } of replication) {
-        if (replicator) {
-          if (!Array.isArray(replicator)) {
-            replicator = [ replicator ];
-          }
-
-          for (let { handleQuery } of replicator) {
-            if (handleQuery) {
-              return {
-                handleQuery,
-                reducerKeys: reducerKeys || Object.keys(provider.reducers)
-              };
-            }
-          }
-        }
-      }
-    }
-
-    return null;
-  }
-
-  function getMergedResult(results) {
-    let mergedResult = null;
-
-    for (let providerKey in results) {
-      let result = results[providerKey];
-
-      if (Array.isArray(result)) {
-        mergedResult = [ ...(mergedResult || []), ...result ];
-      } else if (result && typeof result === 'object') {
-        mergedResult = { ...(mergedResult || {}), ...result };
-      } else if (typeof result !== 'undefined') {
-        mergedResult = result;
-      }
-    }
-
-    return mergedResult;
   }
 
   const Provide = class extends Component {
@@ -98,8 +39,8 @@ export default function provide(ComponentClass) {
       return {
         providers: this.getProviders(),
         providerInstances: this.getProviderInstances(),
-        providerActiveQueries: this.getProviderActiveQueries(),
-        providerQueryResults: this.getProviderQueryResults()
+        activeQueries: this.getActiveQueries(),
+        queryResults: this.getQueryResults()
       };
     }
 
@@ -121,22 +62,22 @@ export default function provide(ComponentClass) {
       return this.providerInstances;
     }
 
-    getProviderActiveQueries(props = this.props, context = this.context) {
-      this.providerActiveQueries = this.providerActiveQueries
-        || props.providerActiveQueries
-        || context.providerActiveQueries
+    getActiveQueries(props = this.props, context = this.context) {
+      this.activeQueries = this.activeQueries
+        || props.activeQueries
+        || context.activeQueries
         || {};
 
-      return this.providerActiveQueries;
+      return this.activeQueries;
     }
 
-    getProviderQueryResults(props = this.props, context = this.context) {
-      this.providerQueryResults = this.providerQueryResults
-        || props.providerQueryResults
-        || context.providerQueryResults
+    getQueryResults(props = this.props, context = this.context) {
+      this.queryResults = this.queryResults
+        || props.queryResults
+        || context.queryResults
         || {};
 
-      return this.providerQueryResults;
+      return this.queryResults;
     }
 
     constructor(props, context) {
@@ -154,6 +95,8 @@ export default function provide(ComponentClass) {
 
     initialize(props, context) {
       const providers = this.getProviders(props, context);
+
+      this.relevantProviders = {};
 
       for (let key in providers) {
         let provider = providers[key];
@@ -178,10 +121,7 @@ export default function provide(ComponentClass) {
         }
       }
 
-      if (this.getQueries(props, context)) {
-        this.handleQueries(props, context);
-      }
-
+      this.handleQueries(props, context);
       this.setDisplayName(props, context);
     }
 
@@ -192,13 +132,9 @@ export default function provide(ComponentClass) {
       delete this.componentProps;
       delete this.fauxInstance;
       delete this.query;
-      delete this.dynamicQuery;
       delete this.queryOptions;
-      delete this.dynamicQueryOptions;
       delete this.queries;
-      delete this.dynamicQueries;
       delete this.queriesOptions;
-      delete this.dynamicQueriesOptions;
       delete this.subscriptions;
       delete this.mergers;
       delete this.wrappedInstance;
@@ -244,22 +180,14 @@ export default function provide(ComponentClass) {
       return this.getWrappedInstance();
     }
 
-    update(props, context) {
+    update() {
       if (!this.unmounted) {
         this.forceUpdate();
       }
     }
 
     setDisplayName(props, context) {
-      Provide.displayName = getDisplayName(this.getRelevantProviders());
-    }
-
-    getRelevantProviders() {
-      if (!this.relevantProviders) {
-        this.relevantProviders = {};
-      }
-
-      return this.relevantProviders;
+      Provide.displayName = getDisplayName(this.relevantProviders);
     }
 
     getComponentProps(props = this.props, context = this.context) {
@@ -280,137 +208,16 @@ export default function provide(ComponentClass) {
       if (!this.fauxInstance) {
         const componentProps = this.getComponentProps(props, context);
 
+        this.getProviders(props, context);
+        this.getProviderInstances(props, context);
+        this.getActiveQueries(props, context);
+        this.getQueryResults(props, context);
         this.fauxInstance = { ...this, props: componentProps };
       }
 
       this.fauxInstance.context = context;
 
       return this.fauxInstance;
-    }
-
-    getQuery(props, context) {
-      if (typeof this.query !== 'undefined') {
-        return this.query;
-      }
-
-      const componentProps = this.getComponentProps(props, context);
-
-      this.query = componentProps.query || null;
-      this.dynamicQuery = typeof this.query === 'function';
-
-      if (this.dynamicQuery) {
-        this.query = this.query(this.getFauxInstance(props, context));
-      }
-
-      return this.query;
-    }
-
-    getQueryOptions(props, context) {
-      if (typeof this.queryOptions !== 'undefined') {
-        return this.queryOptions;
-      }
-
-      const componentProps = this.getComponentProps(props, context);
-
-      this.queryOptions = componentProps.queryOptions || null;
-      this.dynamicQueryOptions = typeof this.queryOptions === 'function';
-
-      if (this.dynamicQueryOptions) {
-        this.queryOptions = this.queryOptions(
-          this.getFauxInstance(props, context)
-        );
-      }
-
-      return this.queryOptions;
-    }
-
-    getQueries(props, context) {
-      if (typeof this.queries !== 'undefined') {
-        return this.queries;
-      }
-
-      const query = this.getQuery(props, context);
-      const providers = this.getProviders(props, context);
-      const fauxInstance = this.getFauxInstance(props, context);
-      const componentProps = this.getComponentProps(props, context);
-      let hasQueries = false;
-
-      this.queries = componentProps.queries || null;
-      this.dynamicQueries = typeof this.queries === 'function';
-
-      if (this.dynamicQueries) {
-        this.queries = this.queries(fauxInstance);
-      }
-
-      if (query) {
-        // we need to map the query to relevant provider(s)
-        if (!this.queries) {
-          this.queries = {};
-        } else if (!this.dynamicQueries) {
-          this.queries = { ...this.queries };
-        }
-
-        for (let key in providers) {
-          let provider = providers[key];
-          let queryKeys = getRelevantKeys(provider.reducers, query);
-
-          if (queryKeys.length) {
-            // provider is relevant, so we map it within the queries object
-            if (!this.queries[key]) {
-              this.queries[key] = {};
-            }
-
-            for (let queryKey of queryKeys) {
-              this.queries[key][queryKey] = query[queryKey];
-            }
-          }
-        }
-      }
-
-      for (let key in this.queries) {
-        let query = this.queries[key];
-
-        if (typeof query === 'function') {
-          this.queries[key] = query(fauxInstance);
-        }
-
-        // make sure each provider is instantiated
-        this.getProviderInstance(props, context, providers[key]);
-        hasQueries = true;
-      }
-
-      if (!hasQueries) {
-        this.queries = null;
-
-        if (componentProps.query) {
-          componentProps.result = null;
-        }
-
-        if (componentProps.queries) {
-          componentProps.results = {};
-        }
-      }
-
-      return this.queries;
-    }
-
-    getQueriesOptions(props, context) {
-      if (typeof this.queriesOptions !== 'undefined') {
-        return this.queriesOptions;
-      }
-
-      const componentProps = this.getComponentProps(props, context);
-
-      this.queriesOptions = componentProps.queriesOptions || {};
-      this.dynamicQueriesOptions = typeof this.queriesOptions === 'function';
-
-      if (this.dynamicQueriesOptions) {
-        this.queriesOptions = this.queriesOptions(
-          this.getFauxInstance(props, context)
-        );
-      }
-
-      return this.queriesOptions;
     }
 
     getSubscriptions() {
@@ -442,20 +249,14 @@ export default function provide(ComponentClass) {
     }
 
     getProviderInstance(props, context, provider) {
-      const relevantProviders = this.getRelevantProviders();
-      const providerInstance = instantiateProvider(
-        provider,
-        this.getProviderInstances(props, context),
-        this.getFauxInstance(props, context)
+      return instantiateProvider(
+        this.getFauxInstance(props, context),
+        provider
       );
-
-      relevantProviders[providerInstance.key] = true;
-
-      return providerInstance;
     }
 
     assignActionCreators(props, context, provider) {
-      const actionKeys = getRelevantKeys(provider.actions);
+      const actionKeys = getRelevantKeys(provider.actions, propTypes);
 
       if (!actionKeys.length) {
         return false;
@@ -477,7 +278,7 @@ export default function provide(ComponentClass) {
     }
 
     assignReducers(props, context, provider) {
-      const reducerKeys = getRelevantKeys(provider.reducers);
+      const reducerKeys = getRelevantKeys(provider.reducers, propTypes);
 
       if (!reducerKeys.length) {
         return false;
@@ -513,7 +314,7 @@ export default function provide(ComponentClass) {
     }
 
     assignMergers(props, context, provider) {
-      const mergeKeys = getRelevantKeys(provider.merge);
+      const mergeKeys = getRelevantKeys(provider.merge, propTypes);
 
       if (!mergeKeys.length) {
         return false;
@@ -599,101 +400,13 @@ export default function provide(ComponentClass) {
     }
 
     handleQueriesOrUpdate(props, context) {
-      if (this.getQueries(props, context)) {
-        this.handleQueries(props, context);
-      } else {
+      if (!this.handleQueries(props, context)) {
         this.update(props, context);
       }
     }
 
-    // TODO: clean up this mess
     handleQueries(props, context) {
-      const query = this.getQuery(props, context);
-      const queryOptions = this.getQueryOptions(props, context);
-      const queries = this.getQueries(props, context);
-      const queriesOptions = this.getQueriesOptions(props, context);
-      const activeQueries = this.getProviderActiveQueries(props, context);
-      const queryResults = this.getProviderQueryResults(props, context);
-      const providers = this.getProviders(props, context);
-      const componentProps = this.getComponentProps(props, context);
-      const previousResults = componentProps.results || {};
-
-      let semaphore = Object.keys(queries).length;
-      const clear = () => {
-        if (--semaphore === 0) {
-          if (query) {
-            componentProps.result = getMergedResult(componentProps.results);
-          }
-
-          if (this.doUpdate) {
-            // TODO: should mergers be checked (again) ??
-            this.update(props, context);
-          }
-        }
-      };
-
-      if (props.query) {
-        componentProps.result = null;
-      }
-
-      componentProps.results = {};
-
-      for (let key in queries) {
-        let provider = providers[key];
-        let query = queries[key];
-        let options = queryOptions || queriesOptions[key] || {};
-        let resultKey = JSON.stringify({ query, options });
-        let queryResult = queryResults[resultKey];
-
-        if (typeof queryResult !== 'undefined') {
-          componentProps.results[key] = queryResult;
-          clear();
-          continue;
-        }
-
-        if (provider.wait) {
-          provider.wait();
-        }
-
-        let resultHandlers = activeQueries[resultKey];
-        let resultHandler = result => {
-          const previousResult = previousResults[key];
-
-          if (!this.doUpdate && !shallowEqual(result, previousResult)) {
-            this.doUpdate = true;
-          }
-
-          componentProps.results[key] = result;
-          queryResults[resultKey] = result;
-
-          clear();
-
-          if (provider.clear) {
-            provider.clear(this.doUpdate);
-          }
-        };
-
-        if (resultHandlers) {
-          resultHandlers.push(resultHandler);
-        } else {
-          let { handleQuery, reducerKeys } = getQueryHandler(provider);
-
-          if (!options.select) {
-            options.select = reducerKeys;
-          }
-
-          resultHandlers = [ resultHandler ];
-          activeQueries[resultKey] = resultHandlers;
-
-          handleQuery(query, options, result => {
-            delete activeQueries[resultKey];
-
-            while (resultHandlers.length) {
-              resultHandlers.shift()(result);
-            }
-          });
-        }
-      }
+      return handleQueries(this.getFauxInstance(props, context));
     }
   }
 

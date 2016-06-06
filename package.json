@@ -50,8 +50,7 @@
     "is-plain-object": "^2.0.1",
     "react": "^0.14.0 || ^15.0.0-0",
     "redux": "^3.0.0",
-    "redux-replicate": "^2.0.0-0",
-    "redux-thunk": "^2.1.0"
+    "redux-replicate": "^2.0.0-0"
   },
   "devDependencies": {
     "babel-cli": "^6.6.0",

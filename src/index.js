@@ -1,8 +1,25 @@
 import provide, { reloadProviders } from './provide';
-import instantiateProvider from './instantiateProvider';
 import createProviderStore from './createProviderStore';
 import createKeyConcat from './createKeyConcat';
 import shallowEqual from './shallowEqual';
+
+import instantiateProvider from './instantiateProvider';
+import {
+  getFromContextOrProps,
+  getProviders,
+  getProviderInstances,
+  getActiveQueries,
+  getQueryResults,
+  getFunctionOrObject,
+  getQueries,
+  getQuery,
+  getQueryOptions,
+  getQueriesOptions,
+  getQueryHandler,
+  getMergedResult,
+  handleQueries
+} from './instantiateProvider';
+
 import {
   pushMiddleware,
   unshiftMiddleware,
@@ -33,10 +50,24 @@ export default provide;
 export {
   provide,
   reloadProviders,
-  instantiateProvider,
   createProviderStore,
   createKeyConcat,
   shallowEqual,
+
+  instantiateProvider,
+  getFromContextOrProps,
+  getProviders,
+  getProviderInstances,
+  getActiveQueries,
+  getQueryResults,
+  getFunctionOrObject,
+  getQueries,
+  getQuery,
+  getQueryOptions,
+  getQueriesOptions,
+  getQueryHandler,
+  getMergedResult,
+  handleQueries,
 
   pushMiddleware,
   unshiftMiddleware,
