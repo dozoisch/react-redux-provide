@@ -89,10 +89,49 @@ export default function provide(ComponentClass) {
       this.renders = 0;
       this.componentName = componentName;
       this.unmounted = true;
-      this.initialize(props, context);
     }
 
-    initialize(props, context) {
+    componentWillMount() {
+      this.initialize();
+    }
+
+    componentDidMount() {
+      this.unmounted = isServerSide;
+    }
+
+    componentWillUnmount() {
+      this.unmounted = true;
+      this.deinitialize();
+    }
+
+    componentWillReceiveProps(nextProps) {
+      if (!shallowEqual(nextProps, this.props)) {
+        this.deinitialize();
+        this.initialize(nextProps, this.context);
+        this.receivedNewProps = true;
+      }
+    }
+
+    shouldComponentUpdate() {
+      if (this.receivedNewProps) {
+        this.receivedNewProps = false;
+        return true;
+      }
+
+      return false;
+    }
+
+    render() {
+      return this.getWrappedInstance();
+    }
+
+    update() {
+      if (!this.unmounted) {
+        this.forceUpdate();
+      }
+    }
+
+    initialize(props = this.props, context = this.context) {
       const providers = this.getProviders(props, context);
 
       this.relevantProviders = {};
@@ -146,42 +185,6 @@ export default function provide(ComponentClass) {
         let unsubscribe = subscriptions.shift();
 
         unsubscribe();
-      }
-    }
-
-    componentWillReceiveProps(nextProps) {
-      if (!shallowEqual(nextProps, this.props)) {
-        this.deinitialize();
-        this.initialize(nextProps, this.context);
-        this.receivedNewProps = true;
-      }
-    }
-
-    componentDidMount() {
-      this.unmounted = isServerSide;
-    }
-
-    componentWillUnmount() {
-      this.unmounted = true;
-      this.deinitialize();
-    }
-
-    shouldComponentUpdate() {
-      if (this.receivedNewProps) {
-        this.receivedNewProps = false;
-        return true;
-      }
-
-      return false;
-    }
-
-    render() {
-      return this.getWrappedInstance();
-    }
-
-    update() {
-      if (!this.unmounted) {
-        this.forceUpdate();
       }
     }
 
@@ -428,15 +431,17 @@ export default function provide(ComponentClass) {
     }
 
     Provide.prototype.reinitialize = function(props, context, NextClass) {
-      if (NextClass) {
-        this.setComponentClass(NextClass);
-      }
+      setTimeout(() => {
+        if (NextClass) {
+          this.setComponentClass(NextClass);
+        }
 
-      this.initialize(props, context);
+        this.initialize(props, context);
 
-      if (!this.unmounted) {
-        this.forceUpdate();
-      }
+        if (!this.unmounted) {
+          this.forceUpdate();
+        }
+      });
     }
 
     Provide.prototype.setComponentClass = function(NextClass) {
