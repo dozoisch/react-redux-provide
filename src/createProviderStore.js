@@ -1,9 +1,9 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import replicate from 'redux-replicate';
 
-function getClientState({ key, state }) {
+function getClientState({ providerKey, state }) {
   if (typeof window !== 'undefined' && window.clientStates) {
-    const clientState = window.clientStates[key];
+    const clientState = window.clientStates[providerKey];
 
     if (typeof clientState !== 'undefined') {
       return clientState;
@@ -13,11 +13,11 @@ function getClientState({ key, state }) {
   return null;
 }
 
-function getInitialState({ key, state }) {
-  const clientState = getClientState({ key, state });
+function getInitialState({ providerKey, state }) {
+  const clientState = getClientState({ providerKey, state });
 
   if (clientState) {
-    delete window.clientStates[key];
+    delete window.clientStates[providerKey];
 
     return state ? { ...state, ...clientState } : clientState;
   }
@@ -41,12 +41,14 @@ export default function createProviderStore(providerInstance) {
   let store;
   let state;
   let setState;
+  let settingState;
+  let combinedReducers;
 
   function unshiftReplication({ key, reducerKeys, queryable, replicator }) {
     if (replicator) {
       enhancers.unshift(
         replicate({
-          key: key || providerInstance.key,
+          key: key || providerInstance.providerKey,
           reducerKeys,
           queryable,
           replicator,
@@ -80,7 +82,13 @@ export default function createProviderStore(providerInstance) {
 
   Object.keys(reducers).forEach(reducerKey => {
     watchedReducers[reducerKey] = (state, action) => {
-      const nextState = reducers[reducerKey](state, action);
+      let nextState;
+
+      if (settingState && typeof settingState[reducerKey] !== 'undefined') {
+        nextState = settingState[reducerKey];
+      } else {
+        nextState = reducers[reducerKey](state, action);
+      }
 
       if (watching[reducerKey] && state !== nextState) {
         watching[reducerKey].forEach(fn => fn(nextState));
@@ -90,10 +98,8 @@ export default function createProviderStore(providerInstance) {
     };
   });
 
-  store = create(
-    combineReducers(watchedReducers),
-    getInitialState(providerInstance)
-  );
+  combinedReducers = combineReducers(watchedReducers);
+  store = create(combinedReducers, getInitialState(providerInstance));
 
   // we use a custom `watch` method with instead of a replicator
   // since it's slightly more efficient and every clock cycle counts,
@@ -109,10 +115,10 @@ export default function createProviderStore(providerInstance) {
   };
 
   setState = store.setState;
-  if (setState) {
-    store.setState = nextState => {
-      const state = store.getState();
+  store.setState = nextState => {
+    const state = store.getState();
 
+    if (setState) {
       for (let reducerKey in nextState) {
         let current = state[reducerKey];
         let next = nextState[reducerKey];
@@ -123,8 +129,12 @@ export default function createProviderStore(providerInstance) {
       }
 
       setState(nextState);
-    };
-  }
+    } else {
+      settingState = nextState;
+      store.replaceReducer(combinedReducers);
+      settingState = null;
+    }
+  };
 
   return store;
 }

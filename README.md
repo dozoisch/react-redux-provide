@@ -187,7 +187,7 @@ Optional object used for overriding the store's initial state.  This is typicall
   });
   ```
 
-Additionally, if `window.clientStates` exists and contains a key matching the provider key, its value will be merged into the store's initial state.  This is used when initializing the state of the providers' stores on the client.
+Additionally, if `window.clientStates` exists and contains a key matching the provider instance's `providerKey`, its value will be merged into the store's initial state.  This is used when initializing the state of the providers' stores on the client.
 
 ### key
 
@@ -195,9 +195,9 @@ Optional string or function.  Defaults to its respective `key` within the `provi
 
   Providers are instantiated based on their `key`:
 
-  - If the `key` is a string, it's considered a static provider and is instantiated immediately at the top level.
+  - If the `key` is a string, it's considered a static provider and is instantiated immediately at the top level.  This `key` becomes the provider instance's identifying `providerKey`.
 
-  - If the `key` is a function, it's considered a dynamic provider and is instantiated only as needed.  The function should accept some component instance as an argument and should return a string which becomes the provider instance's identifying `key`.  If a provider instance with that `key` already exists, the same instance will be used.
+  - If the `key` is a function, it's considered a dynamic provider and is instantiated only as needed.  The function should accept some component instance as an argument and should return a string which becomes the provider instance's identifying `providerKey`.  If a provider instance with that `providerKey` already exists, the same instance will be used.
 
   Example:
 
@@ -215,7 +215,7 @@ Optional string or function.  Defaults to its respective `key` within the `provi
 
 ### replication
 
-Optional object or array of objects.  Uses [`redux-replicate`](https://github.com/loggur/redux-replicate) under the hood.  Each object should contain keys that match the arguments expected by `redux-replicate` - i.e., `{ key, reducerKeys, replicator }`.
+Optional object or array of objects.  Uses [`redux-replicate`](https://github.com/loggur/redux-replicate) under the hood.  Each object should contain keys that match the arguments expected by `redux-replicate` - i.e., `{ key, reducerKeys, replicator }`.  The `key` will default to the provider instance's `providerKey`.
 
 ### clientStateKeys
 
@@ -486,9 +486,9 @@ Adds function(s) to each provider's array of `onInstantiated` callbacks.  Useful
   import * as providers from './providers/index';
 
   pushOnInstantiated(providers, providerInstance => {
-    const { key, store } = providerInstance;
+    const { providerKey, store } = providerInstance;
 
-    console.log(key, store);
+    console.log(providerKey, store);
   });
   ```
 
@@ -501,9 +501,9 @@ Adds function(s) to each provider's array of `onReady` callbacks.  Useful when y
   import * as providers from './providers/index';
 
   pushOnReady(providers, providerInstance => {
-    const { key, store } = providerInstance;
+    const { providerKey, store } = providerInstance;
 
-    console.log(key, store);
+    console.log(providerKey, store);
   });
   ```
 

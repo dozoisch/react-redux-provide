@@ -2,8 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
 import shallowEqual from './shallowEqual';
 import getRelevantKeys from './getRelevantKeys';
-import instantiateProvider from './instantiateProvider';
-import handleQueries from './handleQueries';
+import instantiateProvider, { handleQueries } from './instantiateProvider';
 
 const componentInstances = {};
 const isServerSide = typeof window === 'undefined';
@@ -469,10 +468,11 @@ export function reloadProviders(providers, providerInstances) {
     providers: oldProviders,
     providerInstances: oldProviderInstances
   } = rootInstance;
+  const { clientStates } = window;
 
-  for (let providerKey in providers) {
-    let provider = providers[providerKey];
-    let oldProvider = oldProviders[providerKey];
+  for (let key in providers) {
+    let provider = providers[key];
+    let oldProvider = oldProviders[key];
 
     if (!providers.replication && oldProvider && oldProvider.replication) {
       provider.replication = oldProvider.replication;
@@ -480,10 +480,10 @@ export function reloadProviders(providers, providerInstances) {
   }
 
   for (let providerKey in oldProviderInstances) {
-    let state = oldProviderInstances[providerKey].store.getState();
+    let oldProviderInstance = oldProviderInstances[providerKey];
 
-    if (providers[providerKey]) {
-      providers[providerKey].state = state;
+    if (clientStates) {
+      clientStates[providerKey] = oldProviderInstance.store.getState();
     }
 
     delete oldProviderInstances[providerKey];

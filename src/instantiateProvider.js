@@ -10,19 +10,26 @@ const globalProviderInstances = {};
  *
  * @param {Object} fauxInstance resembles { props, context }
  * @param {Object} provider
- * @param {Function} readyCallback
+ * @param {String|Function} providerKey Optional
+ * @param {Function} readyCallback Optional unless providerKey exists
  * @return {Object}
  * @api public
  */
 export default function instantiateProvider(
   fauxInstance,
   provider,
+  providerKey,
   readyCallback
 ) {
+  if (arguments.length < 4) {
+    readyCallback = providerKey;
+    providerKey = provider.key;
+  }
+
+  const { context } = fauxInstance;
   const providers = getProviders(fauxInstance);
   const providerInstances = getProviderInstances(fauxInstance);
   let providerInstance;
-  let providerKey = provider.key;
   let isStatic = typeof providerKey !== 'function';
 
   if (!isStatic) {
@@ -77,7 +84,7 @@ export default function instantiateProvider(
       return provider;
     }
 
-    function getResultInstances(fauxInstance, result, callback) {
+    function getResultInstances(result, callback) {
       const resultInstances = [];
       let semaphore = result && result.length;
       function clear() {
@@ -92,13 +99,11 @@ export default function instantiateProvider(
         return;
       }
 
-      semaphore = result.length;
-
       result.forEach((resultProps, index) => {
         resultInstances[index] = null;
 
         instantiateProvider(
-          { ...fauxInstance, props: resultProps },
+          { props: resultProps, context },
           findProvider(resultProps),
           resultInstance => {
             resultInstances[index] = resultInstance;
@@ -110,28 +115,59 @@ export default function instantiateProvider(
 
     function getInstance(props, callback) {
       return instantiateProvider(
-        { ...fauxInstance, props },
+        { props, context },
         findProvider(props),
         callback
       );
     }
 
-    function find(props, doInstantiate, callback) {
-      const newFauxInstance = { ...fauxInstance, props };
+    function setStates(states) {
+      const settingStates = [];
+      const { clientStates } = window;
 
+      for (let providerKey in states) {
+        const state = states[providerKey];
+        const providerInstance = providerInstances[providerKey];
+
+        if (providerInstance) {
+          if (providerInstance.store.setState) {
+            settingStates.push(() => providerInstance.store.setState(state));
+          }
+        } else {
+          clientStates[providerKey] = state;
+        }
+      }
+
+      // need to `setState` after any `clientStates` are cached
+      while (settingStates.length) {
+        settingStates.shift()();
+      }
+    }
+
+    function dispatchAll(actions) {
+      for (let { providerKey, action } of actions) {
+        let providerInstance = providerInstances[providerKey];
+
+        if (providerInstance) {
+          providerInstance.store.dispatch(action);
+        }
+      }
+    }
+
+    function find(props, doInstantiate, callback) {
       if (arguments.length === 2) {
         callback = doInstantiate;
         doInstantiate = false;
       }
 
-      handleQueries(newFauxInstance, () => {
+      handleQueries({ props, context }, () => {
         if (!doInstantiate) {
           callback(props.query ? props.result : props.results);
           return;
         }
 
         if (props.query) {
-          getResultInstances(newFauxInstance, props.result, callback);
+          getResultInstances(props.result, callback);
           return;
         }
 
@@ -154,7 +190,6 @@ export default function instantiateProvider(
           resultsInstances[resultKey] = [];
 
           getResultInstances(
-            newFauxInstance,
             results[resultKey],
             resultInstances => {
               resultsInstances[resultKey] = resultInstances;
@@ -164,6 +199,8 @@ export default function instantiateProvider(
         });
       });
     }
+
+    const providerApi = { getInstance, setStates, dispatchAll, find };
 
     unshiftMiddleware({ provider }, ({ dispatch, getState }) => {
       return next => action => {
@@ -185,7 +222,7 @@ export default function instantiateProvider(
             storeChanged = state !== store.getState();
             provider.clear.forEach(fn => fn(storeChanged));
           }
-        }, getState, getInstance, find);
+        }, getState, providerApi);
       };
     });
   }
@@ -195,7 +232,7 @@ export default function instantiateProvider(
   }
 
   providerInstance = Object.create(provider);
-  providerInstance.key = providerKey;
+  providerInstance.providerKey = providerKey;
   providerInstance.isStatic = isStatic;
 
   const store = createProviderStore(providerInstance);
@@ -311,6 +348,10 @@ export function getFunctionOrObject(fauxInstance, key, defaultValue = null) {
 }
 
 export function getQueries(fauxInstance) {
+  if (typeof fauxInstance.queries !== 'undefined') {
+    return fauxInstance.queries;
+  }
+
   const { props, context, relevantProviders } = fauxInstance;
   const { providers } = context;
   const query = getQuery(fauxInstance);
