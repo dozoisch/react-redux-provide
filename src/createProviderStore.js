@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import replicate from 'redux-replicate';
 
-function getClientState({ providerKey, state }) {
+export function getClientState({ providerKey }) {
   if (typeof window !== 'undefined' && window.clientStates) {
     const clientState = window.clientStates[providerKey];
 
@@ -13,7 +13,7 @@ function getClientState({ providerKey, state }) {
   return null;
 }
 
-function getInitialState({ providerKey, state }) {
+export function getInitialState({ providerKey, state }) {
   const clientState = getClientState({ providerKey, state });
 
   if (clientState) {

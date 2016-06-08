@@ -1,5 +1,8 @@
 import provide, { reloadProviders } from './provide';
+
 import createProviderStore from './createProviderStore';
+import { getClientState, getInitialState } from './createProviderStore';
+
 import createKeyConcat from './createKeyConcat';
 import shallowEqual from './shallowEqual';
 
@@ -50,7 +53,11 @@ export default provide;
 export {
   provide,
   reloadProviders,
+
   createProviderStore,
+  getClientState,
+  getInitialState,
+
   createKeyConcat,
   shallowEqual,
 
