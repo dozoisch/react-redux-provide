@@ -240,6 +240,29 @@ export default function instantiateProvider(
   const { actions } = providerInstance;
   const actionCreators = {};
 
+  const setKey = store.setKey;
+  store.setKey = (newKey, readyCallback) => {
+    if (provider.wait) {
+      provider.wait.forEach(fn => fn());
+    }
+
+    setKey(newKey, () => {
+      if (Array.isArray(providerInstance.onReady)) {
+        providerInstance.onReady.forEach(fn => fn(providerInstance));
+      } else {
+        providerInstance.onReady(providerInstance);
+      }
+
+      if (readyCallback) {
+        readyCallback();
+      }
+
+      if (provider.clear) {
+        provider.clear.forEach(fn => fn(true));
+      }
+    });
+  };
+
   for (let actionKey in actions) {
     actionCreators[actionKey] = function() {
       return store.dispatch(actions[actionKey].apply(this, arguments));
@@ -252,9 +275,68 @@ export default function instantiateProvider(
   if (provider.isGlobal) {
     globalProviderInstances[providerKey] = providerInstance;
   }
-
   if (providerInstances) {
     providerInstances[providerKey] = providerInstance;
+  }
+  if (!provider.instances) {
+    provider.instances = [];
+  }
+  provider.instances.push(providerInstance);
+
+  if (provider.subscribers) {
+    Object.keys(provider.subscribers).forEach(key => {
+      const handler = provider.subscribers[key];
+      const subProvider = providers[key];
+      function callHandler() {
+        const subProviderInstances = subProvider.instances;
+
+        if (subProviderInstances) {
+          subProviderInstances.forEach(subProviderInstance => {
+            handler(providerInstance, subProviderInstance);
+          });
+        }
+      }
+
+      if (!subProvider.subscribeTo) {
+        subProvider.subscribeTo = {};
+      }
+      if (!subProvider.subscribeTo[provider.key]) {
+        subProvider.subscribeTo[provider.key] = handler;
+      }
+
+      providerInstance.store.subscribe(callHandler);
+      callHandler();
+    });
+  }
+
+  if (provider.subscribeTo) {
+    Object.keys(provider.subscribeTo).forEach(key => {
+      const handler = provider.subscribeTo[key];
+      const supProvider = providers[key];
+
+      if (!supProvider.subscribers) {
+        supProvider.subscribers = {};
+      }
+      if (!supProvider.subscribers[provider.key]) {
+        supProvider.subscribers[provider.key] = handler;
+
+        if (supProvider.instances) {
+          supProvider.instances.forEach(supProviderInstance => {
+            supProviderInstance.store.subscribe(() => {
+              provider.instances.forEach(providerInstance => {
+                handler(supProviderInstance, providerInstance);
+              });
+            });
+          });
+        }
+      }
+
+      if (supProvider.instances) {
+        supProvider.instances.forEach(supProviderInstance => {
+          handler(supProviderInstance, providerInstance);
+        });
+      }
+    });
   }
 
   if (providerInstance.onInstantiated) {
@@ -286,11 +368,7 @@ export default function instantiateProvider(
     }
   }
 
-  if (
-    providerInstance.replication
-    && store.onReady
-    && !store.initializedReplication
-  ) {
+  if (provider.replication && store.onReady && !store.initializedReplication) {
     store.onReady(done);
   } else {
     done();
