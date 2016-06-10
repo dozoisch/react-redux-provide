@@ -239,29 +239,31 @@ export default function instantiateProvider(
   const initialState = store.getState();
   const { actions } = providerInstance;
   const actionCreators = {};
-
   const setKey = store.setKey;
-  store.setKey = (newKey, readyCallback) => {
-    if (provider.wait) {
-      provider.wait.forEach(fn => fn());
-    }
 
-    setKey(newKey, () => {
-      if (Array.isArray(providerInstance.onReady)) {
-        providerInstance.onReady.forEach(fn => fn(providerInstance));
-      } else {
-        providerInstance.onReady(providerInstance);
+  if (setKey) {
+    store.setKey = (newKey, readyCallback) => {
+      if (provider.wait) {
+        provider.wait.forEach(fn => fn());
       }
 
-      if (readyCallback) {
-        readyCallback();
-      }
+      setKey(newKey, () => {
+        if (Array.isArray(providerInstance.onReady)) {
+          providerInstance.onReady.forEach(fn => fn(providerInstance));
+        } else {
+          providerInstance.onReady(providerInstance);
+        }
 
-      if (provider.clear) {
-        provider.clear.forEach(fn => fn(true));
-      }
-    });
-  };
+        if (readyCallback) {
+          readyCallback();
+        }
+
+        if (provider.clear) {
+          provider.clear.forEach(fn => fn(true));
+        }
+      });
+    };
+  }
 
   for (let actionKey in actions) {
     actionCreators[actionKey] = function() {
