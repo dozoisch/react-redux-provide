@@ -747,6 +747,18 @@ renderApp({
 
 - For most providers, everything might fit within a single file, but you can structure your imports and exports however you want since each provider is ultimately just a single object.
 
+- Use provider factories to create providers with unique keys for common use cases.  The [`array`](https://github.com/loggur/provide-array) and [`map`](https://github.com/loggur/provide-map) providers are good examples.
+
+  ```js
+  // src/providers/todoList.js
+
+  import provideArray from 'provide-array';
+
+  const todoList = provideArray('todoList', 'todoItem', 'todoItemIndex');
+
+  export default todoList;
+  ```
+
 - Providers are composable objects!  You can combine as many providers as you need.  This is great when you have core functionality you would like to implement within multiple providers.
 
   ```js
@@ -775,18 +787,6 @@ renderApp({
   ];
 
   export default { actions, reducers, middleware };
-  ```
-
-- Use provider factories to create providers with unique keys for common use cases.  The [`array`](https://github.com/loggur/provide-array) and [`map`](https://github.com/loggur/provide-map) providers are good examples.
-
-  ```js
-  // src/providers/todoList.js
-
-  import provideArray from 'provide-array';
-
-  const todoList = provideArray('todoList', 'todoItem', 'todoItemIndex');
-
-  export default todoList;
   ```
 
 - Apps typically only need a `components` directory and a `providers` directory.  A `themes` directory is also recommended!  See [`provide-theme`](https://github.com/loggur/provide-theme). Also see [Lumbur](https://github.com/loggur/lumbur) for some boilerplate (with the [Lumburjack](https://github.com/loggur/lumburjack) generator) to start using this architecture in a matter of minutes.
