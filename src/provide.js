@@ -89,10 +89,7 @@ export default function provide(ComponentClass) {
       this.renders = 0;
       this.componentName = componentName;
       this.unmounted = true;
-    }
-
-    componentWillMount() {
-      this.initialize();
+      this.initialize(props, context);
     }
 
     componentDidMount() {
@@ -140,7 +137,7 @@ export default function provide(ComponentClass) {
         let provider = providers[key];
         let shouldSubscribe = false;
 
-        if (!provider.key) {
+        if (typeof provider.key === 'undefined') {
           provider.key = key;
         }
 
@@ -431,17 +428,15 @@ export default function provide(ComponentClass) {
     }
 
     Provide.prototype.reinitialize = function(props, context, NextClass) {
-      setTimeout(() => {
-        if (NextClass) {
-          this.setComponentClass(NextClass);
-        }
+      if (NextClass) {
+        this.setComponentClass(NextClass);
+      }
 
-        this.initialize(props, context);
+      this.initialize(props, context);
 
-        if (!this.unmounted) {
-          this.forceUpdate();
-        }
-      });
+      if (!this.unmounted) {
+        this.forceUpdate();
+      }
     }
 
     Provide.prototype.setComponentClass = function(NextClass) {
