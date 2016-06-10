@@ -11,7 +11,7 @@ React.createElement = function(ComponentClass, props, ...args) {
     props.component = provide(props.component);
   }
 
-  if (!ComponentClass.Provide) {
+  if (ComponentClass && !ComponentClass.Provide) {
     ComponentClass.Provide = provide(ComponentClass);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -45,5 +45,10 @@ React.createElement = function(ComponentClass, props, ...args) {
   props = props || {};
   props.__provided = true;
 
-  return createElement.call(this, ComponentClass.Provide, props, ...args);
+  return createElement.call(
+    this,
+    ComponentClass && ComponentClass.Provide || ComponentClass,
+    props,
+    ...args
+  );
 };
