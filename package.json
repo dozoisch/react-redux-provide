@@ -1,6 +1,6 @@
 {
   "name": "react-redux-provide",
-  "version": "6.0.0-rc.23",
+  "version": "6.0.0-rc.24",
   "description": "Redux equivalent of GraphQL/Relay, but simpler and easier to use!  Build your applications in an extremely declarative manner.  Share, manipulate, and replicate application state across any number of components.",
   "main": "./lib/index.js",
   "scripts": {
