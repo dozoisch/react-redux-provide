@@ -34,9 +34,10 @@
     - [setStates](#setstates-object-states)
     - [dispatchAll](#dispatchall-array-actions)
     - [find](#find-object-state-optional-boolean-doinstantiate-function-callback)
-4.  [Quick example](#quick-example)
-5.  [Protips](#protips)
-6.  [Complete list of exports](#complete-list-of-exports)
+4.  [Reserved component props](#reserved-component-props)
+5.  [Quick example](#quick-example)
+6.  [Protips](#protips)
+7.  [Complete list of exports](#complete-list-of-exports)
 
 
 ## Installation
@@ -48,7 +49,7 @@ npm install react-redux-provide --save
 
 ## What does this do?
 
-This tiny library allows you to:
+This library allows you to:
 
 - Build your applications in an extremely declarative manner.  Think of it as the Redux equivalent of GraphQL/Relay, but slightly easier to get started (you decide).
 
@@ -539,6 +540,187 @@ Dispatches actions to provider instances.  Each item in the `actions` array shou
 ### find (Object state, Optional Boolean doInstantiate, Function callback)
 
 Queries the first replicator with a `handleQuery` method to retrieve an array of states representing any provider instance partially matching the `state` argument.  If `doInstantiate` is `true`, providers will be instantiated based on each state and passed to the `callback`.  If `doInstantiate` is `false` or omitted, only the array of states is passed to the `callback`.
+
+
+## Reserved component props
+
+### providers
+
+Object containing all of the providers used throughout the app.  The top level component should receive this prop.  You can also pass a new `providers` object (along with a new `providerInstances` object) at any level, but you typically shouldn't do that.  This is passed down via `context`.
+
+### providerInstances
+
+Object containing all of the instantiated providers.  This is passed down via `context`.
+
+### activeQueries
+
+Object containing any queries being handled at the time.  This is passed down via `context`.
+
+### queryResults
+
+Object containing the latest query results.  This is passed down via `context`.
+
+### query
+
+An object or a function which should return an object containing the query for the component.  The query should typically contain a map of reducer keys to states you're searching for, but it can be anything supported by your replicator's `handleQuery` method.  The function will receive the component instance.  If the function returns `null`, the query will not be handled and the `result` will be `null`.
+
+Example:
+
+```js
+import React, { Component, PropTypes } from 'react';
+
+class FooFinder extends Component {
+  static propTypes = {
+    fooName: PropTypes.string.isRequired,
+    query: PropTypes.any,
+    result: PropTypes.any
+  };
+
+  static defaultProps = {
+    query({ props: { fooName } }) {
+      return fooName ? { fooName } : null;
+    }
+  };
+
+  render() {
+    const { result } = this.props;
+    const numFound = result && result.length;
+
+    if (numFound) {
+      return (
+        <div className="foo-finder foo-found">
+          {JSON.stringify(result)}
+        </div>
+      );
+    } else {
+      return (
+        <div className="foo-finder foo-not-found">
+          No Foos found!
+        </div>
+      );
+    }
+  }
+}
+```
+
+And so if the component is declared like this:
+
+```js
+<FooFinder fooName="bar" />
+```
+
+And a couple of `Foo` provider instances have "bar" as the state of their `fooName`, the `result` prop might look like this:
+
+```json
+[
+  {
+    "fooId": 0,
+    "fooName": "bar",
+    "includes": "entire state by default"
+  },
+  {
+    "fooId": 1,
+    "fooName": "bar",
+    "etc": "etc"
+  }
+]
+```
+
+The `result` prop comes from your replicator's `handleQuery` function.  It should typically be an array of states.
+
+Alternatively, you could simply pass a `query` prop to the component (usually either a function or an object), rather than have it derived from `defaultProps`.
+
+### queryOptions
+
+These options are passed to your replicator's `handleQuery` function and should typically be specific to the options supported by the replicator.  Coming soon: A standard/recommended set of options that replicator should support.
+
+### result
+
+The result returned by your replicator's `handleQuery` function.  Defaults to `null`.  Only exists if [the `query` prop](#query) exists.
+
+### queries
+
+Works exactly the same as [the `query` prop](#query), but should only be used if you know the base provider key for each query, as it is a map of base provider keys to queries.  You typically just want to use [the `query` prop](#query), as the queries will be mapped to their providers automatically.
+
+The following will produce the same functionality and output as the above `query` example:
+
+```js
+import React, { Component, PropTypes } from 'react';
+
+class FooFinder extends Component {
+  static propTypes = {
+    fooName: PropTypes.string.isRequired,
+    queries: PropTypes.any,
+    results: PropTypes.any
+  };
+
+  static defaultProps = {
+    queries({ props: { fooName } }) {
+      return {
+        foo: fooName ? { fooName } : null
+      };
+    }
+  };
+
+  render() {
+    const { results } = this.props;
+    const numFound = results && results.foo && results.foo.length;
+
+    if (numFound) {
+      return (
+        <div className="foo-finder foo-found">
+          {JSON.stringify(results.foo)}
+        </div>
+      );
+    } else {
+      return (
+        <div className="foo-finder foo-not-found">
+          No Foos found!
+        </div>
+      );
+    }
+  }
+}
+```
+
+And the `results` object would simply be:
+
+```json
+{
+  "foo": [
+    {
+      "fooId": 0,
+      "fooName": "bar",
+      "includes": "entire state by default"
+    },
+    {
+      "fooId": 1,
+      "fooName": "bar",
+      "etc": "etc"
+    }
+  ]
+}
+```
+
+### queriesOptions
+
+Works exactly like `queryOptions` but with the options pre-mapped to each provider.
+
+### results
+
+See `queries` example above.  Only exists if the `queries` prop exists.
+
+### autoUpdateQueryResults
+
+Boolean value used for automatically updating components whose query results might change as a result of some relevant state change.  Defaults to `true`.
+
+### wait
+
+See the [wait section](#wait) under [Advanced](#advanced) above.
+
+### clear
+
+See the [clear section](#clear) under [Advanced](#advanced) above.
 
 
 ## Quick example
