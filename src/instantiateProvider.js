@@ -487,6 +487,7 @@ export function getQueries(fauxInstance) {
     }
   }
 
+  fauxInstance.queries = queries;
   return queries;
 }
 
@@ -550,6 +551,41 @@ export function getMergedResult(results) {
   return mergedResult;
 }
 
+export function resultsEqual(result, previousResult) {
+  if (result === previousResult) {
+    return true;
+  }
+
+  if (typeof result === typeof previousResult) {
+    return false;
+  }
+
+  if (Array.isArray(result)) {
+    if (Array.isArray(previousResult)) {
+      let i = 0;
+      const length = result.length;
+
+      if (length !== previousResult.length) {
+        return false;
+      }
+
+      while (i < length) {
+        if (!shallowEqual(result[i], previousResult[i])) {
+          return false;
+        }
+
+        i++;
+      }
+    } else {
+      return false;
+    }
+  } else if (Array.isArray(previousResult)) {
+    return false;
+  }
+
+  return shallowEqual(result, previousResult);
+}
+
 export function handleQueries(fauxInstance, callback) {
   const queries = getQueries(fauxInstance);
 
@@ -577,16 +613,17 @@ export function handleQueries(fauxInstance, callback) {
         props.result = getMergedResult(props.results);
       }
 
-      if (fauxInstance.doUpdate && fauxInstance.update) {
-        // TODO: should mergers be checked (again) ??
-        fauxInstance.update();
-      }
-
       if (callback) {
         callback();
       }
     }
   };
+
+  const { autoUpdateQueryResults = true } = props;
+  const { subscriptions, subbedAll } = fauxInstance;
+  const subscribeToAll = autoUpdateQueryResults && subscriptions && !subbedAll;
+
+  fauxInstance.subbedAll = true;
 
   if (props.query) {
     props.result = null;
@@ -594,17 +631,48 @@ export function handleQueries(fauxInstance, callback) {
 
   props.results = {};
 
-  for (let key in queries) {
-    let provider = providers[key];
-    let query = queries[key];
-    let options = queryOptions || queriesOptions[key] || {};
-    let resultKey = JSON.stringify({ query, options });
-    let queryResult = queryResults[resultKey];
+  Object.keys(queries).forEach(key => {
+    const provider = providers[key];
+    const query = queries[key];
+    const options = queryOptions || queriesOptions[key] || {};
+    const resultKey = JSON.stringify({ query, options });
+    const queryResult = queryResults[resultKey];
+
+    if (subscribeToAll) {
+      // pretty hacky but whatever
+      const requery = () => {
+        if (!activeQueries[resultKey]) {
+          delete queryResults[resultKey];
+          handleQueries(fauxInstance, callback);
+        }
+      };
+
+      if (provider.instances) {
+        provider.instances.forEach(providerInstance => {
+          subscriptions.push(
+            providerInstance.store.subscribe(requery)
+          );
+        });
+      }
+
+      if (!provider.subscribers) {
+        provider.subscribers = {};
+      }
+
+      const handler = provider.subscribers[key];
+      provider.subscribers[key] = (providerInstance, subProviderInstance) => {
+        if (handler) {
+          handler(providerInstance, subProviderInstance);
+        }
+
+        requery();
+      };
+    }
 
     if (typeof queryResult !== 'undefined') {
       props.results[key] = queryResult;
       clear();
-      continue;
+      return;
     }
 
     if (provider.wait) {
@@ -616,10 +684,10 @@ export function handleQueries(fauxInstance, callback) {
     }
 
     let resultHandlers = activeQueries[resultKey];
-    let resultHandler = result => {
+    const resultHandler = result => {
       const previousResult = previousResults[key];
 
-      if (!fauxInstance.doUpdate && !shallowEqual(result, previousResult)) {
+      if (!fauxInstance.doUpdate && !resultsEqual(result, previousResult)) {
         fauxInstance.doUpdate = true;
       }
 
@@ -641,17 +709,18 @@ export function handleQueries(fauxInstance, callback) {
       resultHandlers.push(resultHandler);
     } else {
       let { handleQuery, reducerKeys } = getQueryHandler(provider);
+      const normalizedOptions = { ...options };
 
-      if (typeof options.select === 'undefined') {
-        options.select = reducerKeys;
-      } else if (!Array.isArray(options.select)) {
-        options.select = [ options.select ];
+      if (typeof normalizedOptions.select === 'undefined') {
+        normalizedOptions.select = reducerKeys;
+      } else if (!Array.isArray(normalizedOptions.select)) {
+        normalizedOptions.select = [ normalizedOptions.select ];
       }
 
       resultHandlers = [ resultHandler ];
       activeQueries[resultKey] = resultHandlers;
 
-      handleQuery(query, options, result => {
+      handleQuery(query, normalizedOptions, result => {
         delete activeQueries[resultKey];
 
         while (resultHandlers.length) {
@@ -659,7 +728,7 @@ export function handleQueries(fauxInstance, callback) {
         }
       });
     }
-  }
+  });
 
   return true;
 }

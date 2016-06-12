@@ -1085,6 +1085,10 @@ Finds the first `handleQuery` function within replicators and returns the releva
 
 Flattens the `results` from multiple provider queries and returns the `result`.
 
+### resultsEqual (Mixed result, Mixed previousResult)
+
+Returns `true` if the `result` essentially matches the `previousResult`.
+
 ### handleQueries (Object fauxInstance, Optional Function callback)
 
 Performs any queries which may exist within the `fauxInstance`s `props` and assigns the `results` to `props.results` if `props.queries`, or assigns the flattened `result` to `props.result` if `props.query`.

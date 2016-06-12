@@ -14,6 +14,7 @@ export default {
 
       replication: {
         reducerKeys: ['list', 'roll'],
+        queryable: ['roll'],
         replicator: localforage
       }
     }

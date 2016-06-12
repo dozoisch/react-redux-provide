@@ -20,6 +20,7 @@ import {
   getQueriesOptions,
   getQueryHandler,
   getMergedResult,
+  resultsEqual,
   handleQueries
 } from './instantiateProvider';
 

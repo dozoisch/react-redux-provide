@@ -123,6 +123,8 @@ export default function provide(ComponentClass) {
     }
 
     update() {
+      this.doUpdate = true;
+
       if (!this.unmounted) {
         this.forceUpdate();
       }
@@ -166,6 +168,7 @@ export default function provide(ComponentClass) {
       delete this.relevantProviders;
       delete this.componentProps;
       delete this.fauxInstance;
+      delete this.subbedAll;
       delete this.query;
       delete this.queryOptions;
       delete this.queries;
@@ -211,6 +214,7 @@ export default function provide(ComponentClass) {
         this.getProviderInstances(props, context);
         this.getActiveQueries(props, context);
         this.getQueryResults(props, context);
+        this.getSubscriptions(props, context);
         this.fauxInstance = { ...this, props: componentProps };
       }
 
@@ -400,12 +404,20 @@ export default function provide(ComponentClass) {
 
     handleQueriesOrUpdate(props, context) {
       if (!this.handleQueries(props, context)) {
-        this.update(props, context);
+        this.update();
       }
     }
 
     handleQueries(props, context) {
-      return handleQueries(this.getFauxInstance(props, context));
+      const fauxInstance = this.getFauxInstance(props, context);
+
+      return handleQueries(fauxInstance, () => {
+        if (fauxInstance.doUpdate) {
+          // TODO: should mergers be checked (again) ??
+          fauxInstance.doUpdate = false;
+          this.update();
+        }
+      });
     }
   }
 

@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import QueryTest from './QueryTest';
 
 export default class GoodTimes extends Component {
   static propTypes = {
@@ -26,6 +27,7 @@ export default class GoodTimes extends Component {
     return (
       <div className="good-times">
         {this.renderButton()}
+        <QueryTest/>
         {this.renderTimes()}
       </div>
     );
