@@ -48,9 +48,10 @@
   - [autoUpdateQueryResults](#autoupdatequeryresults)
   - [wait](#wait-1)
   - [clear](#clear-1)
-5.  [Quick example](#quick-example)
-6.  [Protips](#protips)
-7.  [Complete list of exports](#complete-list-of-exports)
+5.  [Store modifications](#store-modifications)
+6.  [Quick example](#quick-example)
+7.  [Protips](#protips)
+8.  [Complete list of exports](#complete-list-of-exports)
 
 
 ## Installation
@@ -87,7 +88,7 @@ This library allows you to:
 
 ## What is a provider?
 
-If you're already familiar with Redux's `Provider` component, that's that not what this is, but it's where the inspiration came from.  A provider can do essentially anything Redux can do, but it is encapsulated, reusable, extremely declarative, and mostly automatic.
+If you're already familiar with Redux's `Provider` component, that's not what this is, but it's where the inspiration came from.  A provider can do essentially anything Redux can do, but it is encapsulated, reusable, extremely declarative, and mostly automatic.
 
 For example, you might have a [theme provider](https://github.com/loggur/provide-theme) and a [user provider](https://github.com/loggur/provide-user).  These providers are automatically instantiated as needed, so in the case of the [user provider](https://github.com/loggur/provide-user), you can have many different instances at the same time to represent multiple users.  Each instance has its own "store" and works completely independently of one another, but you can also configure providers to automatically subscribe to and/or find/create/interact with others if necessary.  "Stores" are responsible for holding the current state and handling actions to update that state.  The current state and action creators (and any `props` which might be derived from a combination of state and component `props`) are automatically mapped to React components as needed.
 
@@ -738,6 +739,35 @@ See the [wait section](#wait) under [Advanced](#advanced) above.
 ### clear
 
 See the [clear section](#clear) under [Advanced](#advanced) above.
+
+
+## Store modifications
+
+The enhancer adds the following to the `store` object.
+
+### store.key
+
+The current `key`.
+
+### store.setKey (String key, Function readyCallback)
+
+Sets the current `key`.  The `readyCallback` is called after all of the replicators have fully initialized based on the new `key`.
+
+### store.setState (Mixed nextState)
+
+You typically shouldn't need to use this, as state changes should almost always occur as a result of `store.dispatch(action)`.  But it may be useful for keeping a store's state synchronized with some data source which doesn't rely on actions.  If using `reducerKeys`, the `nextState` is expected to be an object and is merged into the current state, similar to React's `setState`.  If not using `reducerKeys`, the `nextState` replaces the current state entirely.
+
+### store.watch (String reducerKey, Function handler)
+
+Mostly used internally for watching for whenever some reducer returns a different state so that components can efficiently know when they should update.
+
+### store.onReady (Function readyCallback)
+
+You can use this if you know your replicator(s) asynchronously initialize the store's state and would like to do something immediately after initialization.  The `readyCallback` will receive the `key` and `store` as arguments.
+
+### store.initializedReplication
+
+If for some reason you need to know whether or not `getInitialState` has completed, you can check this boolean property.  It will be `true` after initialization.
 
 
 ## Quick example
