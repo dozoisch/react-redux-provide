@@ -87,7 +87,11 @@ This library allows you to:
 
 ## What is a provider?
 
-A provider is a plain object composed of a handful of different properties (below).  These properties are designed to work together to represent and manipulate the state of anything within your application.  You can also declaratively replicate the state of any provider instance's store to some database and/or to other clients.  Each provider instance is given its own Redux store which is automatically created based on these properties.
+If you're already familiar with Redux's `Provider` component, that's that not what this is, but it's where the inspiration came from.  A provider can do essentially anything Redux can do, but it is encapsulated, reusable, extremely declarative, and mostly automatic.
+
+For example, you might have a [theme provider](https://github.com/loggur/provide-theme) and a [user provider](https://github.com/loggur/provide-user).  These providers are automatically instantiated as needed, so in the case of the [user provider](https://github.com/loggur/provide-user), you can have many different instances at the same time to represent multiple users.  Each instance has its own "store" and works completely independently of one another, but you can also configure providers to automatically subscribe to and/or find/create/interact with others if necessary.  "Stores" are responsible for holding the current state and handling actions to update that state.  The current state and action creators (and any `props` which might be derived from a combination of state and component `props`) are automatically mapped to React components as needed.
+
+A provider is a plain object composed of a handful of different properties (see below).  These properties are designed to work together to represent and manipulate the state of anything within your application.  You can also declaratively replicate the state of any provider instance's store to some database and/or to other clients.  Redux stores are automatically created based on these properties and assigned to each provider instance.
 
 Example:
 
@@ -645,7 +649,7 @@ Alternatively, you could simply pass a `query` prop to the component (usually ei
 
 ### queryOptions
 
-These options are passed to your replicator's `handleQuery` function and should typically be specific to the options supported by the replicator.  Coming soon: A standard/recommended set of options that replicator should support.
+These options are passed to your replicator's `handleQuery` function and should typically be specific to the options supported by the replicator.  Coming soon: A standard/recommended set of options that replicators should support.
 
 ### result
 
