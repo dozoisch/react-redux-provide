@@ -474,7 +474,22 @@ Optional boolean value.  Useful for cases where you want to use the same provide
 
 All providers are given a special thunk middleware which includes a `providerApi` object as a third argument to the action's returned function.  The `providerApi` contains a handful of useful functions for getting provider instance(s), setting provider states, dispatching actions, and finding data and/or getting instantiated providers based on that data.  Any sorting/grouping is left entirely up to the replicator and the options passed to its `handleQuery` function.
 
-For example, suppose you want unique user names.  You would set the `replication` on the `user` provider as [seen below within the `replication` section](#replication), such that the `userName` state is queryable, and then the `createUser` action would look like this:
+For example, suppose you want unique user names.
+
+You would start by setting the `user` provider's `replication` property such that the `userName` state is queryable:
+
+```js
+const replication = {
+  // only these reducers are watched/replicated
+  reducerKeys: ['userId', 'userName', 'userPasswordHash'],
+  // and we want to be able to retrieve user instances by `userName`
+  queryable: ['userName'],
+  // and here we'll use node's file system API to store states in flat files
+  replicator: fs
+};
+```
+
+And then the `createUser` action would look like this:
 
 ```js
 const actions = {
