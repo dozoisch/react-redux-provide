@@ -250,7 +250,7 @@ export default function instantiateProvider(
       setKey(newKey, () => {
         if (Array.isArray(providerInstance.onReady)) {
           providerInstance.onReady.forEach(fn => fn(providerInstance));
-        } else {
+        } else if (providerInstance.onReady) {
           providerInstance.onReady(providerInstance);
         }
 
@@ -341,12 +341,10 @@ export default function instantiateProvider(
     });
   }
 
-  if (providerInstance.onInstantiated) {
-    if (Array.isArray(providerInstance.onInstantiated)) {
-      providerInstance.onInstantiated.forEach(fn => fn(providerInstance));
-    } else {
-      providerInstance.onInstantiated(providerInstance);
-    }
+  if (Array.isArray(providerInstance.onInstantiated)) {
+    providerInstance.onInstantiated.forEach(fn => fn(providerInstance));
+  } else if (providerInstance.onInstantiated) {
+    providerInstance.onInstantiated(providerInstance);
   }
 
   unshiftOnReady({ providerInstance }, () => {
@@ -360,7 +358,7 @@ export default function instantiateProvider(
   function done() {
     if (Array.isArray(providerInstance.onReady)) {
       providerInstance.onReady.forEach(fn => fn(providerInstance));
-    } else {
+    } else if (providerInstance.onReady) {
       providerInstance.onReady(providerInstance);
     }
 

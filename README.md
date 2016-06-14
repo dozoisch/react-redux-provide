@@ -336,9 +336,15 @@ import fs from 'redux-replicate-fs';
 
 const replication = {
   // only these reducers are watched/replicated
-  reducerKeys: ['userId', 'userName', 'userPasswordHash'],
+  reducerKeys: [
+    'userId',
+    'userName',
+    'userPasswordHash'
+  ],
   // and we want to be able to retrieve user instances by `userName`
-  queryable: ['userName'],
+  queryable: [
+    'userName'
+  ],
   // and here we'll use node's file system API to store states in flat files
   replicator: fs
 };
@@ -481,9 +487,15 @@ You would start by setting the `user` provider's `replication` property such tha
 ```js
 const replication = {
   // only these reducers are watched/replicated
-  reducerKeys: ['userId', 'userName', 'userPasswordHash'],
+  reducerKeys: [
+    'userId',
+    'userName',
+    'userPasswordHash'
+  ],
   // and we want to be able to retrieve user instances by `userName`
-  queryable: ['userName'],
+  queryable: [
+    'userName'
+  ],
   // and here we'll use node's file system API to store states in flat files
   replicator: fs
 };
