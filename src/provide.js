@@ -4,8 +4,8 @@ import shallowEqual from './shallowEqual';
 import getRelevantKeys from './getRelevantKeys';
 import instantiateProvider, { handleQueries } from './instantiateProvider';
 
-const componentInstances = {};
 const isServerSide = typeof window === 'undefined';
+const allComponentInstances = [];
 let rootInstance = null;
 
 const contextTypes = {
@@ -21,7 +21,6 @@ export default function provide(ComponentClass) {
   }
 
   let componentName = ComponentClass.displayName || ComponentClass.name;
-  const { propTypes } = ComponentClass;
 
   function getDisplayName(providers = {}) {
     return `Provide${componentName}(${Object.keys(providers).join(',')})`;
@@ -259,7 +258,10 @@ export default function provide(ComponentClass) {
     }
 
     assignActionCreators(props, context, provider) {
-      const actionKeys = getRelevantKeys(provider.actions, propTypes);
+      const actionKeys = getRelevantKeys(
+        provider.actions,
+        ComponentClass.propTypes
+      );
 
       if (!actionKeys.length) {
         return false;
@@ -281,7 +283,10 @@ export default function provide(ComponentClass) {
     }
 
     assignReducers(props, context, provider) {
-      const reducerKeys = getRelevantKeys(provider.reducers, propTypes);
+      const reducerKeys = getRelevantKeys(
+        provider.reducers,
+        ComponentClass.propTypes
+      );
 
       if (!reducerKeys.length) {
         return false;
@@ -317,7 +322,10 @@ export default function provide(ComponentClass) {
     }
 
     assignMergers(props, context, provider) {
-      const mergeKeys = getRelevantKeys(provider.merge, propTypes);
+      const mergeKeys = getRelevantKeys(
+        provider.merge,
+        ComponentClass.propTypes
+      );
 
       if (!mergeKeys.length) {
         return false;
@@ -422,21 +430,23 @@ export default function provide(ComponentClass) {
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    let instances = componentInstances[componentName] || new Set();
+    let componentInstances = ComponentClass.__componentInstances;
 
-    if (!componentInstances[componentName]) {
-      componentInstances[componentName] = instances;
+    if (typeof componentInstances === 'undefined') {
+      componentInstances = new Set();
+      ComponentClass.__componentInstances = componentInstances;
+      allComponentInstances.push(componentInstances);
     }
 
     Provide.prototype.componentDidMount = function() {
       this.unmounted = isServerSide;
-      instances.add(this);
+      componentInstances.add(this);
     }
 
     Provide.prototype.componentWillUnmount = function() {
       this.unmounted = true;
       this.deinitialize();
-      instances.delete(this);
+      componentInstances.delete(this);
     }
 
     Provide.prototype.reinitialize = function(props, context, NextClass) {
@@ -444,31 +454,26 @@ export default function provide(ComponentClass) {
         this.setComponentClass(NextClass);
       }
 
-      this.initialize(props, context);
-
-      if (!this.unmounted) {
-        this.forceUpdate();
-      }
+      setTimeout(() => {
+        this.doUpdate = true;
+        this.deinitialize();
+        this.initialize(props, context);
+        this.handleQueriesOrUpdate(props, context);
+      });
     }
 
     Provide.prototype.setComponentClass = function(NextClass) {
-      const prevComponentName = componentName;
-
+      NextClass.__componentInstances = ComponentClass.__componentInstances;
       ComponentClass = NextClass;
       Provide.ComponentClass = ComponentClass;
       componentName = ComponentClass.displayName || ComponentClass.name;
       this.componentName = componentName;
-
-      if (prevComponentName !== componentName) {
-        componentInstances[componentName] = instances;
-        delete componentInstances[prevComponentName];
-      }
     }
 
-    for (let instance of instances) {
-      const { props, context } = instance;
+    for (let componentInstance of componentInstances) {
+      const { props, context } = componentInstance;
 
-      instance.reinitialize(props, context, ComponentClass);
+      componentInstance.reinitialize(props, context, ComponentClass);
     }
   }
 
@@ -505,18 +510,16 @@ export function reloadProviders(providers, providerInstances) {
   rootInstance.providerInstances = providerInstances || oldProviderInstances;
   rootInstance.reinitialize(rootInstance.props, rootInstance.context);
 
-  for (let componentName in componentInstances) {
-    let instances = componentInstances[componentName];
+  for (let componentInstances of allComponentInstances) {
+    for (let componentInstance of componentInstances) {
+      let { props, context } = componentInstance;
 
-    for (let instance of instances) {
-      let { props, context } = instance;
-
-      if (instance !== rootInstance) {
+      if (componentInstance !== rootInstance) {
         context.providers = rootInstance.providers;
         context.providerInstances = rootInstance.providerInstances;
-        instance.providers = rootInstance.providers;
-        instance.providerInstances = rootInstance.providerInstances;
-        instance.reinitialize(props, context);
+        componentInstance.providers = rootInstance.providers;
+        componentInstance.providerInstances = rootInstance.providerInstances;
+        componentInstance.reinitialize(props, context);
       }
     }
   }
