@@ -317,7 +317,7 @@ Optional function or array of functions to be called immediately after the provi
   }
   ```
 
-Additionally, if `window.clientStates` exists and contains a key matching the provider instance's `providerKey`, its value will be merged into the store's initial state.  This is used when initializing the state of the providers' stores on the client.
+Additionally, if `window.clientStates` exists and contains a key matching the provider instance's `providerKey`, its value will be merged into the store's initial state.  This is used when initializing the state of the providers' stores on the client.  A `window.queryResults` object may also be set to provide the client with a cached set of query results for the initial render.
 
 ## Replication
 

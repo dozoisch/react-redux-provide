@@ -83,6 +83,11 @@ export default function provide(ComponentClass) {
 
       if (!isServerSide && !context.providers) {
         rootInstance = this;
+
+        if (window.queryResults) {
+          this.queryResults = window.queryResults;
+          delete window.queryResults;
+        }
       }
 
       this.renders = 0;
