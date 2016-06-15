@@ -463,7 +463,8 @@ export default function provide(ComponentClass) {
     }
 
     Provide.prototype.setComponentClass = function(NextClass) {
-      NextClass.__componentInstances = ComponentClass.__componentInstances;
+      componentInstances = ComponentClass.__componentInstances;
+      NextClass.__componentInstances = componentInstances;
       ComponentClass = NextClass;
       Provide.ComponentClass = ComponentClass;
       componentName = ComponentClass.displayName || ComponentClass.name;

@@ -22,16 +22,14 @@ React.createElement = function(ComponentClass, props, ...args) {
 
           if (!proxy.__provided) {
             proxy.__provided = true;
-            proxy.update = function(NextClass) {
-              NextClass.Provide = provide(NextClass);
-
+            proxy.update = function() {
               const instances = update.apply(this, arguments);
 
               for (let instance of instances) {
                 let wrapper = instance.props.__wrapper;
                 let { props, context } = wrapper;
 
-                wrapper.reinitialize(props, context, NextClass);
+                wrapper.reinitialize(props, context);
               }
 
               return instances;
