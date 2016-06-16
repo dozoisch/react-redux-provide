@@ -679,12 +679,10 @@ export function handleQueries(fauxInstance, callback) {
       return;
     }
 
-    if (provider.wait) {
-      if (Array.isArray(provider.wait)) {
-        provider.wait.forEach(fn => fn());
-      } else {
-        provider.wait();
-      }
+    if (Array.isArray(provider.wait)) {
+      provider.wait.forEach(fn => fn());
+    } else if (provider.wait) {
+      provider.wait();
     }
 
     let resultHandlers = activeQueries[resultKey];
@@ -698,15 +696,13 @@ export function handleQueries(fauxInstance, callback) {
       props.results[key] = result;
       queryResults[resultKey] = result;
 
-      clear();
-
-      if (provider.clear) {
-        if (Array.isArray(provider.clear)) {
-          provider.clear.forEach(fn => fn(fauxInstance.doUpdate));
-        } else {
-          provider.clear();
-        }
+      if (Array.isArray(provider.clear)) {
+        provider.clear.forEach(fn => fn(fauxInstance.doUpdate));
+      } else if (provider.clear) {
+        provider.clear(fauxInstance.doUpdate);
       }
+
+      clear();
     };
 
     if (resultHandlers) {
