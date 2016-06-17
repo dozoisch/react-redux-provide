@@ -368,9 +368,9 @@ For example, suppose you have a static `theme` provider instance and you want it
   import theme from 'provide-theme';
 
   function getThemeKey(pageState) {
-    const { userId = -1 } = pageState.requestSession;
+    const { userId } = pageState.requestSession;
 
-    return userId < 0 ? null : `theme&userId=${userId}`;
+    return userId ? `theme&userId=${userId}` : null;
   }
 
   theme.replication.key = null;
@@ -400,9 +400,9 @@ Works exactly like `subscribeTo` but in the opposite direction.  The following i
   import page from 'provide-page';
 
   function getThemeKey(pageState) {
-    const { userId = -1 } = pageState.requestSession;
+    const { userId } = pageState.requestSession;
 
-    return userId < 0 ? null : `theme&userId=${userId}`;
+    return userId ? `theme&userId=${userId}` : null;
   }
 
   page.subscribers = {
