@@ -265,7 +265,7 @@ Optional string or function.  Defaults to its respective `key` within the `provi
 
   - If the `key` is a string, it's considered a static provider and is instantiated immediately at the top level.  This `key` becomes the provider instance's identifying `providerKey`.
 
-  - If the `key` is a function, it's considered a dynamic provider and is instantiated only as needed.  The function should accept some component instance as an argument and should return a string which becomes the provider instance's identifying `providerKey`.  If a provider instance with that `providerKey` already exists, the same instance will be used.
+  - If the `key` is a function, it's considered a dynamic provider and is instantiated only as needed.  The function should accept some component instance as an argument and should return a string which becomes the provider instance's identifying `providerKey`.  If a provider instance with that `providerKey` already exists, the same instance will be used.  The function may also return `null`, which will disable replication for the instance and the `providerKey` will default to its respective `key` within the `providers` object.
 
   Example:
 
@@ -1086,7 +1086,7 @@ Returns an instance of some provider.  Each provider instance is assigned its ow
 
 The `fauxInstance` should resemble a component instance - i.e., `{ props, context }`.
 
-### createProviderStore (Object providerInstance)
+### createProviderStore (Object providerInstance, Optional Mixed storeKey)
 
 Creates and returns a store specifically for some provider instance.  You probably won't ever need to use this.
 

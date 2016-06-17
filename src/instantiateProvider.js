@@ -31,12 +31,19 @@ export default function instantiateProvider(
   const providerInstances = getProviderInstances(fauxInstance);
   let providerInstance;
   let isStatic = typeof providerKey !== 'function';
+  let storeKey;
 
   if (!isStatic) {
     // get actual `providerKey`
     providerKey = providerKey(fauxInstance);
     // if actual `providerKey` matches `key`, treat as static provider
     isStatic = providerKey === provider.key;
+  }
+
+  if (providerKey === null) {
+    storeKey = null;
+    providerKey = provider.defaultKey;
+    isStatic = true;
   }
 
   providerInstance = provider.isGlobal
@@ -235,7 +242,7 @@ export default function instantiateProvider(
   providerInstance.providerKey = providerKey;
   providerInstance.isStatic = isStatic;
 
-  const store = createProviderStore(providerInstance);
+  const store = createProviderStore(providerInstance, storeKey);
   const initialState = store.getState();
   const { actions } = providerInstance;
   const actionCreators = {};

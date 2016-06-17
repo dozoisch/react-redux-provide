@@ -143,8 +143,11 @@ export default function provide(ComponentClass) {
         let provider = providers[key];
         let shouldSubscribe = false;
 
+        if (typeof provider.defaultKey === 'undefined') {
+          provider.defaultKey = key;
+        }
         if (typeof provider.key === 'undefined') {
-          provider.key = key;
+          provider.key = provider.defaultKey;
         }
 
         this.assignActionCreators(props, context, provider);
