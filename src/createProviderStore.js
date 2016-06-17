@@ -30,10 +30,13 @@ export function getInitialState({ providerKey, state }) {
  *
  * @param {Object} providerInstance
  * @param {Mixed} storeKey Optional
+ * @param {Boolean} createReplication
  * @return {Object}
  * @api public
  */
-export default function createProviderStore(providerInstance, storeKey) {
+export default function createProviderStore(
+  providerInstance, storeKey, createReplication
+) {
   const { reducers, middleware, enhancer, replication } = providerInstance;
   const watchedReducers = {};
   const watching = {};
@@ -48,11 +51,14 @@ export default function createProviderStore(providerInstance, storeKey) {
     storeKey = providerInstance.providerKey;
   }
 
-  function unshiftReplication({ key, reducerKeys, queryable, replicator }) {
+  function unshiftReplication({
+    key, create, reducerKeys, queryable, replicator
+  }) {
     if (replicator) {
       enhancers.unshift(
         replicate({
           key: typeof key === 'undefined' ? storeKey : key,
+          create: createReplication,
           reducerKeys,
           queryable,
           replicator,

@@ -11,7 +11,8 @@ const globalProviderInstances = {};
  * @param {Object} fauxInstance resembles { props, context }
  * @param {Object} provider
  * @param {String|Function} providerKey Optional
- * @param {Function} readyCallback Optional unless providerKey exists
+ * @param {Function} readyCallback Optional
+ * @param {Boolean} createReplication Optional
  * @return {Object}
  * @api public
  */
@@ -19,10 +20,10 @@ export default function instantiateProvider(
   fauxInstance,
   provider,
   providerKey,
-  readyCallback
+  readyCallback,
+  createReplication
 ) {
-  if (arguments.length < 4) {
-    readyCallback = providerKey;
+  if (typeof providerKey === 'undefined') {
     providerKey = provider.key;
   }
 
@@ -112,6 +113,7 @@ export default function instantiateProvider(
         instantiateProvider(
           { props: resultProps, context },
           findProvider(resultProps),
+          undefined,
           resultInstance => {
             resultInstances[index] = resultInstance;
             clear();
@@ -120,12 +122,18 @@ export default function instantiateProvider(
       });
     }
 
-    function getInstance(props, callback) {
+    function getInstance(props, callback, createReplication) {
       return instantiateProvider(
         { props, context },
         findProvider(props),
-        callback
+        undefined,
+        callback,
+        createReplication
       );
+    }
+
+    function createInstance(props, callback) {
+      return getInstance(props, callback, true);
     }
 
     function setStates(states) {
@@ -207,7 +215,9 @@ export default function instantiateProvider(
       });
     }
 
-    const providerApi = { getInstance, setStates, dispatchAll, find };
+    const providerApi = {
+      getInstance, createInstance, setStates, dispatchAll, find
+    };
 
     unshiftMiddleware({ provider }, ({ dispatch, getState }) => {
       return next => action => {
@@ -242,7 +252,9 @@ export default function instantiateProvider(
   providerInstance.providerKey = providerKey;
   providerInstance.isStatic = isStatic;
 
-  const store = createProviderStore(providerInstance, storeKey);
+  const store = createProviderStore(
+    providerInstance, storeKey, createReplication
+  );
   const initialState = store.getState();
   const { actions } = providerInstance;
   const actionCreators = {};

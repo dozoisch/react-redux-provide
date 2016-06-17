@@ -31,6 +31,7 @@
     - [isGlobal](#isglobal)
   - [Thunk API](#thunk-api)
     - [getInstance](#getinstance-object-state-function-callback)
+    - [createInstance](#createinstance-object-state-function-callback)
     - [setStates](#setstates-object-states)
     - [dispatchAll](#dispatchall-array-actions)
     - [find](#find-object-state-optional-boolean-doinstantiate-function-callback)
@@ -521,7 +522,7 @@ const actions = {
       return actions.setUserError('Enter a password!');
     }
 
-    return (dispatch, getState, { getInstance, find }) => {
+    return (dispatch, getState, { createInstance, find }) => {
       // here we need to ensure the user name is not already in use
       find({ query: { userName }, options: { select: 'userId' } }, results => {
         if (results && results.length) {
@@ -547,7 +548,7 @@ const actions = {
           // which is then replicated to your database of choice
           state.userId = genUserId();
 
-          getInstance(state, userInstance => {
+          createInstance(state, userInstance => {
             userInstance.store.dispatch({
               ...state,
               userPasswordHash,
@@ -573,6 +574,10 @@ const actions = {
 ### getInstance (Object state, Function callback)
 
 Uses [`instantiateProvider`](#instantiateprovider) to get some provider instance based on some `state` - i.e., same method used when providing some instance to components.
+
+### createInstance (Object state, Function callback)
+
+Just like `getInstance` but ensures the initial states are replicated.
 
 ### setStates (Object states)
 
@@ -1080,13 +1085,13 @@ Useful for hot reloading of providers.  The state of your app and your stores wi
   }
   ```
 
-### instantiateProvider (Object fauxInstance, Object provider, Optional String|Function providerKey, Optional Function readyCallback)
+### instantiateProvider (Object fauxInstance, Object provider, Optional String|Function providerKey, Optional Function readyCallback, Optional Boolean createReplication)
 
 Returns an instance of some provider.  Each provider instance is assigned its own `providerKey` and has its own store.  And each instance is cached within the `context`'s `provideInstances` object by its `providerKey`.  If the instance already exists, it will be returned.  You probably won't ever need to use this.
 
 The `fauxInstance` should resemble a component instance - i.e., `{ props, context }`.
 
-### createProviderStore (Object providerInstance, Optional Mixed storeKey)
+### createProviderStore (Object providerInstance, Optional Mixed storeKey, Optional Boolean createReplication)
 
 Creates and returns a store specifically for some provider instance.  You probably won't ever need to use this.
 
