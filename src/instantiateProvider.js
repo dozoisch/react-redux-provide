@@ -727,7 +727,13 @@ export function handleQueries(fauxInstance, callback) {
     if (resultHandlers) {
       resultHandlers.push(resultHandler);
     } else {
-      let { handleQuery, reducerKeys } = getQueryHandler(provider);
+      const queryHandler = getQueryHandler(provider);
+
+      if (!queryHandler) {
+        return;
+      }
+
+      let { handleQuery, reducerKeys } = queryHandler;
       const normalizedOptions = { ...options };
 
       if (typeof normalizedOptions.select === 'undefined') {
