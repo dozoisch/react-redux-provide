@@ -271,15 +271,9 @@ Optional string or function.  Defaults to its respective `key` within the `provi
   Example:
 
   ```js
-  providers.user.key = (instance) => {
-    const { props } = instance;
-
-    if (props.userId) {
-      return `userId=${props.userId}`;
-    } else {
-      return `user`;
-    }
-  };
+  providers.user.key = ({ props }) => props.userId
+    ? `userId=${props.userId}`
+    : null;
   ```
 
 ### state
@@ -374,10 +368,15 @@ For example, suppose you have a static `theme` provider instance and you want it
     return userId ? `theme&userId=${userId}` : null;
   }
 
+  // disable replication by default
   theme.replication.key = null;
 
   theme.subscribeTo = {
     page({ store: pageStore }, { store: themeStore }) {
+      // stores have a `setKey` method that allows you to change their key,
+      // which will reinitialize the store (i.e., state) based on the new key;
+      // only the replication key is changed, not the key used for identifying
+      // the provide instance
       if (themeStore.setKey) {
         const themeKey = getThemeKey(pageStore.getState());
 
