@@ -172,11 +172,13 @@ export default function instantiateProvider(
     }
 
     function dispatchAll(actions) {
-      for (let { providerKey, action } of actions) {
-        let providerInstance = providerInstances[providerKey];
+      if (actions) {
+        for (let { providerKey, action } of actions) {
+          let providerInstance = providerInstances[providerKey];
 
-        if (providerInstance) {
-          providerInstance.store.dispatch(action);
+          if (providerInstance) {
+            providerInstance.store.dispatch(action);
+          }
         }
       }
     }
