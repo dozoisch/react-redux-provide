@@ -64,6 +64,7 @@ export default function instantiateProvider(
       }
     }
 
+    providerInstances[providerKey] = providerInstance;
     return providerInstance;
   }
 
@@ -159,30 +160,6 @@ export default function instantiateProvider(
       }
     }
 
-    function setResults(results) {
-      if (typeof window === 'undefined') {
-        Object.assign(getQueryResults(fauxInstance), results);
-      } else {
-        if (!window.queryResults) {
-          window.queryResults = {};
-        }
-
-        Object.assign(window.queryResults, results);
-      }
-    }
-
-    function dispatchAll(actions) {
-      if (actions) {
-        for (let { providerKey, action } of actions) {
-          let providerInstance = providerInstances[providerKey];
-
-          if (providerInstance) {
-            providerInstance.store.dispatch(action);
-          }
-        }
-      }
-    }
-
     function find(props, doInstantiate, callback) {
       if (arguments.length === 2) {
         callback = doInstantiate;
@@ -230,7 +207,7 @@ export default function instantiateProvider(
     }
 
     const providerApi = {
-      getInstance, createInstance, setResults, setStates, dispatchAll, find
+      getInstance, createInstance, setStates, find
     };
 
     unshiftMiddleware({ provider }, ({ dispatch, getState }) => {
@@ -445,14 +422,7 @@ export function getActiveQueries(fauxInstance) {
 }
 
 export function getQueryResults(fauxInstance) {
-  const queryResults = getFromContextOrProps(fauxInstance, 'queryResults', {});
-
-  if (typeof window !== 'undefined' && window.queryResults) {
-    Object.assign(queryResults, window.queryResults);
-    setTimeout(() => delete window.queryResults);
-  }
-
-  return queryResults;
+  return getFromContextOrProps(fauxInstance, 'queryResults', {});
 }
 
 export function getFunctionOrObject(fauxInstance, key, defaultValue = null) {
@@ -751,6 +721,7 @@ export function handleQueries(fauxInstance, callback) {
       const queryHandler = getQueryHandler(provider);
 
       if (!queryHandler) {
+        resultHandler([]);
         return;
       }
 

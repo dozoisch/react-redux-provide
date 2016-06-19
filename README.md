@@ -33,7 +33,6 @@
     - [getInstance](#getinstance-object-state-function-callback)
     - [createInstance](#createinstance-object-state-function-callback)
     - [setStates](#setstates-object-states)
-    - [dispatchAll](#dispatchall-array-actions)
     - [find](#find-object-state-optional-boolean-doinstantiate-function-callback)
 4.  [Reserved component props](#reserved-component-props)
   - [providers](#providers)
@@ -312,7 +311,7 @@ Optional function or array of functions to be called immediately after the provi
   }
   ```
 
-Additionally, if `window.clientStates` exists and contains a key matching the provider instance's `providerKey`, its value will be merged into the store's initial state.  This is used when initializing the state of the providers' stores on the client.  A `window.queryResults` object may also be set to provide the client with a cached set of query results for the initial render.
+Additionally, if `window.clientStates` exists and contains a key matching the provider instance's `providerKey`, its value will be merged into the store's initial state.  This is used when initializing the state of the providers' stores on the client.
 
 ## Replication
 
@@ -581,10 +580,6 @@ Just like `getInstance` but ensures the initial states are replicated.
 ### setStates (Object states)
 
 Sets the states of multiple provider instances, or if they don't exist yet, their states are cached on the `window.clientStates` object.
-
-### dispatchAll (Array actions)
-
-Dispatches actions to provider instances.  Each item in the `actions` array should contain `{ providerKey, action }`.
 
 ### find (Object state, Optional Boolean doInstantiate, Function callback)
 
