@@ -159,6 +159,18 @@ export default function instantiateProvider(
       }
     }
 
+    function setResults(results) {
+      if (typeof window === 'undefined') {
+        Object.assign(getQueryResults(fauxInstance), results);
+      } else {
+        if (!window.queryResults) {
+          window.queryResults = {};
+        }
+
+        Object.assign(window.queryResults, results);
+      }
+    }
+
     function dispatchAll(actions) {
       for (let { providerKey, action } of actions) {
         let providerInstance = providerInstances[providerKey];
@@ -216,7 +228,7 @@ export default function instantiateProvider(
     }
 
     const providerApi = {
-      getInstance, createInstance, setStates, dispatchAll, find
+      getInstance, createInstance, setResults, setStates, dispatchAll, find
     };
 
     unshiftMiddleware({ provider }, ({ dispatch, getState }) => {
@@ -431,7 +443,14 @@ export function getActiveQueries(fauxInstance) {
 }
 
 export function getQueryResults(fauxInstance) {
-  return getFromContextOrProps(fauxInstance, 'queryResults', {});
+  const queryResults = getFromContextOrProps(fauxInstance, 'queryResults', {});
+
+  if (typeof window !== 'undefined' && window.queryResults) {
+    Object.assign(queryResults, window.queryResults);
+    setTimeout(() => delete window.queryResults);
+  }
+
+  return queryResults;
 }
 
 export function getFunctionOrObject(fauxInstance, key, defaultValue = null) {
@@ -746,11 +765,11 @@ export function handleQueries(fauxInstance, callback) {
       activeQueries[resultKey] = resultHandlers;
 
       handleQuery(query, normalizedOptions, result => {
-        delete activeQueries[resultKey];
-
         while (resultHandlers.length) {
           resultHandlers.shift()(result);
         }
+
+        delete activeQueries[resultKey];
       });
     }
   });
