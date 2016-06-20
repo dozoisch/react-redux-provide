@@ -642,7 +642,8 @@ export function handleQueries(fauxInstance, callback) {
   const activeQueries = getActiveQueries(fauxInstance);
   const queryResults = getQueryResults(fauxInstance);
   const providers = getProviders(fauxInstance);
-  const previousResults = props.results || {};
+  const previousResults = { ...props.results };
+  let asyncLeader = false;
   let asyncReset = false;
 
   let semaphore = Object.keys(queries).length;
@@ -715,18 +716,8 @@ export function handleQueries(fauxInstance, callback) {
     }
 
     getQueryHandlers(provider).forEach(({ handleQuery, reducerKeys }) => {
-      const normalizedOptions = { ...options };
-      const semaphoreBefore = semaphore;
-      let asyncQueryHandler = false;
-
-      const resultHandler = result => {
-        const previousResult = previousResults[key];
-
-        if (!fauxInstance.doUpdate && !resultsEqual(result, previousResult)) {
-          fauxInstance.doUpdate = true;
-        }
-
-        if (asyncQueryHandler && asyncReset) {
+      const setResult = result => {
+        if (asyncReset) {
           props.results = {};
 
           if (props.query) {
@@ -748,21 +739,27 @@ export function handleQueries(fauxInstance, callback) {
         }
 
         clear();
-
-        if (asyncQueryHandler) {
-          while (activeQueries[resultKey] && activeQueries[resultKey].length) {
-            activeQueries[resultKey].shift()(result);
-          }
-
-          delete activeQueries[resultKey];
-        }
       };
 
-      if (typeof normalizedOptions.select === 'undefined') {
-        normalizedOptions.select = reducerKeys;
-      } else if (!Array.isArray(normalizedOptions.select)) {
-        normalizedOptions.select = [ normalizedOptions.select ];
-      }
+      const resultHandler = result => {
+        const previousResult = previousResults[key];
+
+        if (!fauxInstance.doUpdate && !resultsEqual(result, previousResult)) {
+          fauxInstance.doUpdate = true;
+        }
+
+        if (asyncQueryHandler) {
+          if (asyncLeader) {
+            while (activeQueries[resultKey].length) {
+              activeQueries[resultKey].shift()(result);
+            }
+
+            delete activeQueries[resultKey];
+          }
+        } else {
+          setResult(result);
+        }
+      };
 
       if (Array.isArray(provider.wait)) {
         provider.wait.forEach(fn => fn());
@@ -770,6 +767,15 @@ export function handleQueries(fauxInstance, callback) {
         provider.wait();
       }
 
+      const normalizedOptions = { ...options };
+      if (typeof normalizedOptions.select === 'undefined') {
+        normalizedOptions.select = reducerKeys;
+      } else if (!Array.isArray(normalizedOptions.select)) {
+        normalizedOptions.select = [ normalizedOptions.select ];
+      }
+
+      let asyncQueryHandler = false;
+      const semaphoreBefore = semaphore;
       semaphore++;
       handleQuery(query, normalizedOptions, resultHandler);
       asyncQueryHandler = semaphore > semaphoreBefore;
@@ -778,9 +784,10 @@ export function handleQueries(fauxInstance, callback) {
         asyncReset = true;
 
         if (activeQueries[resultKey]) {
-          activeQueries[resultKey].push(resultHandler);
+          activeQueries[resultKey].push(setResult);
         } else {
-          activeQueries[resultKey] = [];
+          asyncLeader = true;
+          activeQueries[resultKey] = [ setResult ];
         }
       }
     });
