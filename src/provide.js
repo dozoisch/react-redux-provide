@@ -124,8 +124,6 @@ export default function provide(ComponentClass) {
     }
 
     update() {
-      this.doUpdate = true;
-
       if (!this.unmounted) {
         this.forceUpdate();
       }
@@ -198,6 +196,10 @@ export default function provide(ComponentClass) {
 
       this.handleQueries(props, context);
       this.setDisplayName(props, context);
+
+      if (this.doUpdate) {
+        this.update();
+      }
     }
 
     deinitialize() {
@@ -443,16 +445,12 @@ export default function provide(ComponentClass) {
           }
 
           if (this.doUpdate) {
-            this.handleQueriesOrUpdate(props, context);
+            this.handleQueries(props, context);
+            this.setDisplayName(props, context);
+            this.update();
           }
         })
       );
-    }
-
-    handleQueriesOrUpdate(props, context) {
-      if (!this.handleQueries(props, context)) {
-        this.update();
-      }
     }
 
     handleQueries(props, context) {
@@ -462,6 +460,7 @@ export default function provide(ComponentClass) {
         if (fauxInstance.doUpdate) {
           // TODO: should mergers be checked (again) ??
           fauxInstance.doUpdate = false;
+          this.doUpdate = true;
           this.update();
         }
       });
@@ -497,7 +496,6 @@ export default function provide(ComponentClass) {
         this.doUpdate = true;
         this.deinitialize();
         this.initialize(props, context);
-        this.handleQueriesOrUpdate(props, context);
       });
     }
 
