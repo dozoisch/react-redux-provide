@@ -28,11 +28,6 @@ function render(props) {
 const placeholder = 'Testing...';
 
 describe('react-redux-provide', () => {
-  it('should have the correct displayName', () => {
-    const { component } = render({ placeholder });
-    expect(component.constructor.displayName).toBe('ProvideTest(test)');
-  });
-
   it('should render correctly', () => {
     const { node } = render({ placeholder });
     const input = node.childNodes[0];
