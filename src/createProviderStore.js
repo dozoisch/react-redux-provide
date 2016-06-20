@@ -30,7 +30,7 @@ export function getInitialState({ providerKey, state }) {
  *
  * @param {Object} providerInstance
  * @param {Mixed} storeKey Optional
- * @param {Boolean} createReplication
+ * @param {Boolean} createReplication Optional
  * @return {Object}
  * @api public
  */

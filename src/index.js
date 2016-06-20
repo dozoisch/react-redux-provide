@@ -18,7 +18,7 @@ import {
   getQuery,
   getQueryOptions,
   getQueriesOptions,
-  getQueryHandler,
+  getQueryHandlers,
   getMergedResult,
   resultsEqual,
   handleQueries
@@ -73,7 +73,7 @@ export {
   getQuery,
   getQueryOptions,
   getQueriesOptions,
-  getQueryHandler,
+  getQueryHandlers,
   getMergedResult,
   handleQueries,
 

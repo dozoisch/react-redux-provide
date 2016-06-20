@@ -583,7 +583,7 @@ Sets the states of multiple provider instances, or if they don't exist yet, thei
 
 ### find (Object state, Optional Boolean doInstantiate, Function callback)
 
-Queries the first replicator with a `handleQuery` method to retrieve an array of states representing any provider instance partially matching the `state` argument.  If `doInstantiate` is `true`, providers will be instantiated based on each state and passed to the `callback`.  If `doInstantiate` is `false` or omitted, only the array of states is passed to the `callback`.
+Queries replicators with a `handleQuery` method to retrieve an array of states representing any provider instance partially matching the `state` argument.  If `doInstantiate` is `true`, providers will be instantiated based on each state and passed to the `callback`.  If `doInstantiate` is `false` or omitted, only the array of states is passed to the `callback`.
 
 
 ## Reserved component props
@@ -1097,6 +1097,10 @@ Gets the state from `window.clientStates` for the `providerInstance` based on it
 
 Merges and returns the `state` property with the result of `getClientState`.  Returns an empty object by default.  You probably won't ever need to use this.
 
+### getNewFauxInstance (Object fauxInstance, Object props)
+
+Gets a new `fauxInstance` with the same `context` but with new `props`.
+
 ### getFromContextOrProps (Object fauxInstance, String key, Optional defaultValue)
 
 Gets and caches some property from the `fauxInstance`'s `context` or `props`.
@@ -1137,13 +1141,13 @@ Gets the `queryOptions` object (using `getFunctionOrObject`) from the `fauxInsta
 
 Gets the `queriesOptions` object (using `getFunctionOrObject`) from the `fauxInstance`'s `context` or `props`.
 
-### getQueryHandler (Object provider)
+### getQueryHandlers (Object provider)
 
-Finds the first `handleQuery` function within replicators and returns the relevant `{ handleQuery, reducerKeys }`.
+Gets all `handleQuery` functions within replicators and returns the relevant `{ handleQuery, reducerKeys }`.
 
-### getMergedResult (Object results)
+### getMergedResult (Mixed mergedResult, Mixed result)
 
-Flattens the `results` from multiple provider queries and returns the `result`.
+Merges the `result` into the `mergedResult` and returns the new `mergedResult`.
 
 ### resultsEqual (Mixed result, Mixed previousResult)
 

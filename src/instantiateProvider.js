@@ -27,7 +27,6 @@ export default function instantiateProvider(
     providerKey = provider.key;
   }
 
-  const { context } = fauxInstance;
   const providers = getProviders(fauxInstance);
   const providerInstances = getProviderInstances(fauxInstance);
   let providerInstance;
@@ -112,7 +111,7 @@ export default function instantiateProvider(
         resultInstances[index] = null;
 
         instantiateProvider(
-          { props: resultProps, context },
+          getNewFauxInstance(fauxInstance, resultProps),
           findProvider(resultProps),
           undefined,
           resultInstance => {
@@ -125,7 +124,7 @@ export default function instantiateProvider(
 
     function getInstance(props, callback, createReplication) {
       return instantiateProvider(
-        { props, context },
+        getNewFauxInstance(fauxInstance, props),
         findProvider(props),
         undefined,
         callback,
@@ -138,8 +137,17 @@ export default function instantiateProvider(
     }
 
     function setStates(states) {
+      const gettingInstances = [];
       const settingStates = [];
-      const { clientStates } = window;
+      let clientStates = null;
+
+      if (typeof window !== 'undefined') {
+        if (!window.clientStates) {
+          window.clientStates = {};
+        }
+
+        clientStates = window.clientStates;
+      }
 
       for (let providerKey in states) {
         const state = states[providerKey];
@@ -150,11 +158,18 @@ export default function instantiateProvider(
             settingStates.push(() => providerInstance.store.setState(state));
           }
         } else {
-          clientStates[providerKey] = state;
+          if (clientStates) {
+            clientStates[providerKey] = state;
+          }
+
+          gettingInstances.push(state);
         }
       }
 
-      // need to `setState` after any `clientStates` are cached
+      // now that `clientStates` are cached...
+      while (gettingInstances.length) {
+        getInstance(gettingInstances.shift());
+      }
       while (settingStates.length) {
         settingStates.shift()();
       }
@@ -166,7 +181,7 @@ export default function instantiateProvider(
         doInstantiate = false;
       }
 
-      handleQueries({ props, context }, () => {
+      handleQueries(getNewFauxInstance(fauxInstance, props), () => {
         if (!doInstantiate) {
           callback(props.query ? props.result : props.results);
           return;
@@ -393,6 +408,17 @@ export default function instantiateProvider(
   return providerInstance;
 }
 
+export function getNewFauxInstance(fauxInstance, state) {
+  return {
+    props: state,
+    context: fauxInstance.context,
+    providers: getProviders(fauxInstance),
+    providerInstances: getProviderInstances(fauxInstance),
+    activeQueries: getActiveQueries(fauxInstance),
+    queryResults: getQueryResults(fauxInstance)
+  };
+}
+
 export function getFromContextOrProps(fauxInstance, key, defaultValue) {
   if (typeof fauxInstance[key] === 'undefined') {
     const { props, context } = fauxInstance;
@@ -446,8 +472,8 @@ export function getQueries(fauxInstance) {
     return fauxInstance.queries;
   }
 
-  const { props, context, relevantProviders } = fauxInstance;
-  const { providers } = context;
+  const { props, relevantProviders } = fauxInstance;
+  const providers = getProviders(fauxInstance);
   const query = getQuery(fauxInstance);
   let queries = getFunctionOrObject(fauxInstance, 'queries');
   let hasQueries = false;
@@ -517,8 +543,9 @@ export function getQueriesOptions(fauxInstance) {
   return getFunctionOrObject(fauxInstance, 'queriesOptions', {});
 }
 
-// finds the first `handleQuery` function within replicators
-export function getQueryHandler(provider) {
+// gets all `handleQuery` functions within replicators
+export function getQueryHandlers(provider) {
+  const queryHandlers = [];
   let { replication } = provider;
 
   if (replication) {
@@ -534,35 +561,29 @@ export function getQueryHandler(provider) {
 
         for (let { handleQuery } of replicator) {
           if (handleQuery) {
-            return {
+            queryHandlers.push({
               handleQuery,
               reducerKeys: reducerKeys || Object.keys(provider.reducers)
-            };
+            });
           }
         }
       }
     }
   }
 
-  return null;
+  return queryHandlers;
 }
 
-export function getMergedResult(results) {
-  let mergedResult = null;
-
-  for (let providerKey in results) {
-    let result = results[providerKey];
-
-    if (Array.isArray(result)) {
-      mergedResult = [ ...(mergedResult || []), ...result ];
-    } else if (result && typeof result === 'object') {
-      mergedResult = { ...(mergedResult || {}), ...result };
-    } else if (typeof result !== 'undefined') {
-      mergedResult = result;
-    }
+export function getMergedResult(mergedResult, result) {
+  if (Array.isArray(result)) {
+    return [ ...(mergedResult || []), ...result ];
+  } else if (result && typeof result === 'object') {
+    return { ...(mergedResult || {}), ...result };
+  } else if (typeof result !== 'undefined') {
+    return result;
+  } else {
+    return mergedResult;
   }
-
-  return mergedResult;
 }
 
 export function resultsEqual(result, previousResult) {
@@ -600,6 +621,9 @@ export function resultsEqual(result, previousResult) {
   return shallowEqual(result, previousResult);
 }
 
+// this is admittedly a mess... :(
+// trying to account for both synchronous and asynchronous query handling
+// where asynchronous results will override the synchronous results
 export function handleQueries(fauxInstance, callback) {
   const queries = getQueries(fauxInstance);
 
@@ -611,7 +635,7 @@ export function handleQueries(fauxInstance, callback) {
     return false;
   }
 
-  const { props, context } = fauxInstance;
+  const { props } = fauxInstance;
   const query = getQuery(fauxInstance);
   const queryOptions = getQueryOptions(fauxInstance);
   const queriesOptions = getQueriesOptions(fauxInstance);
@@ -619,17 +643,17 @@ export function handleQueries(fauxInstance, callback) {
   const queryResults = getQueryResults(fauxInstance);
   const providers = getProviders(fauxInstance);
   const previousResults = props.results || {};
+  let asyncReset = false;
 
   let semaphore = Object.keys(queries).length;
   const clear = () => {
-    if (--semaphore === 0) {
-      if (query) {
-        props.result = getMergedResult(props.results);
-      }
-
-      if (callback) {
-        callback();
-      }
+    if (--semaphore === 0 && callback) {
+      callback();
+    }
+  };
+  const setMergedResult = result => {
+    if (props.query) {
+      props.result = getMergedResult(props.result, result);
     }
   };
 
@@ -685,48 +709,54 @@ export function handleQueries(fauxInstance, callback) {
 
     if (typeof queryResult !== 'undefined') {
       props.results[key] = queryResult;
+      setMergedResult(queryResult);
       clear();
       return;
     }
 
-    if (Array.isArray(provider.wait)) {
-      provider.wait.forEach(fn => fn());
-    } else if (provider.wait) {
-      provider.wait();
-    }
-
-    let resultHandlers = activeQueries[resultKey];
-    const resultHandler = result => {
-      const previousResult = previousResults[key];
-
-      if (!fauxInstance.doUpdate && !resultsEqual(result, previousResult)) {
-        fauxInstance.doUpdate = true;
-      }
-
-      props.results[key] = result;
-      queryResults[resultKey] = result;
-
-      if (Array.isArray(provider.clear)) {
-        provider.clear.forEach(fn => fn(fauxInstance.doUpdate));
-      } else if (provider.clear) {
-        provider.clear(fauxInstance.doUpdate);
-      }
-
-      clear();
-    };
-
-    if (resultHandlers) {
-      resultHandlers.push(resultHandler);
-    } else {
-      const queryHandler = getQueryHandler(provider);
-
-      if (!queryHandler) {
-        resultHandler([]);
-        return;
-      }
-
-      let { handleQuery, reducerKeys } = queryHandler;
+    getQueryHandlers(provider).forEach(({ handleQuery, reducerKeys }) => {
       const normalizedOptions = { ...options };
+      const semaphoreBefore = semaphore;
+      let asyncQueryHandler = false;
+
+      const resultHandler = result => {
+        const previousResult = previousResults[key];
+
+        if (!fauxInstance.doUpdate && !resultsEqual(result, previousResult)) {
+          fauxInstance.doUpdate = true;
+        }
+
+        if (asyncQueryHandler && asyncReset) {
+          props.results = {};
+
+          if (props.query) {
+            props.result = null;
+          }
+
+          asyncReset = false;
+        }
+
+        props.results[key] = result;
+        previousResults[key] = result;
+        queryResults[resultKey] = result;
+        setMergedResult(result);
+
+        if (Array.isArray(provider.clear)) {
+          provider.clear.forEach(fn => fn(fauxInstance.doUpdate));
+        } else if (provider.clear) {
+          provider.clear(fauxInstance.doUpdate);
+        }
+
+        clear();
+
+        if (asyncQueryHandler) {
+          while (activeQueries[resultKey] && activeQueries[resultKey].length) {
+            activeQueries[resultKey].shift()(result);
+          }
+
+          delete activeQueries[resultKey];
+        }
+      };
 
       if (typeof normalizedOptions.select === 'undefined') {
         normalizedOptions.select = reducerKeys;
@@ -734,17 +764,28 @@ export function handleQueries(fauxInstance, callback) {
         normalizedOptions.select = [ normalizedOptions.select ];
       }
 
-      resultHandlers = [ resultHandler ];
-      activeQueries[resultKey] = resultHandlers;
+      if (Array.isArray(provider.wait)) {
+        provider.wait.forEach(fn => fn());
+      } else if (provider.wait) {
+        provider.wait();
+      }
 
-      handleQuery(query, normalizedOptions, result => {
-        while (resultHandlers.length) {
-          resultHandlers.shift()(result);
+      semaphore++;
+      handleQuery(query, normalizedOptions, resultHandler);
+      asyncQueryHandler = semaphore > semaphoreBefore;
+
+      if (asyncQueryHandler) {
+        asyncReset = true;
+
+        if (activeQueries[resultKey]) {
+          activeQueries[resultKey].push(resultHandler);
+        } else {
+          activeQueries[resultKey] = [];
         }
+      }
+    });
 
-        delete activeQueries[resultKey];
-      });
-    }
+    clear();
   });
 
   return true;

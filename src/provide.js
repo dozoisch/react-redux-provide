@@ -2,7 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
 import shallowEqual from './shallowEqual';
 import getRelevantKeys from './getRelevantKeys';
-import instantiateProvider, { handleQueries } from './instantiateProvider';
+import instantiateProvider from './instantiateProvider';
+import { handleQueries, getNewFauxInstance } from './instantiateProvider';
 
 const isServerSide = typeof window === 'undefined';
 const allComponentInstances = [];
@@ -83,6 +84,7 @@ export default function provide(ComponentClass) {
 
       if (!isServerSide && !context.providers) {
         rootInstance = this;
+        this.initializeClientStates(props, context);
       }
 
       this.renders = 0;
@@ -126,6 +128,40 @@ export default function provide(ComponentClass) {
 
       if (!this.unmounted) {
         this.forceUpdate();
+      }
+    }
+
+    // TODO: improve this
+    initializeClientStates(props = this.props, context = this.context) {
+      const { clientStates } = window;
+      const fauxInstance = this.getFauxInstance(props, context);
+      const providers = this.getProviders(props, context);
+      const findProvider = props => {
+        for (let key in providers) {
+          let provider = providers[key];
+
+          if (getRelevantKeys(provider.reducers, props).length) {
+            if (typeof provider.defaultKey === 'undefined') {
+              provider.defaultKey = key;
+            }
+            if (typeof provider.key === 'undefined') {
+              provider.key = provider.defaultKey;
+            }
+
+            return provider;
+          }
+        }
+      };
+
+      if (clientStates) {
+        for (let providerKey in clientStates) {
+          let state = clientStates[providerKey];
+
+          instantiateProvider(
+            getNewFauxInstance(fauxInstance, state),
+            findProvider(state)
+          );
+        }
       }
     }
 
