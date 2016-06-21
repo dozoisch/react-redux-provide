@@ -310,7 +310,9 @@ Optional function or array of functions to be called immediately after the provi
   }
   ```
 
-Additionally, if `window.clientStates` exists and contains a key matching the provider instance's `providerKey`, its value will be merged into the store's initial state.  This is used when initializing the state of the providers' stores on the client.
+
+**Additionally:** During the very first tick of the app *only on the client*, the root provider component will look for a `window.clientStates` object and convert it to provider instances which are cached within the current `context`.  Each state is removed from the `window.clientStates` object as a result.  If you're using the official [page provider](https://github.com/loggur/provide-page), you won't ever need to worry about this.  See [`provide-page/src/defaultRenderDocumentToString.js`](https://github.com/loggur/provide-page/blob/master/src/defaultRenderDocumentToString.js) for an example where the client states are extracted from the server's provider instances' stores, stringified (using `JSON.stringify`) and sent to the client for the initial render.
+
 
 ## Replication
 
@@ -578,7 +580,9 @@ Just like `getInstance` but ensures the initial states are replicated.
 
 ### setStates (Object states)
 
-Sets the states of multiple provider instances, or if they don't exist yet, their states are cached on the `window.clientStates` object.
+This should typically only be used client-side when the server sends the client states that it needs to properly perform some action.  This function sets the states of multiple provider instances, or if they don't exist yet, their states are cached on the `window.clientStates` object.
+
+If you're using the official [page provider](https://github.com/loggur/provide-page), you won't ever need to use this function yourself.  See the `getPageStates` and `submitForm` methods in [`provide-page/src/index.js`](https://github.com/loggur/provide-page/blob/master/src/index.js) for exact usage.
 
 ### find (Object state, Optional Boolean doInstantiate, Function callback)
 
