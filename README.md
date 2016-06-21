@@ -34,11 +34,12 @@
     - [createInstance](#createinstance-object-state-function-callback)
     - [setStates](#setstates-object-states)
     - [find](#find-object-state-optional-boolean-doinstantiate-function-callback)
-4.  [Reserved component props](#reserved-component-props)
+4.  [Contextual component props](#contextual-component-props)
   - [providers](#providers)
   - [providerInstances](#providerinstances)
   - [activeQueries](#activequeries)
   - [queryResults](#queryresults)
+5.  [Query-related component props](#query-related-component-props)
   - [query](#query)
   - [queryOptions](#queryoptions)
   - [result](#result)
@@ -46,12 +47,10 @@
   - [queriesOptions](#queriesoptions)
   - [results](#results)
   - [autoUpdateQueryResults](#autoupdatequeryresults)
-  - [wait](#wait-1)
-  - [clear](#clear-1)
-5.  [Store modifications](#store-modifications)
-6.  [Quick example](#quick-example)
-7.  [Protips](#protips)
-8.  [Complete list of exports](#complete-list-of-exports)
+6.  [Store modifications](#store-modifications)
+7.  [Quick example](#quick-example)
+8.  [Protips](#protips)
+9.  [Complete list of exports](#complete-list-of-exports)
 
 
 ## Installation
@@ -586,23 +585,30 @@ Sets the states of multiple provider instances, or if they don't exist yet, thei
 Queries replicators with a `handleQuery` method to retrieve an array of states representing any provider instance partially matching the `state` argument.  If `doInstantiate` is `true`, providers will be instantiated based on each state and passed to the `callback`.  If `doInstantiate` is `false` or omitted, only the array of states is passed to the `callback`.
 
 
-## Reserved component props
+## Contextual component props
+
+These properties are passed down via `context` and are used interally by this library.  You can override them with your own props at any time, but in most cases you should never have to do that.
 
 ### providers
 
-Object containing all of the providers used throughout the app.  The top level component should receive this prop.  You can also pass a new `providers` object (along with a new `providerInstances` object) at any level, but you typically shouldn't do that.  This is passed down via `context`.
+Object containing all of the providers used throughout the app.  The top level component should receive this prop.  You can also pass a new `providers` object (along with a new `providerInstances` object) at any level, but you typically shouldn't do that.
 
 ### providerInstances
 
-Object containing all of the instantiated providers.  This is passed down via `context`.
+Object containing all of the instantiated providers.
 
 ### activeQueries
 
-Object containing any queries being handled at the time.  This is passed down via `context`.
+Object containing any queries being handled at the time.
 
 ### queryResults
 
-Object containing the latest query results.  This is passed down via `context`.
+Object containing the latest query results.
+
+
+## Query-related component props
+
+There are a handful of props you can use for finding provider instances whose states have been replicated to (stored within) data sources.
 
 ### query
 
@@ -674,13 +680,15 @@ The `result` prop comes from your replicator's `handleQuery` function.  It shoul
 
 Alternatively, you could simply pass a `query` prop to the component (usually either a function or an object), rather than have it derived from `defaultProps`.
 
+**Note:** If the `query` isn't compatible with any provider, it will be assumed that it isn't a provider query and will be treated as a normal prop.
+
 ### queryOptions
 
-These options are passed to your replicator's `handleQuery` function and should typically be specific to the options supported by the replicator.  Coming soon: A standard/recommended set of options that replicators should support.
+Only used in conjunction with a valid `query`.  These options are passed to your replicator's `handleQuery` function and should typically be specific to the options supported by the replicator.  Coming soon: A standard/recommended set of options that replicators should support.
 
 ### result
 
-The result returned by your replicator's `handleQuery` function.  Defaults to `null`.  Only exists if [the `query` prop](#query) exists.
+Only used in conjunction with a valid `query`.  The result returned by your replicator's `handleQuery` function.  Defaults to `null`.  Only exists if [the `query` prop](#query) exists.
 
 ### queries
 
@@ -746,25 +754,19 @@ And the `results` object would simply be:
 }
 ```
 
+**Note:** If `queries` isn't compatible with any provider, it will be assumed that it isn't provider queries and will be treated as a normal prop.
+
 ### queriesOptions
 
-Works exactly like `queryOptions` but with the options pre-mapped to each provider.
+Only used in conjunction with a valid `queries`.  Works exactly like `queryOptions` but with the options pre-mapped to each provider.
 
 ### results
 
-See `queries` example above.  Only exists if the `queries` prop exists.
+Only used in conjunction with a valid `queries`.  See `queries` example above.  Only exists if the `queries` prop exists.
 
 ### autoUpdateQueryResults
 
 Boolean value used for automatically updating components whose query results might change as a result of some relevant state change.  Defaults to `true`.
-
-### wait
-
-See the [wait section](#wait) under [Advanced](#advanced) above.
-
-### clear
-
-See the [clear section](#clear) under [Advanced](#advanced) above.
 
 
 ## Store modifications
