@@ -729,7 +729,9 @@ Alternatively, you could simply pass a `query` prop to the component (usually ei
 
 ### queryOptions
 
-Only used in conjunction with a valid `query`.  These options are passed to your replicator's `handleQuery` function and should typically be specific to the options supported by the replicator.  Coming soon: A standard/recommended set of options that replicators should support.
+Only used in conjunction with a valid `query`.  These options are passed to your replicator's `handleQuery` function and should typically be specific to the options supported by the replicator.
+
+**Coming soon:** A standard/recommended set of query options that replicators should support.  Please see [https://github.com/loggur/react-redux-provide/issues/33](https://github.com/loggur/react-redux-provide/issues/33) and discuss!
 
 ### result
 
