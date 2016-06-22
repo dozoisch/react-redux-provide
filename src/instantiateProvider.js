@@ -6,6 +6,29 @@ import { pushOnReady, unshiftOnReady, unshiftMiddleware } from './keyConcats';
 const isServerSide = typeof window === 'undefined';
 const globalProviderInstances = {};
 
+// TODO: we'll use this at some point to select only component propTypes
+/*
+function hasReducerKeys(providerInstance, getReducerKeys) {
+  if (!getReducerKeys) {
+    return true;
+  }
+
+  const { hasReducerKeys = {} } = providerInstance;
+
+  for (let reducerKey in getReducerKeys) {
+    if (!hasReducerKeys[reducerKey]) {
+      providerInstance.hasReducerKeys = {
+        ...hasReducerKeys,
+        ...getReducerKeys
+      };
+
+      return false;
+    }
+  }
+
+  return true;
+}*/
+
 /**
  * Instantiates a provider with its own store.
  *
@@ -14,6 +37,7 @@ const globalProviderInstances = {};
  * @param {String|Function} providerKey Optional
  * @param {Function} readyCallback Optional
  * @param {Boolean} createReplication Optional
+ * @param {Object} getReducerKeys Optional
  * @return {Object}
  * @api public
  */
@@ -22,10 +46,24 @@ export default function instantiateProvider(
   provider,
   providerKey,
   readyCallback,
-  createReplication
+  createReplication,
+  getReducerKeys
 ) {
+  if (arguments.length === 1) {
+    fauxInstance = arguments[0].fauxInstance;
+    provider = arguments[0].provider;
+    providerKey = arguments[0].providerKey;
+    readyCallback = arguments[0].readyCallback;
+    createReplication = arguments[0].createReplication;
+    getReducerKeys = arguments[0].getReducerKeys;
+  }
+
   if (typeof providerKey === 'undefined') {
     providerKey = provider.key;
+  }
+
+  if (getReducerKeys === true) {
+    getReducerKeys = provider.reducers;
   }
 
   const providers = getProviders(fauxInstance);
@@ -55,6 +93,8 @@ export default function instantiateProvider(
     fauxInstance.relevantProviders[providerKey] = true;
   }
 
+  // TODO: we'll use this at some point
+  //if (providerInstance && hasReducerKeys(providerInstance, getReducerKeys)) {
   if (providerInstance) {
     if (readyCallback) {
       if (providerInstance.ready) {
@@ -416,7 +456,8 @@ export function getTempFauxInstance(fauxInstance, props) {
     providers: getProviders(fauxInstance),
     providerInstances: getProviderInstances(fauxInstance),
     activeQueries: getActiveQueries(fauxInstance),
-    queryResults: getQueryResults(fauxInstance)
+    queryResults: getQueryResults(fauxInstance),
+    partialStates: getPartialStates(fauxInstance)
   };
 }
 
@@ -450,6 +491,10 @@ export function getActiveQueries(fauxInstance) {
 
 export function getQueryResults(fauxInstance) {
   return getFromContextOrProps(fauxInstance, 'queryResults', {});
+}
+
+export function getPartialStates(fauxInstance) {
+  return getFromContextOrProps(fauxInstance, 'partialStates', {});
 }
 
 export function getFunctionOrObject(fauxInstance, key, defaultValue = null) {
@@ -641,7 +686,7 @@ export function handleQueries(fauxInstance, callback, previousResults) {
     return false;
   }
 
-  const { props } = fauxInstance;
+  const { props, context } = fauxInstance;
   const { result: originalResult, results: originalResults } = props;
   let validQuery = false;
 
@@ -656,7 +701,28 @@ export function handleQueries(fauxInstance, callback, previousResults) {
   const queriesOptions = getQueriesOptions(fauxInstance);
   const activeQueries = getActiveQueries(fauxInstance);
   const queryResults = getQueryResults(fauxInstance);
+  const partialStates = getPartialStates(fauxInstance);
   const providers = getProviders(fauxInstance);
+  const providerInstances = getProviderInstances(fauxInstance);
+
+  // TODO: we should probably do something better at some point
+  const setPartialStates = (provider, result) => {
+    if (!result || !isServerSide) {
+      return;
+    }
+
+    for (let partialState of result) {
+      let providerKey = provider.key;
+
+      if (typeof providerKey === 'function') {
+        providerKey = providerKey({ props: partialState, context });
+      }
+
+      if (providerKey !== null && !providerInstances[providerKey]) {
+        partialStates[providerKey] = partialState;
+      }
+    }
+  };
 
   // most queries should be async
   let queryCount = Object.keys(queries).length;
@@ -761,6 +827,7 @@ export function handleQueries(fauxInstance, callback, previousResults) {
         // if there are no handlers remaining, this query is no longer active
         if (!activeQueries[resultKey].size) {
           delete activeQueries[resultKey];
+          setPartialStates(provider, result);
         }
 
         // no more query handlers, so let the provider know we're done

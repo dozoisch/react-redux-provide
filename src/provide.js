@@ -12,7 +12,8 @@ const contextTypes = {
   providers: PropTypes.object,
   providerInstances: PropTypes.object,
   activeQueries: PropTypes.object,
-  queryResults: PropTypes.object
+  queryResults: PropTypes.object,
+  partialStates: PropTypes.object
 };
 
 export default function provide(ComponentClass) {
@@ -38,7 +39,8 @@ export default function provide(ComponentClass) {
         providers: this.getProviders(),
         providerInstances: this.getProviderInstances(),
         activeQueries: this.getActiveQueries(),
-        queryResults: this.getQueryResults()
+        queryResults: this.getQueryResults(),
+        partialStates: this.getPartialStates()
       };
     }
 
@@ -76,6 +78,15 @@ export default function provide(ComponentClass) {
         || {};
 
       return this.queryResults;
+    }
+
+    getPartialStates(props = this.props, context = this.context) {
+      this.partialStates = this.partialStates
+        || props.partialStates
+        || context.partialStates
+        || {};
+
+      return this.partialStates;
     }
 
     constructor(props, context) {
@@ -258,6 +269,7 @@ export default function provide(ComponentClass) {
         this.getProviderInstances(props, context);
         this.getActiveQueries(props, context);
         this.getQueryResults(props, context);
+        this.getPartialStates(props, context);
         this.getSubscriptions(props, context);
         this.fauxInstance = { ...this, props: componentProps };
       }
@@ -295,11 +307,12 @@ export default function provide(ComponentClass) {
       return this.wrappedInstance;
     }
 
-    getProviderInstance(props, context, provider) {
-      return instantiateProvider(
-        this.getFauxInstance(props, context),
-        provider
-      );
+    getProviderInstance(props, context, provider, getReducerKeys) {
+      return instantiateProvider({
+        fauxInstance: this.getFauxInstance(props, context),
+        provider,
+        getReducerKeys
+      });
     }
 
     assignActionCreators(props, context, provider) {
@@ -314,7 +327,7 @@ export default function provide(ComponentClass) {
 
       const componentProps = this.getComponentProps(props, context);
       const { actionCreators } = this.getProviderInstance(
-        props, context, provider
+        props, context, provider, true
       );
 
       // assign relevant action creators to wrapped component's props
@@ -337,10 +350,24 @@ export default function provide(ComponentClass) {
         return false;
       }
 
+      const getReducerKeys = {};
+      let shouldSubscribe = false;
+
+      for (let reducerKey of reducerKeys) {
+        if (!props[reducerKey]) {
+          getReducerKeys[reducerKey] = true;
+          shouldSubscribe = true;
+        }
+      }
+
+      if (!shouldSubscribe) {
+        return false;
+      }
+
       const subscriptions = this.getSubscriptions();
       const componentProps = this.getComponentProps(props, context);
       const { store } = this.getProviderInstance(
-        props, context, provider
+        props, context, provider, getReducerKeys
       );
       const state = store.getState();
 
@@ -348,27 +375,26 @@ export default function provide(ComponentClass) {
       // and whenever some state changes, update (mutate) the wrapped props
       // and raise the `doUpdate` flag to indicate that the component
       // should be updated after the action has taken place
-      for (let reducerKey of reducerKeys) {
-        if (!props[reducerKey]) {
-          componentProps[reducerKey] = state[reducerKey];
+      for (let reducerKey in getReducerKeys) {
+        componentProps[reducerKey] = state[reducerKey];
 
-          subscriptions.push(
-            store.watch(
-              reducerKey, nextState => {
-                componentProps[reducerKey] = nextState;
-                this.doUpdate = true;
-              }
-            )
-          );
-        }
+        subscriptions.push(
+          store.watch(
+            reducerKey, nextState => {
+              componentProps[reducerKey] = nextState;
+              this.doUpdate = true;
+            }
+          )
+        );
       }
 
       return true;
     }
 
     assignMergers(props, context, provider) {
+      const { merge } = provider;
       const mergeKeys = getRelevantKeys(
-        provider.merge,
+        merge,
         ComponentClass.propTypes
       );
 
@@ -376,11 +402,29 @@ export default function provide(ComponentClass) {
         return false;
       }
 
+      const getReducerKeys = {};
+      let shouldSubscribe = false;
+
+      for (let mergeKey of mergeKeys) {
+        if (!props[mergeKey]) {
+          let merger = merge[mergeKey];
+
+          for (let reducerKey of merger.keys) {
+            getReducerKeys[reducerKey] = true;
+            shouldSubscribe = true;
+          }
+        }
+      }
+
+      if (!shouldSubscribe) {
+        return false;
+      }
+
       const mergers = this.getMergers();
       const subscriptions = this.getSubscriptions();
       const componentProps = this.getComponentProps(props, context);
-      const { merge, store } = this.getProviderInstance(
-        props, context, provider
+      const { store } = this.getProviderInstance(
+        props, context, provider, getReducerKeys
       );
       const state = store.getState();
 
