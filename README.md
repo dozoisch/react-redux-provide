@@ -768,10 +768,6 @@ Only used in conjunction with a valid `queries`.  Works exactly like `queryOptio
 
 Only used in conjunction with a valid `queries`.  See `queries` example above.  Only exists if the `queries` prop exists.
 
-### autoUpdateQueryResults
-
-Boolean value used for automatically updating components whose query results might change as a result of some relevant state change.  Defaults to `true`.
-
 
 ## Store modifications
 
@@ -1103,7 +1099,7 @@ Gets the state from `window.clientStates` for the `providerInstance` based on it
 
 Merges and returns the `state` property with the result of `getClientState`.  Returns an empty object by default.  You probably won't ever need to use this.
 
-### getNewFauxInstance (Object fauxInstance, Object props)
+### getTempFauxInstance (Object fauxInstance, Object props)
 
 Gets a new `fauxInstance` with the same `context` but with new `props`.
 

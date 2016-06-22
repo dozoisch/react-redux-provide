@@ -3,11 +3,10 @@ import hoistStatics from 'hoist-non-react-statics';
 import shallowEqual from './shallowEqual';
 import getRelevantKeys from './getRelevantKeys';
 import instantiateProvider from './instantiateProvider';
-import { handleQueries, getNewFauxInstance } from './instantiateProvider';
+import { handleQueries, getTempFauxInstance } from './instantiateProvider';
 
 const isServerSide = typeof window === 'undefined';
 const allComponentInstances = [];
-let rootInstance = null;
 
 const contextTypes = {
   providers: PropTypes.object,
@@ -83,7 +82,7 @@ export default function provide(ComponentClass) {
       super(props);
 
       if (!isServerSide && !context.providers) {
-        rootInstance = this;
+        window.rootInstance = this;
         this.initializeClientStates(props, context);
       }
 
@@ -119,9 +118,14 @@ export default function provide(ComponentClass) {
       return false;
     }
 
-    render() {
-      return this.getWrappedInstance();
-    }
+    render = isServerSide
+      ? () => {
+        const wrappedInstance = this.getWrappedInstance();
+
+        this.deinitialize();
+        return wrappedInstance;
+      }
+      : () => this.getWrappedInstance();
 
     update() {
       if (!this.unmounted) {
@@ -156,7 +160,7 @@ export default function provide(ComponentClass) {
           let state = clientStates[providerKey];
 
           instantiateProvider(
-            getNewFauxInstance(fauxInstance, state),
+            getTempFauxInstance(fauxInstance, state),
             findProvider(state)
           );
         }
@@ -456,10 +460,9 @@ export default function provide(ComponentClass) {
     handleQueries(props, context) {
       const fauxInstance = this.getFauxInstance(props, context);
 
-      return handleQueries(fauxInstance, () => {
-        if (fauxInstance.doUpdate) {
+      return handleQueries(fauxInstance, doUpdate => {
+        if (doUpdate) {
           // TODO: should mergers be checked (again) ??
-          fauxInstance.doUpdate = false;
           this.doUpdate = true;
           this.update();
         }
@@ -519,11 +522,11 @@ export default function provide(ComponentClass) {
 }
 
 export function reloadProviders(providers, providerInstances) {
+  const { rootInstance, clientStates } = window;
   const {
     providers: oldProviders,
     providerInstances: oldProviderInstances
   } = rootInstance;
-  const { clientStates } = window;
 
   for (let key in providers) {
     let provider = providers[key];

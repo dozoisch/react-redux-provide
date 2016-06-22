@@ -3,6 +3,7 @@ import getRelevantKeys from './getRelevantKeys';
 import createProviderStore from './createProviderStore';
 import { pushOnReady, unshiftOnReady, unshiftMiddleware } from './keyConcats';
 
+const isServerSide = typeof window === 'undefined';
 const globalProviderInstances = {};
 
 /**
@@ -111,7 +112,7 @@ export default function instantiateProvider(
         resultInstances[index] = null;
 
         instantiateProvider(
-          getNewFauxInstance(fauxInstance, resultProps),
+          getTempFauxInstance(fauxInstance, resultProps),
           findProvider(resultProps),
           undefined,
           resultInstance => {
@@ -124,7 +125,7 @@ export default function instantiateProvider(
 
     function getInstance(props, callback, createReplication) {
       return instantiateProvider(
-        getNewFauxInstance(fauxInstance, props),
+        getTempFauxInstance(fauxInstance, props),
         findProvider(props),
         undefined,
         callback,
@@ -141,7 +142,7 @@ export default function instantiateProvider(
       const settingStates = [];
       let clientStates = null;
 
-      if (typeof window !== 'undefined') {
+      if (!isServerSide) {
         if (!window.clientStates) {
           window.clientStates = {};
         }
@@ -181,7 +182,7 @@ export default function instantiateProvider(
         doInstantiate = false;
       }
 
-      handleQueries(getNewFauxInstance(fauxInstance, props), () => {
+      handleQueries(getTempFauxInstance(fauxInstance, props), () => {
         if (!doInstantiate) {
           callback(props.query ? props.result : props.results);
           return;
@@ -408,9 +409,9 @@ export default function instantiateProvider(
   return providerInstance;
 }
 
-export function getNewFauxInstance(fauxInstance, state) {
+export function getTempFauxInstance(fauxInstance, props) {
   return {
-    props: state,
+    props,
     context: fauxInstance.context,
     providers: getProviders(fauxInstance),
     providerInstances: getProviderInstances(fauxInstance),
@@ -591,7 +592,7 @@ export function resultsEqual(result, previousResult) {
     return true;
   }
 
-  if (typeof result === typeof previousResult) {
+  if (typeof result !== typeof previousResult) {
     return false;
   }
 
@@ -622,178 +623,237 @@ export function resultsEqual(result, previousResult) {
 }
 
 // this is admittedly a mess... :(
-// trying to account for both synchronous and asynchronous query handling
+// we're accounting for both synchronous and asynchronous query handling
 // where asynchronous results will override the synchronous results
-export function handleQueries(fauxInstance, callback) {
+export function handleQueries(fauxInstance, callback, previousResults) {
+  let doUpdate = false;
   const queries = getQueries(fauxInstance);
 
   if (!queries) {
     if (callback) {
-      callback();
+      callback(doUpdate);
     }
 
     return false;
   }
 
   const { props } = fauxInstance;
+  const { result: originalResult, results: originalResults } = props;
+  let validQuery = false;
+
+  // for determining whether or not we should update
+  if (!previousResults) {
+    previousResults = { ...props.results };
+  }
+
+  // get what we need to handle the queries
   const query = getQuery(fauxInstance);
   const queryOptions = getQueryOptions(fauxInstance);
   const queriesOptions = getQueriesOptions(fauxInstance);
   const activeQueries = getActiveQueries(fauxInstance);
   const queryResults = getQueryResults(fauxInstance);
   const providers = getProviders(fauxInstance);
-  const previousResults = { ...props.results };
-  let asyncLeader = false;
-  let asyncReset = false;
 
-  let semaphore = Object.keys(queries).length;
-  const clear = () => {
-    if (--semaphore === 0 && callback) {
-      callback();
+  // most queries should be async
+  let queryCount = Object.keys(queries).length;
+  const queryClear = () => {
+    if (--queryCount === 0) {
+      // at this point we have all our results
+      if (callback) {
+        callback(doUpdate);
+      }
     }
   };
+
+  // merge each result into `props.result` if using `props.query`
   const setMergedResult = result => {
     if (props.query) {
       props.result = getMergedResult(props.result, result);
     }
   };
 
-  const { autoUpdateQueryResults = true } = props;
-  const { subscriptions, subbedAll } = fauxInstance;
-  const subscribeToAll = autoUpdateQueryResults && subscriptions && !subbedAll;
-
-  fauxInstance.subbedAll = true;
-
+  // go ahead and set null value if using `props.query`
   if (props.query) {
     props.result = null;
   }
 
+  // results start out as an empty object
   props.results = {};
 
+  // check each query
   Object.keys(queries).forEach(key => {
     const provider = providers[key];
+    const queryHandlers = getQueryHandlers(provider);
+    let handlerCount = queryHandlers.length;
+
+    // no handlers?  Y U DO DIS?
+    if (!handlerCount) {
+      queryClear();
+      return;
+    }
+
+    validQuery = true;
+
+    // let the provider know we're waiting for all of the handlers to finish
+    if (Array.isArray(provider.wait)) {
+      provider.wait.forEach(fn => fn());
+    } else if (provider.wait) {
+      provider.wait();
+    }
+
+    // here we determine the `resultKey` used for caching the results
+    // in the current context
     const query = queries[key];
     const options = queryOptions || queriesOptions[key] || {};
     const resultKey = JSON.stringify({ query, options });
     const queryResult = queryResults[resultKey];
+    let queryResultExists = typeof queryResult !== 'undefined';
 
-    if (subscribeToAll) {
-      // pretty hacky but whatever
-      const requery = () => {
-        if (!activeQueries[resultKey]) {
-          delete queryResults[resultKey];
-          handleQueries(fauxInstance, callback);
+    // result handler for both sync and async queries
+    const setResult = result => {
+      const first = activeQueries[resultKey].values().next().value;
+      const leader = setResult === first;
+      const previousResult = queryResultExists
+        ? queryResult
+        : previousResults[key];
+      const { asyncReset } = setResult;
+
+      // if new result, set `doUpdate` flag
+      if (!doUpdate && !resultsEqual(result, previousResult)) {
+        doUpdate = true;
+      }
+
+      // a special `asyncReset` flag is set if async handler is detected;
+      // we want async results to override sync
+      if (asyncReset) {
+        // this should only occur once, at the start of setting async results
+        setResult.asyncReset = false;
+
+        props.results = {};
+
+        if (props.query) {
+          props.result = null;
         }
-      };
+      }
 
-      if (provider.instances) {
-        provider.instances.forEach(providerInstance => {
-          subscriptions.push(
-            providerInstance.store.subscribe(requery)
-          );
+      props.results[key] = result;
+      previousResults[key] = result;
+      queryResults[resultKey] = result;
+      setMergedResult(result);
+
+      // if this handler is the leader, we pass the result onto the others
+      if (leader && activeQueries[resultKey]) {
+        activeQueries[resultKey].forEach(otherSetResult => {
+          if (otherSetResult !== setResult) {
+            otherSetResult(result);
+          }
         });
       }
 
-      if (!provider.subscribers) {
-        provider.subscribers = {};
-      }
+      if (--handlerCount === 0) {
+        // handler is done, so remove self
+        activeQueries[resultKey].delete(setResult);
 
-      const handler = provider.subscribers[key];
-      provider.subscribers[key] = (providerInstance, subProviderInstance) => {
-        if (handler) {
-          handler(providerInstance, subProviderInstance);
+        // if there are no handlers remaining, this query is no longer active
+        if (!activeQueries[resultKey].size) {
+          delete activeQueries[resultKey];
         }
 
-        requery();
-      };
-    }
+        // no more query handlers, so let the provider know we're done
+        if (Array.isArray(provider.clear)) {
+          provider.clear.forEach(fn => fn(doUpdate));
+        } else if (provider.clear) {
+          provider.clear(doUpdate);
+        }
 
-    if (typeof queryResult !== 'undefined') {
-      props.results[key] = queryResult;
-      setMergedResult(queryResult);
-      clear();
+        // and this query is clear
+        queryClear();
+
+        // we want to remove the cached query results on the client
+        // so that it will always update
+        if (!isServerSide) {
+          delete queryResults[resultKey];
+        }
+      }
+    };
+
+    // this query is currently taking place, make the handler follow the leader
+    if (activeQueries[resultKey]) {
+      activeQueries[resultKey].add(setResult);
       return;
     }
 
-    getQueryHandlers(provider).forEach(({ handleQuery, reducerKeys }) => {
-      const setResult = result => {
-        if (asyncReset) {
-          props.results = {};
+    // this is a new query, so this handler is a leader;
+    // other handlers matching this `resultKey` will check
+    // if the query is active and become a follower
+    activeQueries[resultKey] = new Set();
+    activeQueries[resultKey].add(setResult);
 
-          if (props.query) {
-            props.result = null;
-          }
+    // already have our query result cached?
+    // no point in calling any handlers; go ahead and set the result
+    if (queryResultExists) {
+      handlerCount = 1;
+      setResult(queryResult);
+      return;
+    }
 
-          asyncReset = false;
-        }
-
-        props.results[key] = result;
-        previousResults[key] = result;
-        queryResults[resultKey] = result;
-        setMergedResult(result);
-
-        if (Array.isArray(provider.clear)) {
-          provider.clear.forEach(fn => fn(fauxInstance.doUpdate));
-        } else if (provider.clear) {
-          provider.clear(fauxInstance.doUpdate);
-        }
-
-        clear();
-      };
-
-      const resultHandler = result => {
-        const previousResult = previousResults[key];
-
-        if (!fauxInstance.doUpdate && !resultsEqual(result, previousResult)) {
-          fauxInstance.doUpdate = true;
-        }
-
-        if (asyncQueryHandler) {
-          if (asyncLeader) {
-            while (activeQueries[resultKey].length) {
-              activeQueries[resultKey].shift()(result);
-            }
-
-            delete activeQueries[resultKey];
-          }
-        } else {
-          setResult(result);
-        }
-      };
-
-      if (Array.isArray(provider.wait)) {
-        provider.wait.forEach(fn => fn());
-      } else if (provider.wait) {
-        provider.wait();
-      }
-
+    // now we need to run the query through each `handleQuery` function,
+    // which may or may not be synchronous
+    queryHandlers.forEach(({ handleQuery, reducerKeys }) => {
+      // normalize the options so that people can be lazy
       const normalizedOptions = { ...options };
+
       if (typeof normalizedOptions.select === 'undefined') {
         normalizedOptions.select = reducerKeys;
       } else if (!Array.isArray(normalizedOptions.select)) {
         normalizedOptions.select = [ normalizedOptions.select ];
       }
 
-      let asyncQueryHandler = false;
-      const semaphoreBefore = semaphore;
-      semaphore++;
-      handleQuery(query, normalizedOptions, resultHandler);
-      asyncQueryHandler = semaphore > semaphoreBefore;
+      // we can determine whether or not its synchronous by checking the 
+      // `handlerCount` immediately after `handleQuery` is called
+      const handlerCountBefore = handlerCount;
 
-      if (asyncQueryHandler) {
-        asyncReset = true;
+      handleQuery(query, normalizedOptions, setResult);
 
-        if (activeQueries[resultKey]) {
-          activeQueries[resultKey].push(setResult);
-        } else {
-          asyncLeader = true;
-          activeQueries[resultKey] = [ setResult ];
-        }
+      if (handlerCount === handlerCountBefore) {
+        // asynchronous query, so we set the `asyncReset` flags to true
+        // only if they haven't been set to false yet
+        activeQueries[resultKey].forEach(setResult => {
+          setResult.asyncReset = setResult.asyncReset !== false;
+        });
       }
     });
-
-    clear();
   });
 
-  return true;
+  if (!validQuery) {
+    props.result = originalResult;
+    props.results = originalResults;
+  }
+
+  return validQuery;
+}
+
+function shouldRequery(query, providerInstance) {
+  const currentState = providerInstance.store.getState();
+  const { lastQueriedState } = providerInstance;
+
+  providerInstance.lastQueriedState = currentState;
+
+  if (!lastQueriedState) {
+    return true;
+  }
+
+  if (currentState !== lastQueriedState) {
+    if (typeof query === 'object') {
+      for (let key in query) {
+        if (currentState[key] !== lastQueriedState[key]) {
+          return true;
+        }
+      }
+    } else {
+      return true;
+    }
+  }
+
+  return false;
 }
