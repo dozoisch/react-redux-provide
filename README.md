@@ -347,6 +347,47 @@ const replication = {
 
 See [`redux-replicate`](https://github.com/loggur/redux-replicate) for the full documentation which can be used within the `replication` object.  Also see [`redux-replicate-fs`](https://github.com/loggur/redux-replicate-fs) for an example replicator implementation that gets the initial state, stores states upon changes, and handles queries.
 
+### baseQuery
+
+Optional object that can be used as the base of each query.  For example, if you know you almost always want to search for accounts that have not been deactivated, you would set the `baseQuery` within your `replication` object as follows:
+
+```js
+const replication = {
+  reducerKeys: [
+    'accountName',
+    'accountDeactivated'
+  ],
+  queryable: true,
+  baseQuery: {
+    accountDeactivated: false
+  }
+};
+```
+
+### baseQueryOptions
+
+Optional object that can be used as the base of each query's options.  For example, if you want to limit the query results to some number by default:
+
+```js
+const replication = {
+  reducerKeys: [
+    'userId',
+    'userName',
+    'userPasswordHash'
+  ],
+  queryable: [
+    'userName',
+    'userDeleted'
+  ],
+  baseQuery: {
+    userDeleted: false
+  },
+  baseQueryOptions: {
+    limit: 100
+  }
+};
+```
+
 ### clientStateKeys
 
 Optional array of `reducerKeys`.  This isn't used directly by `react-redux-provide`, but it is the recommended way to specify which `reducerKeys` should be sent to the client by the server.  See [`provide-page`](https://github.com/loggur/provide-page) for an example of how this is used.

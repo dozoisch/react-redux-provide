@@ -554,7 +554,9 @@ export function getQueryHandlers(provider) {
       replication = [ replication ];
     }
 
-    for (let { replicator, reducerKeys } of replication) {
+    for (let {
+      replicator, reducerKeys, baseQuery, baseQueryOptions
+    } of replication) {
       if (replicator) {
         if (!Array.isArray(replicator)) {
           replicator = [ replicator ];
@@ -564,7 +566,9 @@ export function getQueryHandlers(provider) {
           if (handleQuery) {
             queryHandlers.push({
               handleQuery,
-              reducerKeys: reducerKeys || Object.keys(provider.reducers)
+              reducerKeys: reducerKeys || Object.keys(provider.reducers),
+              baseQuery,
+              baseQueryOptions
             });
           }
         }
@@ -799,30 +803,32 @@ export function handleQueries(fauxInstance, callback, previousResults) {
 
     // now we need to run the query through each `handleQuery` function,
     // which may or may not be synchronous
-    queryHandlers.forEach(({ handleQuery, reducerKeys }) => {
-      // normalize the options so that people can be lazy
-      const normalizedOptions = { ...options };
+    queryHandlers.forEach(
+      ({ handleQuery, reducerKeys, baseQuery, baseQueryOptions }) => {
+        // normalize the options so that people can be lazy
+        const normalizedOptions = { ...baseQueryOptions, ...options };
 
-      if (typeof normalizedOptions.select === 'undefined') {
-        normalizedOptions.select = reducerKeys;
-      } else if (!Array.isArray(normalizedOptions.select)) {
-        normalizedOptions.select = [ normalizedOptions.select ];
+        if (typeof normalizedOptions.select === 'undefined') {
+          normalizedOptions.select = reducerKeys;
+        } else if (!Array.isArray(normalizedOptions.select)) {
+          normalizedOptions.select = [ normalizedOptions.select ];
+        }
+
+        // we can determine whether or not its synchronous by checking the 
+        // `handlerCount` immediately after `handleQuery` is called
+        const handlerCountBefore = handlerCount;
+
+        handleQuery({ ...baseQuery, ...query }, normalizedOptions, setResult);
+
+        if (handlerCount === handlerCountBefore) {
+          // asynchronous query, so we set the `asyncReset` flags to true
+          // only if they haven't been set to false yet
+          activeQueries[resultKey].forEach(setResult => {
+            setResult.asyncReset = setResult.asyncReset !== false;
+          });
+        }
       }
-
-      // we can determine whether or not its synchronous by checking the 
-      // `handlerCount` immediately after `handleQuery` is called
-      const handlerCountBefore = handlerCount;
-
-      handleQuery(query, normalizedOptions, setResult);
-
-      if (handlerCount === handlerCountBefore) {
-        // asynchronous query, so we set the `asyncReset` flags to true
-        // only if they haven't been set to false yet
-        activeQueries[resultKey].forEach(setResult => {
-          setResult.asyncReset = setResult.asyncReset !== false;
-        });
-      }
-    });
+    );
   });
 
   if (!validQuery) {
