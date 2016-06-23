@@ -274,6 +274,10 @@ Optional string or function.  Defaults to its respective `key` within the `provi
     : null;
   ```
 
+### defaultKey
+
+The above `key` will default to this.  You typically don't need to set this yourself since it will come from the `providers` object.
+
 ### state
 
 Optional object used for overriding the store's initial state.  This is typically used only when the initial state can be derived from the current request and/or session, as the default initial state should come from the `reducers` themselves.  It works best to copy and extend providers using the spread operator.
