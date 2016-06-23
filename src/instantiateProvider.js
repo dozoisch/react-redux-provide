@@ -62,6 +62,13 @@ export default function instantiateProvider(
     providerKey = provider.key;
   }
 
+  if (!provider.actions) {
+    provider.actions = {};
+  }
+  if (!provider.reducers) {
+    provider.reducers = {};
+  }
+
   if (getReducerKeys === true) {
     getReducerKeys = provider.reducers;
   }
@@ -449,10 +456,18 @@ export default function instantiateProvider(
   return providerInstance;
 }
 
+function getContext(fauxInstance) {
+  if (!fauxInstance.context) {
+    fauxInstance.context = {};
+  }
+
+  return fauxInstance.context;
+}
+
 export function getTempFauxInstance(fauxInstance, props) {
   return {
     props,
-    context: fauxInstance.context,
+    context: getContext(fauxInstance),
     providers: getProviders(fauxInstance),
     providerInstances: getProviderInstances(fauxInstance),
     activeQueries: getActiveQueries(fauxInstance),
@@ -463,7 +478,8 @@ export function getTempFauxInstance(fauxInstance, props) {
 
 export function getFromContextOrProps(fauxInstance, key, defaultValue) {
   if (typeof fauxInstance[key] === 'undefined') {
-    const { props, context } = fauxInstance;
+    const { props } = fauxInstance;
+    const context = getContext(fauxInstance);
 
     if (typeof props[key] !== 'undefined') {
       fauxInstance[key] = props[key];
@@ -686,7 +702,8 @@ export function handleQueries(fauxInstance, callback, previousResults) {
     return false;
   }
 
-  const { props, context } = fauxInstance;
+  const { props } = fauxInstance;
+  const context = getContext(fauxInstance);
   const { result: originalResult, results: originalResults } = props;
   let validQuery = false;
 
