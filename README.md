@@ -1095,6 +1095,18 @@ renderApp({
 
 - The more people who adopt providers, the better!  The provider paradigm makes it insanely easy to integrate each other's services, build apps around specific providers, or even combine multiple apps and/or services into one.
 
+- There's a shortcut for dispatching actions, which might be useful when writing tests or inter-provider communication.
+
+  Instead of:
+    ```js
+    providerInstance.store.dispatch(providerInstance.actions.doSomething('fun'))
+    ```
+
+  You can just do this:
+    ```js
+    providerInstance.actionCreators.doSomething('fun')
+    ```
+
 - Check out [`react-devtools`](https://github.com/facebook/react-devtools) for a closer look at what exactly is going on when using providers!
 
 ![See `ProvideBranches(theme,packageList,sources)`](https://cloud.githubusercontent.com/assets/7020411/9288123/3587858e-4305-11e5-8156-fe0392e6f7fd.png)
