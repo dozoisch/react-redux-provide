@@ -79,6 +79,18 @@ export default function instantiateProvider(
   let isStatic = typeof providerKey !== 'function';
   let storeKey;
 
+  if (typeof provider.key === 'string') {
+    if (!providers[provider.key]) {
+      providers[provider.key] = provider;
+    }
+  } else if (provider.defaultKey) {
+    if (!providers[provider.defaultKey]) {
+      providers[provider.defaultKey] = provider;
+    }
+  } else if (!providers[provider.key.toString()]) {
+    providers[provider.key.toString()] = provider;
+  }
+
   if (!isStatic) {
     // get actual `providerKey`
     providerKey = providerKey(fauxInstance);
