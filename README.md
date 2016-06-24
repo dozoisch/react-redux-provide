@@ -59,6 +59,14 @@
 npm install react-redux-provide --save
 ```
 
+And then at the very beginning if your app:
+
+```js
+import 'react-redux-provide/lib/install';
+```
+
+> This is only necessary until React has a better `context` API.
+
 
 ## What does this do?
 
