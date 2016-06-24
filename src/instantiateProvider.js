@@ -918,7 +918,9 @@ export function handleQueries(fauxInstance, callback, previousResults) {
         const normalizedOptions = { ...baseQueryOptions, ...options };
 
         if (typeof normalizedOptions.select === 'undefined') {
-          normalizedOptions.select = reducerKeys;
+          normalizedOptions.select = reducerKeys === true
+            ? Object.keys(provider.reducers)
+            : reducerKeys;
         } else if (!Array.isArray(normalizedOptions.select)) {
           normalizedOptions.select = [ normalizedOptions.select ];
         }
