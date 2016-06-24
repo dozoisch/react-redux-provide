@@ -67,6 +67,8 @@ import 'react-redux-provide/lib/install';
 
 > This is only necessary until React has a better `context` API.
 
+If you'd rather not use the `install` method, you must wrap your top component with the [`provide`](#provide) function so that `providers` can be retrieved via `context`, assuming you follow convention and actually pass your `providers` to the top component.
+
 
 ## What does this do?
 
