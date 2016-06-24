@@ -51,8 +51,28 @@ export default function createProviderStore(
     storeKey = providerInstance.providerKey;
   }
 
-  function unshiftReplication({ key, reducerKeys, queryable, replicator }) {
+  function unshiftReplication({
+    key, reducerKeys, queryable, baseQuery, replicator
+  }) {
     if (replicator) {
+      if (baseQuery) {
+        if (Array.isArray(reducerKeys)) {
+          for (let reducerKey in baseQuery) {
+            if (reducerKeys.indexOf(reducerKey) < 0) {
+              reducerKeys.push(reducerKey);
+            }
+          }
+        }
+
+        if (Array.isArray(queryable)) {
+          for (let reducerKey in baseQuery) {
+            if (queryable.indexOf(reducerKey) < 0) {
+              queryable.push(reducerKey);
+            }
+          }
+        }
+      }
+
       enhancers.unshift(
         replicate({
           key: typeof key === 'undefined' ? storeKey : key,
