@@ -4,6 +4,10 @@ import createProviderStore from './createProviderStore';
 import { pushOnReady, unshiftOnReady, unshiftMiddleware } from './keyConcats';
 
 const isServerSide = typeof window === 'undefined';
+const isTesting = typeof process !== 'undefined'
+  && process.env
+  && process.env.NODE_ENV === 'test';
+
 const globalProviderInstances = {};
 
 // TODO: we'll use this at some point to select only component propTypes
@@ -869,9 +873,9 @@ export function handleQueries(fauxInstance, callback, previousResults) {
         // and this query is clear
         queryClear();
 
-        // we want to remove the cached query results on the client
+        // we want to remove the cached query results on the client/tests
         // so that it will always update
-        if (!isServerSide) {
+        if (!isServerSide || isTesting) {
           delete queryResults[resultKey];
         }
       }
