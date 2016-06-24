@@ -1140,7 +1140,7 @@ Useful for hot reloading of providers.  The state of your app and your stores wi
   }
   ```
 
-### instantiateProvider (Object fauxInstance, Object provider, Optional String|Function providerKey, Optional Function readyCallback, Optional Boolean createReplication)
+### instantiateProvider (Optional Object fauxInstance, Object provider, Optional String|Function providerKey, Optional Function readyCallback, Optional Boolean createReplication)
 
 Returns an instance of some provider.  Each provider instance is assigned its own `providerKey` and has its own store.  And each instance is cached within the `context`'s `provideInstances` object by its `providerKey`.  If the instance already exists, it will be returned.  You probably won't ever need to use this.
 

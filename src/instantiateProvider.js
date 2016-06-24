@@ -60,6 +60,15 @@ export default function instantiateProvider(
     readyCallback = arguments[0].readyCallback;
     createReplication = arguments[0].createReplication;
     getReducerKeys = arguments[0].getReducerKeys;
+
+    if (!fauxInstance) {
+      provider = arguments[0];
+      fauxInstance = {};
+    }
+  }
+
+  if (!fauxInstance.props) {
+    fauxInstance.props = {};
   }
 
   if (typeof providerKey === 'undefined') {
