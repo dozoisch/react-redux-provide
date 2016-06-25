@@ -565,6 +565,30 @@ export default function provide(ComponentClass) {
   return hoistStatics(Provide, ComponentClass);
 }
 
+export function reloadFunctions(oldFunctions, newFunctions) {
+  for (let key in newFunctions) {
+    let newFunction = newFunctions[key];
+
+    if (
+      typeof newFunction === 'function'
+      && newFunction.propTypes
+      && !newFunction.__componentInstances
+      && oldFunctions[key]
+      && oldFunctions[key].__componentInstances
+    ) {
+      for (let componentInstance of oldFunctions[key].__componentInstances) {
+        let { props, context } = componentInstance;
+
+        componentInstance.reinitialize(props, context, newFunction);
+      }
+    }
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('You should only use `reloadInstances` in development!');
+  }
+}
+
 export function reloadProviders(providers, providerInstances) {
   const { rootInstance, clientStates } = window;
   const {

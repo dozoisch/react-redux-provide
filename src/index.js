@@ -1,4 +1,4 @@
-import provide, { reloadProviders } from './provide';
+import provide, { reloadFunctions, reloadProviders } from './provide';
 
 import createProviderStore from './createProviderStore';
 import { getClientState, getInitialState } from './createProviderStore';
@@ -53,6 +53,7 @@ import {
 export default provide;
 export {
   provide,
+  reloadFunctions,
   reloadProviders,
 
   createProviderStore,

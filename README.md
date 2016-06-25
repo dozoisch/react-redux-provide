@@ -1134,6 +1134,12 @@ Other than the `provide` function, nearly all of the exports are utility functio
 
 The default export which accepts a React class and returns the class wrapped with a higher-order component designed to share and manage application state via `context`.  Only use this if you aren't using the `install` module.
 
+### reloadFunctions (Object oldFunctions, Object newFunctions)
+
+Useful for hot reloading stateless function components.  The state of your app and your stores will remain intact!
+
+  See [`bloggur/src/renderApp.js`](https://github.com/loggur/bloggur/blob/master/src/renderApp.js) for an example of how to hot reload providers using `webpack`'s hot module replacement.
+
 ### reloadProviders (Object providers, Optional Object providerInstances)
 
 Useful for hot reloading of providers.  The state of your app and your stores will remain intact!
