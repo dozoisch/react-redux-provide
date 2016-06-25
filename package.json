@@ -1,6 +1,6 @@
 {
   "name": "react-redux-provide",
-  "version": "6.0.0-rc.49",
+  "version": "6.0.0-rc.50",
   "description": "Bridges the gap between Redux and the declarative nature of GraphQL/Relay. Share, manipulate, and replicate application state across any number of components.",
   "main": "./lib/index.js",
   "scripts": {
