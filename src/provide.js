@@ -13,7 +13,8 @@ const contextTypes = {
   providerInstances: PropTypes.object,
   activeQueries: PropTypes.object,
   queryResults: PropTypes.object,
-  partialStates: PropTypes.object
+  partialStates: PropTypes.object,
+  forceDeepUpdate: PropTypes.bool
 };
 
 export default function provide(ComponentClass) {
@@ -40,7 +41,8 @@ export default function provide(ComponentClass) {
         providerInstances: this.getProviderInstances(),
         activeQueries: this.getActiveQueries(),
         queryResults: this.getQueryResults(),
-        partialStates: this.getPartialStates()
+        partialStates: this.getPartialStates(),
+        forceDeepUpdate: this.forceDeepUpdate
       };
     }
 
@@ -121,12 +123,14 @@ export default function provide(ComponentClass) {
     }
 
     shouldComponentUpdate() {
-      if (this.receivedNewProps) {
+      if (this.forceDeepUpdate || this.context.forceDeepUpdate) {
+        return true;
+      } else if (this.receivedNewProps) {
         this.receivedNewProps = false;
         return true;
+      } else {
+        return false;
       }
-
-      return false;
     }
 
     render = isServerSide
@@ -296,6 +300,10 @@ export default function provide(ComponentClass) {
     }
 
     getWrappedInstance() {
+      if (this.context.forceDeepUpdate) {
+        this.doUpdate = true;
+      }
+
       if (!this.wrappedInstance || this.doUpdate) {
         this.renders++;
         this.doUpdate = false;
@@ -523,6 +531,15 @@ export default function provide(ComponentClass) {
       allComponentInstances.push(componentInstances);
     }
 
+    ComponentClass.Provide = Provide;
+    ComponentClass.setComponentClass = function(NextClass) {
+      componentInstances = ComponentClass.__componentInstances;
+      NextClass.__componentInstances = componentInstances;
+      ComponentClass = NextClass;
+      Provide.ComponentClass = ComponentClass;
+      componentName = ComponentClass.displayName || ComponentClass.name;
+    };
+
     Provide.prototype.componentDidMount = function() {
       this.unmounted = isServerSide;
       componentInstances.add(this);
@@ -547,11 +564,7 @@ export default function provide(ComponentClass) {
     }
 
     Provide.prototype.setComponentClass = function(NextClass) {
-      componentInstances = ComponentClass.__componentInstances;
-      NextClass.__componentInstances = componentInstances;
-      ComponentClass = NextClass;
-      Provide.ComponentClass = ComponentClass;
-      componentName = ComponentClass.displayName || ComponentClass.name;
+      Provide.setComponentClass(NextClass);
       this.componentName = componentName;
     }
 
@@ -568,18 +581,23 @@ export default function provide(ComponentClass) {
 export function reloadFunctions(oldFunctions, newFunctions) {
   for (let key in newFunctions) {
     let newFunction = newFunctions[key];
+    let oldFunction = oldFunctions[key];
 
     if (
       typeof newFunction === 'function'
-      && newFunction.propTypes
-      && !newFunction.__componentInstances
-      && oldFunctions[key]
-      && oldFunctions[key].__componentInstances
+      && newFunction.propTypes && !newFunction.Provide
+      && oldFunction && oldFunction.Provide
     ) {
-      for (let componentInstance of oldFunctions[key].__componentInstances) {
+      newFunction.Provide = provide(newFunction);
+      oldFunction.setComponentClass(newFunction);
+      newFunction.setComponentClass = oldFunction.setComponentClass;
+
+      for (let componentInstance of oldFunction.__componentInstances) {
         let { props, context } = componentInstance;
 
+        componentInstance.forceDeepUpdate = true;
         componentInstance.reinitialize(props, context, newFunction);
+        componentInstance.forceDeepUpdate = false;
       }
     }
   }
