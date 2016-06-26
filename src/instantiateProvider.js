@@ -821,6 +821,9 @@ export function handleQueries(fauxInstance, callback, previousResults) {
     const queryResult = queryResults[resultKey];
     let queryResultExists = typeof queryResult !== 'undefined';
 
+    // subscribe to all of this provider's instances' stores for requeries
+    subscribeToAll(key, provider, fauxInstance, resultKey, query, callback);
+
     // result handler for both sync and async queries
     const setResult = result => {
       const first = activeQueries[resultKey].values().next().value;
@@ -950,7 +953,71 @@ export function handleQueries(fauxInstance, callback, previousResults) {
   return validQuery;
 }
 
-function shouldRequery(query, providerInstance) {
+function subscribeToAll(
+  key, provider, fauxInstance, resultKey, query, callback
+) {
+  if (isServerSide || !fauxInstance.props.__wrapper) {
+    return;
+  }
+
+  fauxInstance.requeryCallback = callback;
+
+  if (!provider.subscribedFauxInstances) {
+    provider.subscribedFauxInstances = {};
+  }
+
+  if (provider.subscribedFauxInstances[resultKey]) {
+    provider.subscribedFauxInstances[resultKey].add(fauxInstance);
+    return;
+  }
+
+  const subscribedFauxInstances = new Set();
+  provider.subscribedFauxInstances[resultKey] = subscribedFauxInstances;
+  subscribedFauxInstances.add(fauxInstance);
+
+  let timeout;
+  const requery = providerInstance => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      for (let fauxInstance of subscribedFauxInstances) {
+        if (fauxInstance.props.__wrapper.unmounted) {
+          subscribedFauxInstances.delete(fauxInstance);
+        } else {
+          handleQueries(fauxInstance, fauxInstance.requeryCallback);
+        }
+      }
+    });
+  };
+
+  pushOnReady({ provider }, requery);
+
+  if (!provider.subscriber) {
+    provider.subscriber = {};
+  }
+
+  const subscriber = provider.subscriber[key];
+  provider.subscriber[key] = (providerInstance, providerInstance2) => {
+    if (subscriber) {
+      subscriber(providerInstance, providerInstance2);
+    }
+
+    if (shouldRequery(providerInstance, query)) {
+      requery(providerInstance);
+    }
+  };
+
+  if (provider.instances) {
+    provider.instances.forEach(providerInstance => {
+      providerInstance.store.subscribe(() => {
+        if (shouldRequery(providerInstance, query)) {
+          requery(providerInstance);
+        }
+      });
+    });
+  }
+}
+
+function shouldRequery(providerInstance, query) {
   const currentState = providerInstance.store.getState();
   const { lastQueriedState } = providerInstance;
 
