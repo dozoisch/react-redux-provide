@@ -72,6 +72,8 @@ If you'd rather not use the `install` method, you must wrap your top component w
 
 ## What does this do?
 
+![react redux providers and replication](https://cloud.githubusercontent.com/assets/7020411/16416007/5b97b936-3cfd-11e6-87e5-f38d9abe631d.png)
+
 This library allows you to:
 
 - Build your applications in an extremely declarative manner.  Think of it as the Redux equivalent of GraphQL/Relay, but slightly easier to get started (you decide).
