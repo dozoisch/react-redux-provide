@@ -668,7 +668,9 @@ export function getQueryHandlers(provider) {
 export function getMergedResult(mergedResult, result) {
   if (Array.isArray(result)) {
     return [ ...(mergedResult || []), ...result ];
-  } else if (result && typeof result === 'object') {
+  } else if (
+    result && typeof result === 'object' && result.constructor === Object
+  ) {
     return { ...(mergedResult || {}), ...result };
   } else if (typeof result !== 'undefined') {
     return result;
