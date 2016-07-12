@@ -198,17 +198,56 @@ export default function instantiateProvider(
     }
 
     function getInstance(props, callback, createReplication) {
+      let provider;
+      let providerKey;
+
+      if (typeof props === 'string') {  // key is already known
+        if (providerInstances[props]) {
+          providerKey = props;
+        }
+
+        provider = providers[props] || providerInstances[props];
+        props = {};
+      } else {
+        provider = findProvider(props);
+      }
+
       return instantiateProvider(
         getTempFauxInstance(fauxInstance, props),
-        findProvider(props),
-        undefined,
+        provider,
+        providerKey,
         callback,
         createReplication
       );
     }
 
+    function getInstances(propsArray, callback, createReplication) {
+      const instances = [];
+      let getCount = propsArray.length;
+      const clear = () => {
+        if (--getCount === 0) {
+          if (callback) {
+            callback(instances);
+          }
+        }
+      };
+
+      propsArray.forEach((props, index) => {
+        getInstance(props, instance => {
+          instances[index] = instance;
+          clear();
+        }, createReplication);
+      });
+
+      return instances;
+    }
+
     function createInstance(props, callback) {
       return getInstance(props, callback, true);
+    }
+
+    function createInstances(propsArray, callback) {
+      return getInstances(propsArray, callback, true);
     }
 
     function setStates(states) {
@@ -297,7 +336,12 @@ export default function instantiateProvider(
     }
 
     const providerApi = {
-      getInstance, createInstance, setStates, find
+      getInstance,
+      getInstances,
+      createInstance,
+      createInstances,
+      setStates,
+      find
     };
 
     unshiftMiddleware({ provider }, ({ dispatch, getState }) => {

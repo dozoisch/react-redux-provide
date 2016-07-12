@@ -629,13 +629,21 @@ const actions = {
 };
 ```
 
-### getInstance (Object state, Function callback)
+### getInstance (Object|String state|key|providerKey, Function callback)
 
 Uses [`instantiateProvider`](#instantiateprovider) to get some provider instance based on some `state` - i.e., same method used when providing some instance to components.
+
+### getInstances (Array states|keys|providerKeys, Function callback)
+
+A shortcut to get multiple instances at once.  Uses `getInstance` under the hood.
 
 ### createInstance (Object state, Function callback)
 
 Just like `getInstance` but ensures the initial states are replicated.
+
+### createInstances (Array states, Function callback)
+
+A shortcut to create multiple instances at once.
 
 ### setStates (Object states)
 
