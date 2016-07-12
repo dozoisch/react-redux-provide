@@ -100,6 +100,8 @@ export default function instantiateProvider(
     if (!providers[provider.defaultKey]) {
       providers[provider.defaultKey] = provider;
     }
+  } else if (!provider.key || !provider.key.toString) {
+    console.warn('Missing or invalid provider key!');
   } else if (!providers[provider.key.toString()]) {
     providers[provider.key.toString()] = provider;
   }
