@@ -4,7 +4,7 @@ import provide from './provide';
 const { createElement } = React;
 React.createElement = function(ComponentClass, props, ...args) {
   if (typeof ComponentClass === 'string') {
-    if (typeof props === 'object') {
+    if (props && typeof props === 'object') {
       delete props.__wrapper;
       delete props.__provided;
     }
