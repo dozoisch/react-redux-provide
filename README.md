@@ -59,11 +59,13 @@
 npm install react-redux-provide --save
 ```
 
-And then at the very beginning if your app:
+And then at the very beginning of your app:
 
 ```js
 import 'react-redux-provide/lib/install';
 ```
+
+> **Note:** If you need to disable the automatic wrapper for specific components (usually 3rd party components), set a static `__provide` property to `false` on the component - e.g., `SomeComponent.__provide = false`.
 
 > This is only necessary until React has a better `context` API.
 
@@ -967,6 +969,8 @@ Now how do we tie everything together?  Easy!  Two methods:
 1.  The easiest and recommended method is to use this library's `install` module, which automatically wraps all of your React classes with the `provide` function.  This allows all of your components to be packaged independently of this library.  There's also a chance that future React versions will support this type of enhancement, so this is definitely the recommended method!
   
   All you do is `import 'react-redux-provide/lib/install'` at the top of your main entry (or entries).
+
+  > **Note:** If you need to disable the automatic wrapper for specific components (usually 3rd party components), set a static `__provide` property to `false` on the component - e.g., `SomeComponent.__provide = false`.
 
   ```js
   // src/renderApp.js

@@ -11,7 +11,10 @@ React.createElement = function(ComponentClass, props, ...args) {
     return createElement.apply(this, arguments);
   }
 
-  if (props && props.__provided) {
+  if (
+    props && props.__provided
+    || ComponentClass && ComponentClass.__provide === false
+  ) {
     return createElement.apply(this, arguments);
   }
 
