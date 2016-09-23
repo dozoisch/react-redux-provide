@@ -941,6 +941,10 @@ export function handleQueries(fauxInstance, callback, previousResults) {
       }
     };
 
+    const setError = error => {
+      console.warn(error);
+    };
+
     // this query is currently taking place, make the handler follow the leader
     if (activeQueries[resultKey]) {
       activeQueries[resultKey].add(setResult);
@@ -980,7 +984,12 @@ export function handleQueries(fauxInstance, callback, previousResults) {
         // `handlerCount` immediately after `handleQuery` is called
         const handlerCountBefore = handlerCount;
 
-        handleQuery({ ...baseQuery, ...query }, normalizedOptions, setResult);
+        handleQuery({
+          query: { ...baseQuery, ...query },
+          options: normalizedOptions,
+          setResult,
+          setError
+        });
 
         if (handlerCount === handlerCountBefore) {
           // asynchronous query, so we set the `asyncReset` flags to true

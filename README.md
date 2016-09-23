@@ -342,7 +342,7 @@ Creating replicators for Redux and using them with providers should hopefully be
 
 ### replication
 
-Optional object or array of objects.  Uses [`redux-replicate`](https://github.com/loggur/redux-replicate) (a Redux store enhancer) under the hood.  Each object should contain keys that match the arguments expected by `redux-replicate` - i.e., `{ key, reducerKeys, replicator, queryable (optional), clientState (optional) }`.  The `key` will default to the provider instance's `providerKey`.
+Optional object or array of objects.  Uses [`redux-replicate`](https://github.com/loggur/redux-replicate) (a Redux store enhancer) under the hood.  Each object should contain keys that match the arguments expected by [`redux-replicate`](https://github.com/loggur/redux-replicate) - i.e., `{ key, reducerKeys, replicator, queryable (optional), clientState (optional) }`.  The `key` will default to the provider instance's `providerKey`.
 
 Example where some `user` provider instance's states are replicated to flat files whenever they change:
 
@@ -862,7 +862,7 @@ Mostly used internally for watching for whenever some reducer returns a differen
 
 ### store.onReady (Function readyCallback)
 
-You can use this if you know your replicator(s) asynchronously initialize the store's state and would like to do something immediately after initialization.  The `readyCallback` will receive the `key` and `store` as arguments.
+You can use this if you know your replicator(s) asynchronously initialize the store's state and would like to do something immediately after initialization.  The `readyCallback` will receive the `store` within an object - e.g., `readyCallback({ store })`.
 
 ### store.initializedReplication
 
@@ -1349,7 +1349,7 @@ Adds replicator(s) to the each provider's `replication` property, if it exists. 
   import localforage from 'redux-replicate-localforage';
   import * as providers from './providers/index';
 
-  pushReplication(providers, localforage);
+  pushReplicator(providers, localforage);
   ```
 
   ```js
@@ -1359,7 +1359,7 @@ Adds replicator(s) to the each provider's `replication` property, if it exists. 
   import rethink from 'redux-replicate-rethink';
   import * as providers from './providers/index';
 
-  pushReplication(providers, rethink);
+  pushReplicator(providers, rethink);
   ```
 
 ### pushWait|unshiftWait|pushClear|unshiftClear (Object providers, Function|Array wait|clear)
