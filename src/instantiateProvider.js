@@ -967,7 +967,12 @@ export function handleQueries(fauxInstance, callback, previousResults) {
     // which may or may not be synchronous
     queryHandlers.forEach(
       ({ handleQuery, reducerKeys, baseQuery, baseQueryOptions }) => {
-        // normalize the options so that people can be lazy
+        // we can determine whether or not its synchronous by checking the 
+        // `handlerCount` immediately after `handleQuery` is called
+        const handlerCountBefore = handlerCount;
+
+        // normalize the query + options so that people can be lazy
+        const normalizedQuery = { ...baseQuery, ...query };
         const normalizedOptions = { ...baseQueryOptions, ...options };
 
         if (typeof normalizedOptions.select === 'undefined') {
@@ -978,12 +983,16 @@ export function handleQueries(fauxInstance, callback, previousResults) {
           normalizedOptions.select = [ normalizedOptions.select ];
         }
 
-        // we can determine whether or not its synchronous by checking the 
-        // `handlerCount` immediately after `handleQuery` is called
-        const handlerCountBefore = handlerCount;
+        if (Array.isArray(normalizedOptions.select)) {
+          for (let reducerKey in normalizedQuery) {
+            if (normalizedOptions.select.indexOf(reducerKey) < 0) {
+              normalizedOptions.select.push(reducerKey);
+            }
+          }
+        }
 
         handleQuery({
-          query: { ...baseQuery, ...query },
+          query: normalizedQuery,
           options: normalizedOptions,
           setResult,
           setError
