@@ -115,7 +115,7 @@ export default function createProviderStore(
     create = createStore;
   }
 
-  const initialState = getInitialState(providerInstance);
+  const initialState = { ...getInitialState(providerInstance) };
 
   Object.keys(reducers).forEach(reducerKey => {
     if (createState && typeof createState[reducerKey] !== 'undefined') {
