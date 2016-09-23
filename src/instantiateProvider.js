@@ -40,7 +40,7 @@ function hasReducerKeys(providerInstance, getReducerKeys) {
  * @param {Object} provider
  * @param {String|Function} providerKey Optional
  * @param {Function} readyCallback Optional
- * @param {Boolean} createReplication Optional
+ * @param {Object} createState Optional
  * @param {Object} getReducerKeys Optional
  * @return {Object}
  * @api public
@@ -50,7 +50,7 @@ export default function instantiateProvider(
   provider,
   providerKey,
   readyCallback,
-  createReplication,
+  createState,
   getReducerKeys
 ) {
   if (arguments.length === 1) {
@@ -58,7 +58,7 @@ export default function instantiateProvider(
     provider = arguments[0].provider;
     providerKey = arguments[0].providerKey;
     readyCallback = arguments[0].readyCallback;
-    createReplication = arguments[0].createReplication;
+    createState = arguments[0].createState;
     getReducerKeys = arguments[0].getReducerKeys;
 
     if (!fauxInstance) {
@@ -197,7 +197,7 @@ export default function instantiateProvider(
       });
     }
 
-    function getInstance(props, callback, createReplication) {
+    function getInstance(props, callback, create) {
       let provider;
       let providerKey;
 
@@ -217,11 +217,11 @@ export default function instantiateProvider(
         provider,
         providerKey,
         callback,
-        createReplication
+        create ? props : null
       );
     }
 
-    function getInstances(propsArray, callback, createReplication) {
+    function getInstances(propsArray, callback, create) {
       const instances = [];
       let getCount = propsArray.length;
       const clear = () => {
@@ -236,7 +236,7 @@ export default function instantiateProvider(
         getInstance(props, instance => {
           instances[index] = instance;
           clear();
-        }, createReplication);
+        }, create);
       });
 
       return instances;
@@ -377,9 +377,7 @@ export default function instantiateProvider(
   providerInstance.providerKey = providerKey;
   providerInstance.isStatic = isStatic;
 
-  const store = createProviderStore(
-    providerInstance, storeKey, createReplication
-  );
+  const store = createProviderStore(providerInstance, storeKey, createState);
   const initialState = store.getState();
   const { actions } = providerInstance;
   const actionCreators = {};

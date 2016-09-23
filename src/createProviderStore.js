@@ -30,12 +30,12 @@ export function getInitialState({ providerKey, state }) {
  *
  * @param {Object} providerInstance
  * @param {Mixed} storeKey Optional
- * @param {Boolean} createReplication Optional
+ * @param {Object} createState Optional
  * @return {Object}
  * @api public
  */
 export default function createProviderStore(
-  providerInstance, storeKey, createReplication
+  providerInstance, storeKey, createState
 ) {
   const { reducers, middleware, enhancer, replication } = providerInstance;
   const watchedReducers = {};
@@ -76,10 +76,10 @@ export default function createProviderStore(
       enhancers.unshift(
         replicate({
           key: typeof key === 'undefined' ? storeKey : key,
-          create: createReplication,
           reducerKeys,
           queryable,
           replicator,
+          create: Boolean(createState),
           clientState: getClientState(providerInstance)
         })
       );
@@ -134,7 +134,9 @@ export default function createProviderStore(
   });
 
   combinedReducers = combineReducers(watchedReducers);
-  store = create(combinedReducers, getInitialState(providerInstance));
+  store = create(
+    combinedReducers, { ...getInitialState(providerInstance), ...createState }
+  );
 
   // we use a custom `watch` method with instead of a replicator
   // since it's slightly more efficient and every clock cycle counts,

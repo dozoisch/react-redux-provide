@@ -1172,15 +1172,19 @@ Useful for hot reloading of providers.  The state of your app and your stores wi
   }
   ```
 
-### instantiateProvider (Optional Object fauxInstance, Object provider, Optional String|Function providerKey, Optional Function readyCallback, Optional Boolean createReplication)
+### instantiateProvider (Optional Object fauxInstance, Object provider, Optional String|Function providerKey, Optional Function readyCallback, Optional Object createState)
 
 Returns an instance of some provider.  Each provider instance is assigned its own `providerKey` and has its own store.  And each instance is cached within the `context`'s `provideInstances` object by its `providerKey`.  If the instance already exists, it will be returned.  You probably won't ever need to use this.
 
 The `fauxInstance` should resemble a component instance - i.e., `{ props, context }`.
 
-### createProviderStore (Object providerInstance, Optional Mixed storeKey, Optional Boolean createReplication)
+The `createState` object will be passed to `createProviderStore` (below).
+
+### createProviderStore (Object providerInstance, Optional Mixed storeKey, Optional Object createState)
 
 Creates and returns a store specifically for some provider instance.  You probably won't ever need to use this.
+
+If the `createState` object is included, it is merged into the store's initial state and indicates that the initial state should be replicated - i.e., `replication.create` is set to `true`.
 
 ### getClientState (Object providerInstance)
 
