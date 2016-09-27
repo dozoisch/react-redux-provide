@@ -1180,11 +1180,11 @@ The `fauxInstance` should resemble a component instance - i.e., `{ props, contex
 
 The `createState` object will be passed to `createProviderStore` (below).
 
-### createProviderStore (Object providerInstance, Optional Mixed storeKey, Optional Object createState)
+### createProviderStore (Object providerInstance, Optional Mixed storeKey, Optional Object createState, Optional Function createFunction)
 
 Creates and returns a store specifically for some provider instance.  You probably won't ever need to use this.
 
-If the `createState` object is included, it is merged into the store's initial state and indicates that the initial state should be replicated - i.e., `replication.create` is set to `true`.
+If the `createState` object is included, it is used as the store's initial state and indicates that the initial state should be replicated - i.e., `replication.create` is set to either the `createFunction` or `true`.
 
 ### getClientState (Object providerInstance)
 

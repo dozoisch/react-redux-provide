@@ -31,11 +31,12 @@ export function getInitialState({ providerKey, state }) {
  * @param {Object} providerInstance
  * @param {Mixed} storeKey Optional
  * @param {Object} createState Optional
+ * @param {Function} createFunction Optional
  * @return {Object}
  * @api public
  */
 export default function createProviderStore(
-  providerInstance, storeKey, createState
+  providerInstance, storeKey, createState, createFunction
 ) {
   const { reducers, middleware, enhancer, replication } = providerInstance;
   const watchedReducers = {};
@@ -79,7 +80,7 @@ export default function createProviderStore(
           reducerKeys,
           queryable,
           replicator,
-          create: Boolean(createState),
+          create: createFunction || Boolean(createState),
           clientState: getClientState(providerInstance)
         })
       );
@@ -115,13 +116,7 @@ export default function createProviderStore(
     create = createStore;
   }
 
-  const initialState = { ...getInitialState(providerInstance) };
-
   Object.keys(reducers).forEach(reducerKey => {
-    if (createState && typeof createState[reducerKey] !== 'undefined') {
-      initialState[reducerKey] = createState[reducerKey];
-    }
-
     watchedReducers[reducerKey] = (state, action) => {
       let nextState;
 
@@ -140,7 +135,11 @@ export default function createProviderStore(
   });
 
   combinedReducers = combineReducers(watchedReducers);
-  store = create(combinedReducers, initialState);
+
+  store = create(
+    combinedReducers,
+    { ...(createState || getInitialState(providerInstance)) }
+  );
 
   // we use a custom `watch` method with instead of a replicator
   // since it's slightly more efficient and every clock cycle counts,
