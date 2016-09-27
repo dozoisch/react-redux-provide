@@ -90,6 +90,7 @@ export default function instantiateProvider(
   const providerInstances = getProviderInstances(fauxInstance);
   let providerInstance;
   let isStatic = typeof providerKey !== 'function';
+  let creator = null;
   let storeKey;
 
   if (typeof provider.key === 'string') {
@@ -130,16 +131,20 @@ export default function instantiateProvider(
   // TODO: we'll use this at some point
   //if (providerInstance && hasReducerKeys(providerInstance, getReducerKeys)) {
   if (providerInstance) {
-    if (readyCallback) {
-      if (providerInstance.ready) {
-        readyCallback(providerInstance);
-      } else {
-        pushOnReady({ providerInstance }, readyCallback);
+    if (createState) {
+      creator = providerInstance;
+    } else {
+      if (readyCallback) {
+        if (providerInstance.ready) {
+          readyCallback(providerInstance);
+        } else {
+          pushOnReady({ providerInstance }, readyCallback);
+        }
       }
-    }
 
-    providerInstances[providerKey] = providerInstance;
-    return providerInstance;
+      providerInstances[providerKey] = providerInstance;
+      return providerInstance;
+    }
   }
 
   if (!provider.hasThunk) {
@@ -416,16 +421,18 @@ export default function instantiateProvider(
   providerInstance.store = store;
   providerInstance.actionCreators = actionCreators;
 
-  if (provider.isGlobal) {
-    globalProviderInstances[providerKey] = providerInstance;
+  if (!creator) {
+    if (provider.isGlobal) {
+      globalProviderInstances[providerKey] = providerInstance;
+    }
+    if (providerInstances) {
+      providerInstances[providerKey] = providerInstance;
+    }
+    if (!provider.instances) {
+      provider.instances = [];
+    }
+    provider.instances.push(providerInstance);
   }
-  if (providerInstances) {
-    providerInstances[providerKey] = providerInstance;
-  }
-  if (!provider.instances) {
-    provider.instances = [];
-  }
-  provider.instances.push(providerInstance);
 
   if (provider.subscribers) {
     Object.keys(provider.subscribers).forEach(key => {
@@ -496,6 +503,27 @@ export default function instantiateProvider(
   }
 
   unshiftOnReady({ providerInstance }, () => {
+    if (creator) {
+      Object.assign(fauxInstance.props, providerInstance.store.getState());
+
+      if (typeof provider.key === 'function') {
+        providerKey = provider.key(fauxInstance);
+      } else if (providerKey === null) {
+        providerKey = provider.defaultKey || provider.key;
+      }
+
+      if (provider.isGlobal && !globalProviderInstances[providerKey]) {
+        globalProviderInstances[providerKey] = providerInstance;
+      }
+      if (providerInstances && !providerInstances[providerKey]) {
+        providerInstances[providerKey] = providerInstance;
+      }
+      if (!provider.instances) {
+        provider.instances = [];
+      }
+      provider.instances.push(providerInstance);
+    }
+
     providerInstance.ready = true;
   });
 
@@ -508,6 +536,16 @@ export default function instantiateProvider(
       providerInstance.onReady.forEach(fn => fn(providerInstance));
     } else if (providerInstance.onReady) {
       providerInstance.onReady(providerInstance);
+    }
+
+    if (creator && providerInstances[providerKey] !== providerInstance) {
+      const index = provider.instances.indexOf(providerInstance);
+
+      if (index > -1) {
+        provider.instances.splice(index, 1);
+      }
+
+      providerInstance = providerInstances[providerKey];
     }
 
     if (provider.clear) {
