@@ -965,7 +965,7 @@ export function handleQueries(fauxInstance, callback, previousResults) {
     };
 
     const setError = error => {
-      console.warn(error);
+      console.error(error);
     };
 
     // this query is currently taking place, make the handler follow the leader
