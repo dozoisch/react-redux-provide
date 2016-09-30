@@ -32,11 +32,12 @@ export function getInitialState({ providerKey, state }) {
  * @param {Mixed} storeKey Optional
  * @param {Object} createState Optional
  * @param {Function} createFunction Optional
+ * @param {Object} creatorStore Optional
  * @return {Object}
  * @api public
  */
 export default function createProviderStore(
-  providerInstance, storeKey, createState, createFunction
+  providerInstance, storeKey, createState, createFunction, creatorStore
 ) {
   const { reducers, middleware, enhancer, replication } = providerInstance;
   const watchedReducers = {};
@@ -81,7 +82,8 @@ export default function createProviderStore(
           queryable,
           replicator,
           create: createFunction || Boolean(createState),
-          clientState: getClientState(providerInstance)
+          clientState: getClientState(providerInstance),
+          creatorStore
         })
       );
     }
