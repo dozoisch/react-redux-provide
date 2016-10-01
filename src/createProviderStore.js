@@ -162,7 +162,8 @@ export default function createProviderStore(
   };
 
   setState = store.setState;
-  store.setState = nextState => {
+  store.setState = (...args) => {
+    const [ nextState ] = args;
     const state = store.getState();
 
     if (setState) {
@@ -175,7 +176,7 @@ export default function createProviderStore(
         }
       }
 
-      setState(nextState);
+      setState(...args);
     } else {
       settingState = nextState;
       store.replaceReducer(combinedReducers);
