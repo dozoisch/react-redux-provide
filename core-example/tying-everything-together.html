@@ -1,0 +1,1055 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Tying Everything Together · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-theme-api/theme-api.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../extended-documentation/" />
+    
+    
+    <link rel="prev" href="querying-replicated-states.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../brief-overview.html">
+            
+                <a href="../brief-overview.html">
+            
+                    
+                    Brief Overview
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Core Example
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="managing-some-thing.html">
+            
+                <a href="managing-some-thing.html">
+            
+                    
+                    Managing Some "Thing"
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="more-than-one-thing.html">
+            
+                <a href="more-than-one-thing.html">
+            
+                    
+                    More Than One "Thing"
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="persisting-state-via-replication.html">
+            
+                <a href="persisting-state-via-replication.html">
+            
+                    
+                    Persisting State via Replication
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="querying-replicated-states.html">
+            
+                <a href="querying-replicated-states.html">
+            
+                    
+                    Querying Replicated States
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3.5" data-path="tying-everything-together.html">
+            
+                <a href="tying-everything-together.html">
+            
+                    
+                    Tying Everything Together
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../extended-documentation/">
+            
+                <a href="../extended-documentation/">
+            
+                    
+                    Extended Documentation
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../extended-documentation/what-does-this-do.html">
+            
+                <a href="../extended-documentation/what-does-this-do.html">
+            
+                    
+                    What does this do?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../extended-documentation/what-is-a-provider/">
+            
+                <a href="../extended-documentation/what-is-a-provider/">
+            
+                    
+                    What is a provider?
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1" data-path="../extended-documentation/what-is-a-provider/the-basics/">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/">
+            
+                    
+                    The basics
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1.1" data-path="../extended-documentation/what-is-a-provider/the-basics/actions.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/actions.html">
+            
+                    
+                    actions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.2" data-path="../extended-documentation/what-is-a-provider/the-basics/reducers.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/reducers.html">
+            
+                    
+                    reducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.3" data-path="../extended-documentation/what-is-a-provider/the-basics/merge.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/merge.html">
+            
+                    
+                    merge
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.4" data-path="../extended-documentation/what-is-a-provider/the-basics/middleware.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/middleware.html">
+            
+                    
+                    middleware
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.5" data-path="../extended-documentation/what-is-a-provider/the-basics/enhancer.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/enhancer.html">
+            
+                    
+                    enhancer
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2" data-path="../extended-documentation/what-is-a-provider/initialization/">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/">
+            
+                    
+                    Initialization
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.2.1" data-path="../extended-documentation/what-is-a-provider/initialization/key.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/key.html">
+            
+                    
+                    key
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.2" data-path="../extended-documentation/what-is-a-provider/initialization/defaultkey.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/defaultkey.html">
+            
+                    
+                    defaultKey
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.3" data-path="../extended-documentation/what-is-a-provider/initialization/state.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/state.html">
+            
+                    
+                    state
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.4" data-path="../extended-documentation/what-is-a-provider/initialization/oninstantiated.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/oninstantiated.html">
+            
+                    
+                    onInstantiated
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.5" data-path="../extended-documentation/what-is-a-provider/initialization/onready.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/onready.html">
+            
+                    
+                    onReady
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3" data-path="../extended-documentation/what-is-a-provider/replication/">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/">
+            
+                    
+                    Replication
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.3.1" data-path="../extended-documentation/what-is-a-provider/replication/replication.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/replication.html">
+            
+                    
+                    replication
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3.2" data-path="../extended-documentation/what-is-a-provider/replication/basequery.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/basequery.html">
+            
+                    
+                    baseQuery
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3.3" data-path="../extended-documentation/what-is-a-provider/replication/basequeryoptions.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/basequeryoptions.html">
+            
+                    
+                    baseQueryOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3.4" data-path="../extended-documentation/what-is-a-provider/replication/clientstatekeys.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/clientstatekeys.html">
+            
+                    
+                    clientStateKeys
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4" data-path="../extended-documentation/what-is-a-provider/advanced/">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/">
+            
+                    
+                    Advanced
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.4.1" data-path="../extended-documentation/what-is-a-provider/advanced/subscribeto.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/subscribeto.html">
+            
+                    
+                    subscribeTo
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.2" data-path="../extended-documentation/what-is-a-provider/advanced/subscribers.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/subscribers.html">
+            
+                    
+                    subscribers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.3" data-path="../extended-documentation/what-is-a-provider/advanced/wait.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/wait.html">
+            
+                    
+                    wait
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.4" data-path="../extended-documentation/what-is-a-provider/advanced/clear.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/clear.html">
+            
+                    
+                    clear
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.5" data-path="../extended-documentation/what-is-a-provider/advanced/isglobal.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/isglobal.html">
+            
+                    
+                    isGlobal
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5" data-path="../extended-documentation/what-is-a-provider/thunk-api/">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/">
+            
+                    
+                    Thunk API
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.5.1" data-path="../extended-documentation/what-is-a-provider/thunk-api/getinstance.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/getinstance.html">
+            
+                    
+                    getInstance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.2" data-path="../extended-documentation/what-is-a-provider/thunk-api/getinstances.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/getinstances.html">
+            
+                    
+                    getInstances
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.3" data-path="../extended-documentation/what-is-a-provider/thunk-api/createinstance.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/createinstance.html">
+            
+                    
+                    createInstance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.4" data-path="../extended-documentation/what-is-a-provider/thunk-api/createinstances.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/createinstances.html">
+            
+                    
+                    createInstances
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.5" data-path="../extended-documentation/what-is-a-provider/thunk-api/setstates.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/setstates.html">
+            
+                    
+                    setStates
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.6" data-path="../extended-documentation/what-is-a-provider/thunk-api/find.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/find.html">
+            
+                    
+                    find
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../extended-documentation/contextual-component-props/">
+            
+                <a href="../extended-documentation/contextual-component-props/">
+            
+                    
+                    Contextual component props
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.1" data-path="../extended-documentation/contextual-component-props/providers.html">
+            
+                <a href="../extended-documentation/contextual-component-props/providers.html">
+            
+                    
+                    providers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.2" data-path="../extended-documentation/contextual-component-props/providerinstances.html">
+            
+                <a href="../extended-documentation/contextual-component-props/providerinstances.html">
+            
+                    
+                    providerInstances
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.3" data-path="../extended-documentation/contextual-component-props/activequeries.html">
+            
+                <a href="../extended-documentation/contextual-component-props/activequeries.html">
+            
+                    
+                    activeQueries
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.4" data-path="../extended-documentation/contextual-component-props/queryresults.html">
+            
+                <a href="../extended-documentation/contextual-component-props/queryresults.html">
+            
+                    
+                    queryResults
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../extended-documentation/query-related-component-props/">
+            
+                <a href="../extended-documentation/query-related-component-props/">
+            
+                    
+                    Query-related component props
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1" data-path="../extended-documentation/query-related-component-props/query.html">
+            
+                <a href="../extended-documentation/query-related-component-props/query.html">
+            
+                    
+                    query
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2" data-path="../extended-documentation/query-related-component-props/queryoptions.html">
+            
+                <a href="../extended-documentation/query-related-component-props/queryoptions.html">
+            
+                    
+                    queryOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.3" data-path="../extended-documentation/query-related-component-props/result.html">
+            
+                <a href="../extended-documentation/query-related-component-props/result.html">
+            
+                    
+                    result
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.4" data-path="../extended-documentation/query-related-component-props/queries.html">
+            
+                <a href="../extended-documentation/query-related-component-props/queries.html">
+            
+                    
+                    queries
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.5" data-path="../extended-documentation/query-related-component-props/queriesoptions.html">
+            
+                <a href="../extended-documentation/query-related-component-props/queriesoptions.html">
+            
+                    
+                    queriesOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.6" data-path="../extended-documentation/query-related-component-props/results.html">
+            
+                <a href="../extended-documentation/query-related-component-props/results.html">
+            
+                    
+                    results
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../extended-documentation/store-modifications.html">
+            
+                <a href="../extended-documentation/store-modifications.html">
+            
+                    
+                    Store modifications
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="../extended-documentation/counter-example.html">
+            
+                <a href="../extended-documentation/counter-example.html">
+            
+                    
+                    Counter example
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="../extended-documentation/protips.html">
+            
+                <a href="../extended-documentation/protips.html">
+            
+                    
+                    Protips
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="../extended-documentation/complete-list-of-exports.html">
+            
+                <a href="../extended-documentation/complete-list-of-exports.html">
+            
+                    
+                    Complete list of exports
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Tying Everything Together</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="tying-everything-together">Tying Everything Together</h1>
+<p>As you may have noticed, the components don&apos;t depend on (import) the providers.  The providers don&apos;t depend on the components or the replicators.  And the replicators don&apos;t depend on the components or the providers.  Each piece of the application is as decoupled as possible.</p>
+<p>With each piece so separate from one another, how do we put it all together?</p>
+<p>When mounting the app, we&apos;ll import the replicator(s), the providers, and the top level component.  We&apos;ll use <code>react-redux-provide</code>&apos;s <code>pushReplicator</code> utility function.  We&apos;ll also use its <code>install</code> method, which automatically enables providers for all components.  Note that the <code>install</code> method may not be necessary in the future when React&apos;s <a href="https://facebook.github.io/react/docs/context.html" target="_blank">context</a> has matured.</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> <span class="hljs-string">&apos;react-redux-provide/lib/install&apos;</span>;
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react&apos;</span>;
+<span class="hljs-keyword">import</span> { render } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react-dom&apos;</span>;
+<span class="hljs-keyword">import</span> { pushReplicator } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react-redux-provide&apos;</span>;
+<span class="hljs-keyword">import</span> backend <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./replicators/backend&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> providers <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./providers/index&apos;</span>;
+<span class="hljs-keyword">import</span> App <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./components/App&apos;</span>;
+</code></pre>
+<p>Notice that we&apos;re importing the providers from an index module.  It&apos;s good practice to use an index module which exports each provider within the app.  We have just one provider in this particular example, but most applications will use more than a handful.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// src/providers/index.js</span>
+
+<span class="hljs-keyword">export</span> thing <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./thing&apos;</span>;
+</code></pre>
+<p>Last but not least, all we need to do now is push our <code>backend</code> replicator onto our <code>providers</code> and pass our <code>providers</code> as a property to our top-level component.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// src/renderApp.js</span>
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&apos;react-redux-provide/lib/install&apos;</span>;
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react&apos;</span>;
+<span class="hljs-keyword">import</span> { render } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react-dom&apos;</span>;
+<span class="hljs-keyword">import</span> { pushReplicator } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react-redux-provide&apos;</span>;
+<span class="hljs-keyword">import</span> backend <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./replicators/backend&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> providers <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./providers/index&apos;</span>;
+<span class="hljs-keyword">import</span> App <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./components/App&apos;</span>;
+
+pushReplicator(providers, backend);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderApp</span>(<span class="hljs-params">props, element = document.getElementById(&apos;root&apos;</span>)) </span>{
+  <span class="hljs-keyword">return</span> render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">App</span> { <span class="hljs-attr">...props</span> } /&gt;</span>, element);
+}
+
+renderApp({ providers });
+
+export default renderApp;
+</span></code></pre>
+<p>That&apos;s it!  The concepts covered throughout this example are what you&apos;ll use the most.</p>
+<p>If you&apos;re ready for more advanced use-cases, checkout the <a href="../extended-documentation/">Extended Documentation</a>.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Tying Everything Together","level":"1.3.5","depth":2,"next":{"title":"Extended Documentation","level":"1.4","depth":1,"path":"extended-documentation/README.md","ref":"extended-documentation/README.md","articles":[{"title":"What does this do?","level":"1.4.1","depth":2,"path":"extended-documentation/what-does-this-do.md","ref":"extended-documentation/what-does-this-do.md","articles":[]},{"title":"What is a provider?","level":"1.4.2","depth":2,"path":"extended-documentation/what-is-a-provider/README.md","ref":"extended-documentation/what-is-a-provider/README.md","articles":[{"title":"The basics","level":"1.4.2.1","depth":3,"path":"extended-documentation/what-is-a-provider/the-basics/README.md","ref":"extended-documentation/what-is-a-provider/the-basics/README.md","articles":[{"title":"actions","level":"1.4.2.1.1","depth":4,"path":"extended-documentation/what-is-a-provider/the-basics/actions.md","ref":"extended-documentation/what-is-a-provider/the-basics/actions.md","articles":[]},{"title":"reducers","level":"1.4.2.1.2","depth":4,"path":"extended-documentation/what-is-a-provider/the-basics/reducers.md","ref":"extended-documentation/what-is-a-provider/the-basics/reducers.md","articles":[]},{"title":"merge","level":"1.4.2.1.3","depth":4,"path":"extended-documentation/what-is-a-provider/the-basics/merge.md","ref":"extended-documentation/what-is-a-provider/the-basics/merge.md","articles":[]},{"title":"middleware","level":"1.4.2.1.4","depth":4,"path":"extended-documentation/what-is-a-provider/the-basics/middleware.md","ref":"extended-documentation/what-is-a-provider/the-basics/middleware.md","articles":[]},{"title":"enhancer","level":"1.4.2.1.5","depth":4,"path":"extended-documentation/what-is-a-provider/the-basics/enhancer.md","ref":"extended-documentation/what-is-a-provider/the-basics/enhancer.md","articles":[]}]},{"title":"Initialization","level":"1.4.2.2","depth":3,"path":"extended-documentation/what-is-a-provider/initialization/README.md","ref":"extended-documentation/what-is-a-provider/initialization/README.md","articles":[{"title":"key","level":"1.4.2.2.1","depth":4,"path":"extended-documentation/what-is-a-provider/initialization/key.md","ref":"extended-documentation/what-is-a-provider/initialization/key.md","articles":[]},{"title":"defaultKey","level":"1.4.2.2.2","depth":4,"path":"extended-documentation/what-is-a-provider/initialization/defaultkey.md","ref":"extended-documentation/what-is-a-provider/initialization/defaultkey.md","articles":[]},{"title":"state","level":"1.4.2.2.3","depth":4,"path":"extended-documentation/what-is-a-provider/initialization/state.md","ref":"extended-documentation/what-is-a-provider/initialization/state.md","articles":[]},{"title":"onInstantiated","level":"1.4.2.2.4","depth":4,"path":"extended-documentation/what-is-a-provider/initialization/oninstantiated.md","ref":"extended-documentation/what-is-a-provider/initialization/oninstantiated.md","articles":[]},{"title":"onReady","level":"1.4.2.2.5","depth":4,"path":"extended-documentation/what-is-a-provider/initialization/onready.md","ref":"extended-documentation/what-is-a-provider/initialization/onready.md","articles":[]}]},{"title":"Replication","level":"1.4.2.3","depth":3,"path":"extended-documentation/what-is-a-provider/replication/README.md","ref":"extended-documentation/what-is-a-provider/replication/README.md","articles":[{"title":"replication","level":"1.4.2.3.1","depth":4,"path":"extended-documentation/what-is-a-provider/replication/replication.md","ref":"extended-documentation/what-is-a-provider/replication/replication.md","articles":[]},{"title":"baseQuery","level":"1.4.2.3.2","depth":4,"path":"extended-documentation/what-is-a-provider/replication/basequery.md","ref":"extended-documentation/what-is-a-provider/replication/basequery.md","articles":[]},{"title":"baseQueryOptions","level":"1.4.2.3.3","depth":4,"path":"extended-documentation/what-is-a-provider/replication/basequeryoptions.md","ref":"extended-documentation/what-is-a-provider/replication/basequeryoptions.md","articles":[]},{"title":"clientStateKeys","level":"1.4.2.3.4","depth":4,"path":"extended-documentation/what-is-a-provider/replication/clientstatekeys.md","ref":"extended-documentation/what-is-a-provider/replication/clientstatekeys.md","articles":[]}]},{"title":"Advanced","level":"1.4.2.4","depth":3,"path":"extended-documentation/what-is-a-provider/advanced/README.md","ref":"extended-documentation/what-is-a-provider/advanced/README.md","articles":[{"title":"subscribeTo","level":"1.4.2.4.1","depth":4,"path":"extended-documentation/what-is-a-provider/advanced/subscribeto.md","ref":"extended-documentation/what-is-a-provider/advanced/subscribeto.md","articles":[]},{"title":"subscribers","level":"1.4.2.4.2","depth":4,"path":"extended-documentation/what-is-a-provider/advanced/subscribers.md","ref":"extended-documentation/what-is-a-provider/advanced/subscribers.md","articles":[]},{"title":"wait","level":"1.4.2.4.3","depth":4,"path":"extended-documentation/what-is-a-provider/advanced/wait.md","ref":"extended-documentation/what-is-a-provider/advanced/wait.md","articles":[]},{"title":"clear","level":"1.4.2.4.4","depth":4,"path":"extended-documentation/what-is-a-provider/advanced/clear.md","ref":"extended-documentation/what-is-a-provider/advanced/clear.md","articles":[]},{"title":"isGlobal","level":"1.4.2.4.5","depth":4,"path":"extended-documentation/what-is-a-provider/advanced/isglobal.md","ref":"extended-documentation/what-is-a-provider/advanced/isglobal.md","articles":[]}]},{"title":"Thunk API","level":"1.4.2.5","depth":3,"path":"extended-documentation/what-is-a-provider/thunk-api/README.md","ref":"extended-documentation/what-is-a-provider/thunk-api/README.md","articles":[{"title":"getInstance","level":"1.4.2.5.1","depth":4,"path":"extended-documentation/what-is-a-provider/thunk-api/getinstance.md","ref":"extended-documentation/what-is-a-provider/thunk-api/getinstance.md","articles":[]},{"title":"getInstances","level":"1.4.2.5.2","depth":4,"path":"extended-documentation/what-is-a-provider/thunk-api/getinstances.md","ref":"extended-documentation/what-is-a-provider/thunk-api/getinstances.md","articles":[]},{"title":"createInstance","level":"1.4.2.5.3","depth":4,"path":"extended-documentation/what-is-a-provider/thunk-api/createinstance.md","ref":"extended-documentation/what-is-a-provider/thunk-api/createinstance.md","articles":[]},{"title":"createInstances","level":"1.4.2.5.4","depth":4,"path":"extended-documentation/what-is-a-provider/thunk-api/createinstances.md","ref":"extended-documentation/what-is-a-provider/thunk-api/createinstances.md","articles":[]},{"title":"setStates","level":"1.4.2.5.5","depth":4,"path":"extended-documentation/what-is-a-provider/thunk-api/setstates.md","ref":"extended-documentation/what-is-a-provider/thunk-api/setstates.md","articles":[]},{"title":"find","level":"1.4.2.5.6","depth":4,"path":"extended-documentation/what-is-a-provider/thunk-api/find.md","ref":"extended-documentation/what-is-a-provider/thunk-api/find.md","articles":[]}]}]},{"title":"Contextual component props","level":"1.4.3","depth":2,"path":"extended-documentation/contextual-component-props/README.md","ref":"extended-documentation/contextual-component-props/README.md","articles":[{"title":"providers","level":"1.4.3.1","depth":3,"path":"extended-documentation/contextual-component-props/providers.md","ref":"extended-documentation/contextual-component-props/providers.md","articles":[]},{"title":"providerInstances","level":"1.4.3.2","depth":3,"path":"extended-documentation/contextual-component-props/providerinstances.md","ref":"extended-documentation/contextual-component-props/providerinstances.md","articles":[]},{"title":"activeQueries","level":"1.4.3.3","depth":3,"path":"extended-documentation/contextual-component-props/activequeries.md","ref":"extended-documentation/contextual-component-props/activequeries.md","articles":[]},{"title":"queryResults","level":"1.4.3.4","depth":3,"path":"extended-documentation/contextual-component-props/queryresults.md","ref":"extended-documentation/contextual-component-props/queryresults.md","articles":[]}]},{"title":"Query-related component props","level":"1.4.4","depth":2,"path":"extended-documentation/query-related-component-props/README.md","ref":"extended-documentation/query-related-component-props/README.md","articles":[{"title":"query","level":"1.4.4.1","depth":3,"path":"extended-documentation/query-related-component-props/query.md","ref":"extended-documentation/query-related-component-props/query.md","articles":[]},{"title":"queryOptions","level":"1.4.4.2","depth":3,"path":"extended-documentation/query-related-component-props/queryoptions.md","ref":"extended-documentation/query-related-component-props/queryoptions.md","articles":[]},{"title":"result","level":"1.4.4.3","depth":3,"path":"extended-documentation/query-related-component-props/result.md","ref":"extended-documentation/query-related-component-props/result.md","articles":[]},{"title":"queries","level":"1.4.4.4","depth":3,"path":"extended-documentation/query-related-component-props/queries.md","ref":"extended-documentation/query-related-component-props/queries.md","articles":[]},{"title":"queriesOptions","level":"1.4.4.5","depth":3,"path":"extended-documentation/query-related-component-props/queriesoptions.md","ref":"extended-documentation/query-related-component-props/queriesoptions.md","articles":[]},{"title":"results","level":"1.4.4.6","depth":3,"path":"extended-documentation/query-related-component-props/results.md","ref":"extended-documentation/query-related-component-props/results.md","articles":[]}]},{"title":"Store modifications","level":"1.4.5","depth":2,"path":"extended-documentation/store-modifications.md","ref":"extended-documentation/store-modifications.md","articles":[]},{"title":"Counter example","level":"1.4.6","depth":2,"path":"extended-documentation/counter-example.md","ref":"extended-documentation/counter-example.md","articles":[]},{"title":"Protips","level":"1.4.7","depth":2,"path":"extended-documentation/protips.md","ref":"extended-documentation/protips.md","articles":[]},{"title":"Complete list of exports","level":"1.4.8","depth":2,"path":"extended-documentation/complete-list-of-exports.md","ref":"extended-documentation/complete-list-of-exports.md","articles":[]}]},"previous":{"title":"Querying Replicated States","level":"1.3.4","depth":2,"path":"core-example/querying-replicated-states.md","ref":"core-example/querying-replicated-states.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["theme-api"],"pluginsConfig":{"theme-api":{"languages":[{"lang":"js","name":"JavaScript","default":true},{"lang":"go","name":"Go"}],"split":true,"theme":"light"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"core-example/tying-everything-together.md","mtime":"2016-10-18T14:49:46.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2016-10-18T15:33:52.864Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-theme-api/theme-api.js"></script>
+        
+    
+
+    </body>
+</html>
+

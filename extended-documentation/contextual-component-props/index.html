@@ -1,0 +1,1018 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Contextual component props · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-theme-api/theme-api.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="providers.html" />
+    
+    
+    <link rel="prev" href="../what-is-a-provider/thunk-api/find.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../../brief-overview.html">
+            
+                <a href="../../brief-overview.html">
+            
+                    
+                    Brief Overview
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../../core-example/">
+            
+                <a href="../../core-example/">
+            
+                    
+                    Core Example
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../../core-example/managing-some-thing.html">
+            
+                <a href="../../core-example/managing-some-thing.html">
+            
+                    
+                    Managing Some "Thing"
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../../core-example/more-than-one-thing.html">
+            
+                <a href="../../core-example/more-than-one-thing.html">
+            
+                    
+                    More Than One "Thing"
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../../core-example/persisting-state-via-replication.html">
+            
+                <a href="../../core-example/persisting-state-via-replication.html">
+            
+                    
+                    Persisting State via Replication
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../../core-example/querying-replicated-states.html">
+            
+                <a href="../../core-example/querying-replicated-states.html">
+            
+                    
+                    Querying Replicated States
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../../core-example/tying-everything-together.html">
+            
+                <a href="../../core-example/tying-everything-together.html">
+            
+                    
+                    Tying Everything Together
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Extended Documentation
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../what-does-this-do.html">
+            
+                <a href="../what-does-this-do.html">
+            
+                    
+                    What does this do?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../what-is-a-provider/">
+            
+                <a href="../what-is-a-provider/">
+            
+                    
+                    What is a provider?
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1" data-path="../what-is-a-provider/the-basics/">
+            
+                <a href="../what-is-a-provider/the-basics/">
+            
+                    
+                    The basics
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1.1" data-path="../what-is-a-provider/the-basics/actions.html">
+            
+                <a href="../what-is-a-provider/the-basics/actions.html">
+            
+                    
+                    actions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.2" data-path="../what-is-a-provider/the-basics/reducers.html">
+            
+                <a href="../what-is-a-provider/the-basics/reducers.html">
+            
+                    
+                    reducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.3" data-path="../what-is-a-provider/the-basics/merge.html">
+            
+                <a href="../what-is-a-provider/the-basics/merge.html">
+            
+                    
+                    merge
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.4" data-path="../what-is-a-provider/the-basics/middleware.html">
+            
+                <a href="../what-is-a-provider/the-basics/middleware.html">
+            
+                    
+                    middleware
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.5" data-path="../what-is-a-provider/the-basics/enhancer.html">
+            
+                <a href="../what-is-a-provider/the-basics/enhancer.html">
+            
+                    
+                    enhancer
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2" data-path="../what-is-a-provider/initialization/">
+            
+                <a href="../what-is-a-provider/initialization/">
+            
+                    
+                    Initialization
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.2.1" data-path="../what-is-a-provider/initialization/key.html">
+            
+                <a href="../what-is-a-provider/initialization/key.html">
+            
+                    
+                    key
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.2" data-path="../what-is-a-provider/initialization/defaultkey.html">
+            
+                <a href="../what-is-a-provider/initialization/defaultkey.html">
+            
+                    
+                    defaultKey
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.3" data-path="../what-is-a-provider/initialization/state.html">
+            
+                <a href="../what-is-a-provider/initialization/state.html">
+            
+                    
+                    state
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.4" data-path="../what-is-a-provider/initialization/oninstantiated.html">
+            
+                <a href="../what-is-a-provider/initialization/oninstantiated.html">
+            
+                    
+                    onInstantiated
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.5" data-path="../what-is-a-provider/initialization/onready.html">
+            
+                <a href="../what-is-a-provider/initialization/onready.html">
+            
+                    
+                    onReady
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3" data-path="../what-is-a-provider/replication/">
+            
+                <a href="../what-is-a-provider/replication/">
+            
+                    
+                    Replication
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.3.1" data-path="../what-is-a-provider/replication/replication.html">
+            
+                <a href="../what-is-a-provider/replication/replication.html">
+            
+                    
+                    replication
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3.2" data-path="../what-is-a-provider/replication/basequery.html">
+            
+                <a href="../what-is-a-provider/replication/basequery.html">
+            
+                    
+                    baseQuery
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3.3" data-path="../what-is-a-provider/replication/basequeryoptions.html">
+            
+                <a href="../what-is-a-provider/replication/basequeryoptions.html">
+            
+                    
+                    baseQueryOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3.4" data-path="../what-is-a-provider/replication/clientstatekeys.html">
+            
+                <a href="../what-is-a-provider/replication/clientstatekeys.html">
+            
+                    
+                    clientStateKeys
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4" data-path="../what-is-a-provider/advanced/">
+            
+                <a href="../what-is-a-provider/advanced/">
+            
+                    
+                    Advanced
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.4.1" data-path="../what-is-a-provider/advanced/subscribeto.html">
+            
+                <a href="../what-is-a-provider/advanced/subscribeto.html">
+            
+                    
+                    subscribeTo
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.2" data-path="../what-is-a-provider/advanced/subscribers.html">
+            
+                <a href="../what-is-a-provider/advanced/subscribers.html">
+            
+                    
+                    subscribers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.3" data-path="../what-is-a-provider/advanced/wait.html">
+            
+                <a href="../what-is-a-provider/advanced/wait.html">
+            
+                    
+                    wait
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.4" data-path="../what-is-a-provider/advanced/clear.html">
+            
+                <a href="../what-is-a-provider/advanced/clear.html">
+            
+                    
+                    clear
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.5" data-path="../what-is-a-provider/advanced/isglobal.html">
+            
+                <a href="../what-is-a-provider/advanced/isglobal.html">
+            
+                    
+                    isGlobal
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5" data-path="../what-is-a-provider/thunk-api/">
+            
+                <a href="../what-is-a-provider/thunk-api/">
+            
+                    
+                    Thunk API
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.5.1" data-path="../what-is-a-provider/thunk-api/getinstance.html">
+            
+                <a href="../what-is-a-provider/thunk-api/getinstance.html">
+            
+                    
+                    getInstance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.2" data-path="../what-is-a-provider/thunk-api/getinstances.html">
+            
+                <a href="../what-is-a-provider/thunk-api/getinstances.html">
+            
+                    
+                    getInstances
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.3" data-path="../what-is-a-provider/thunk-api/createinstance.html">
+            
+                <a href="../what-is-a-provider/thunk-api/createinstance.html">
+            
+                    
+                    createInstance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.4" data-path="../what-is-a-provider/thunk-api/createinstances.html">
+            
+                <a href="../what-is-a-provider/thunk-api/createinstances.html">
+            
+                    
+                    createInstances
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.5" data-path="../what-is-a-provider/thunk-api/setstates.html">
+            
+                <a href="../what-is-a-provider/thunk-api/setstates.html">
+            
+                    
+                    setStates
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.6" data-path="../what-is-a-provider/thunk-api/find.html">
+            
+                <a href="../what-is-a-provider/thunk-api/find.html">
+            
+                    
+                    find
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4.3" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Contextual component props
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.1" data-path="providers.html">
+            
+                <a href="providers.html">
+            
+                    
+                    providers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.2" data-path="providerinstances.html">
+            
+                <a href="providerinstances.html">
+            
+                    
+                    providerInstances
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.3" data-path="activequeries.html">
+            
+                <a href="activequeries.html">
+            
+                    
+                    activeQueries
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.4" data-path="queryresults.html">
+            
+                <a href="queryresults.html">
+            
+                    
+                    queryResults
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../query-related-component-props/">
+            
+                <a href="../query-related-component-props/">
+            
+                    
+                    Query-related component props
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1" data-path="../query-related-component-props/query.html">
+            
+                <a href="../query-related-component-props/query.html">
+            
+                    
+                    query
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2" data-path="../query-related-component-props/queryoptions.html">
+            
+                <a href="../query-related-component-props/queryoptions.html">
+            
+                    
+                    queryOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.3" data-path="../query-related-component-props/result.html">
+            
+                <a href="../query-related-component-props/result.html">
+            
+                    
+                    result
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.4" data-path="../query-related-component-props/queries.html">
+            
+                <a href="../query-related-component-props/queries.html">
+            
+                    
+                    queries
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.5" data-path="../query-related-component-props/queriesoptions.html">
+            
+                <a href="../query-related-component-props/queriesoptions.html">
+            
+                    
+                    queriesOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.6" data-path="../query-related-component-props/results.html">
+            
+                <a href="../query-related-component-props/results.html">
+            
+                    
+                    results
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../store-modifications.html">
+            
+                <a href="../store-modifications.html">
+            
+                    
+                    Store modifications
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="../counter-example.html">
+            
+                <a href="../counter-example.html">
+            
+                    
+                    Counter example
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="../protips.html">
+            
+                <a href="../protips.html">
+            
+                    
+                    Protips
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="../complete-list-of-exports.html">
+            
+                <a href="../complete-list-of-exports.html">
+            
+                    
+                    Complete list of exports
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >Contextual component props</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="contextual-component-props">Contextual component props</h1>
+<p>These properties are passed down via <code>context</code> and are used interally by this library.  You can override them with your own props at any time, but in most cases you should never have to do that.</p>
+<p>Next: <a href="providers.html">providers</a></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Contextual component props","level":"1.4.3","depth":2,"next":{"title":"providers","level":"1.4.3.1","depth":3,"path":"extended-documentation/contextual-component-props/providers.md","ref":"extended-documentation/contextual-component-props/providers.md","articles":[]},"previous":{"title":"find","level":"1.4.2.5.6","depth":4,"path":"extended-documentation/what-is-a-provider/thunk-api/find.md","ref":"extended-documentation/what-is-a-provider/thunk-api/find.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["theme-api"],"pluginsConfig":{"theme-api":{"languages":[{"lang":"js","name":"JavaScript","default":true},{"lang":"go","name":"Go"}],"split":true,"theme":"light"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"extended-documentation/contextual-component-props/README.md","mtime":"2016-10-18T14:49:46.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2016-10-18T15:33:52.864Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-theme-api/theme-api.js"></script>
+        
+    
+
+    </body>
+</html>
+

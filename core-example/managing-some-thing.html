@@ -1,0 +1,1121 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Managing Some "Thing" · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-theme-api/theme-api.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="more-than-one-thing.html" />
+    
+    
+    <link rel="prev" href="./" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../brief-overview.html">
+            
+                <a href="../brief-overview.html">
+            
+                    
+                    Brief Overview
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Core Example
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter active" data-level="1.3.1" data-path="managing-some-thing.html">
+            
+                <a href="managing-some-thing.html">
+            
+                    
+                    Managing Some "Thing"
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="more-than-one-thing.html">
+            
+                <a href="more-than-one-thing.html">
+            
+                    
+                    More Than One "Thing"
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="persisting-state-via-replication.html">
+            
+                <a href="persisting-state-via-replication.html">
+            
+                    
+                    Persisting State via Replication
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="querying-replicated-states.html">
+            
+                <a href="querying-replicated-states.html">
+            
+                    
+                    Querying Replicated States
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="tying-everything-together.html">
+            
+                <a href="tying-everything-together.html">
+            
+                    
+                    Tying Everything Together
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../extended-documentation/">
+            
+                <a href="../extended-documentation/">
+            
+                    
+                    Extended Documentation
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../extended-documentation/what-does-this-do.html">
+            
+                <a href="../extended-documentation/what-does-this-do.html">
+            
+                    
+                    What does this do?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../extended-documentation/what-is-a-provider/">
+            
+                <a href="../extended-documentation/what-is-a-provider/">
+            
+                    
+                    What is a provider?
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1" data-path="../extended-documentation/what-is-a-provider/the-basics/">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/">
+            
+                    
+                    The basics
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1.1" data-path="../extended-documentation/what-is-a-provider/the-basics/actions.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/actions.html">
+            
+                    
+                    actions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.2" data-path="../extended-documentation/what-is-a-provider/the-basics/reducers.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/reducers.html">
+            
+                    
+                    reducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.3" data-path="../extended-documentation/what-is-a-provider/the-basics/merge.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/merge.html">
+            
+                    
+                    merge
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.4" data-path="../extended-documentation/what-is-a-provider/the-basics/middleware.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/middleware.html">
+            
+                    
+                    middleware
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.1.5" data-path="../extended-documentation/what-is-a-provider/the-basics/enhancer.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/the-basics/enhancer.html">
+            
+                    
+                    enhancer
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2" data-path="../extended-documentation/what-is-a-provider/initialization/">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/">
+            
+                    
+                    Initialization
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.2.1" data-path="../extended-documentation/what-is-a-provider/initialization/key.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/key.html">
+            
+                    
+                    key
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.2" data-path="../extended-documentation/what-is-a-provider/initialization/defaultkey.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/defaultkey.html">
+            
+                    
+                    defaultKey
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.3" data-path="../extended-documentation/what-is-a-provider/initialization/state.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/state.html">
+            
+                    
+                    state
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.4" data-path="../extended-documentation/what-is-a-provider/initialization/oninstantiated.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/oninstantiated.html">
+            
+                    
+                    onInstantiated
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2.5" data-path="../extended-documentation/what-is-a-provider/initialization/onready.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/initialization/onready.html">
+            
+                    
+                    onReady
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3" data-path="../extended-documentation/what-is-a-provider/replication/">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/">
+            
+                    
+                    Replication
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.3.1" data-path="../extended-documentation/what-is-a-provider/replication/replication.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/replication.html">
+            
+                    
+                    replication
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3.2" data-path="../extended-documentation/what-is-a-provider/replication/basequery.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/basequery.html">
+            
+                    
+                    baseQuery
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3.3" data-path="../extended-documentation/what-is-a-provider/replication/basequeryoptions.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/basequeryoptions.html">
+            
+                    
+                    baseQueryOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3.4" data-path="../extended-documentation/what-is-a-provider/replication/clientstatekeys.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/replication/clientstatekeys.html">
+            
+                    
+                    clientStateKeys
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4" data-path="../extended-documentation/what-is-a-provider/advanced/">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/">
+            
+                    
+                    Advanced
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.4.1" data-path="../extended-documentation/what-is-a-provider/advanced/subscribeto.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/subscribeto.html">
+            
+                    
+                    subscribeTo
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.2" data-path="../extended-documentation/what-is-a-provider/advanced/subscribers.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/subscribers.html">
+            
+                    
+                    subscribers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.3" data-path="../extended-documentation/what-is-a-provider/advanced/wait.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/wait.html">
+            
+                    
+                    wait
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.4" data-path="../extended-documentation/what-is-a-provider/advanced/clear.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/clear.html">
+            
+                    
+                    clear
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4.5" data-path="../extended-documentation/what-is-a-provider/advanced/isglobal.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/advanced/isglobal.html">
+            
+                    
+                    isGlobal
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5" data-path="../extended-documentation/what-is-a-provider/thunk-api/">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/">
+            
+                    
+                    Thunk API
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.5.1" data-path="../extended-documentation/what-is-a-provider/thunk-api/getinstance.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/getinstance.html">
+            
+                    
+                    getInstance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.2" data-path="../extended-documentation/what-is-a-provider/thunk-api/getinstances.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/getinstances.html">
+            
+                    
+                    getInstances
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.3" data-path="../extended-documentation/what-is-a-provider/thunk-api/createinstance.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/createinstance.html">
+            
+                    
+                    createInstance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.4" data-path="../extended-documentation/what-is-a-provider/thunk-api/createinstances.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/createinstances.html">
+            
+                    
+                    createInstances
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.5" data-path="../extended-documentation/what-is-a-provider/thunk-api/setstates.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/setstates.html">
+            
+                    
+                    setStates
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5.6" data-path="../extended-documentation/what-is-a-provider/thunk-api/find.html">
+            
+                <a href="../extended-documentation/what-is-a-provider/thunk-api/find.html">
+            
+                    
+                    find
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../extended-documentation/contextual-component-props/">
+            
+                <a href="../extended-documentation/contextual-component-props/">
+            
+                    
+                    Contextual component props
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.1" data-path="../extended-documentation/contextual-component-props/providers.html">
+            
+                <a href="../extended-documentation/contextual-component-props/providers.html">
+            
+                    
+                    providers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.2" data-path="../extended-documentation/contextual-component-props/providerinstances.html">
+            
+                <a href="../extended-documentation/contextual-component-props/providerinstances.html">
+            
+                    
+                    providerInstances
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.3" data-path="../extended-documentation/contextual-component-props/activequeries.html">
+            
+                <a href="../extended-documentation/contextual-component-props/activequeries.html">
+            
+                    
+                    activeQueries
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.4" data-path="../extended-documentation/contextual-component-props/queryresults.html">
+            
+                <a href="../extended-documentation/contextual-component-props/queryresults.html">
+            
+                    
+                    queryResults
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../extended-documentation/query-related-component-props/">
+            
+                <a href="../extended-documentation/query-related-component-props/">
+            
+                    
+                    Query-related component props
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1" data-path="../extended-documentation/query-related-component-props/query.html">
+            
+                <a href="../extended-documentation/query-related-component-props/query.html">
+            
+                    
+                    query
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2" data-path="../extended-documentation/query-related-component-props/queryoptions.html">
+            
+                <a href="../extended-documentation/query-related-component-props/queryoptions.html">
+            
+                    
+                    queryOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.3" data-path="../extended-documentation/query-related-component-props/result.html">
+            
+                <a href="../extended-documentation/query-related-component-props/result.html">
+            
+                    
+                    result
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.4" data-path="../extended-documentation/query-related-component-props/queries.html">
+            
+                <a href="../extended-documentation/query-related-component-props/queries.html">
+            
+                    
+                    queries
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.5" data-path="../extended-documentation/query-related-component-props/queriesoptions.html">
+            
+                <a href="../extended-documentation/query-related-component-props/queriesoptions.html">
+            
+                    
+                    queriesOptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.6" data-path="../extended-documentation/query-related-component-props/results.html">
+            
+                <a href="../extended-documentation/query-related-component-props/results.html">
+            
+                    
+                    results
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../extended-documentation/store-modifications.html">
+            
+                <a href="../extended-documentation/store-modifications.html">
+            
+                    
+                    Store modifications
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="../extended-documentation/counter-example.html">
+            
+                <a href="../extended-documentation/counter-example.html">
+            
+                    
+                    Counter example
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="../extended-documentation/protips.html">
+            
+                <a href="../extended-documentation/protips.html">
+            
+                    
+                    Protips
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="../extended-documentation/complete-list-of-exports.html">
+            
+                <a href="../extended-documentation/complete-list-of-exports.html">
+            
+                    
+                    Complete list of exports
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Managing Some "Thing"</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="managing-some-thing">Managing Some &quot;Thing&quot;</h1>
+<p>Suppose we have a component that renders some <code>thing</code>.  The component will extract <code>thing</code> from its <code>props</code> (properties) and render it.  We&apos;ll also add <code>thing</code> to the component&apos;s <code>propTypes</code> so that we know what type of <code>thing</code> the component expects.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// src/components/SomeThing.js</span>
+
+<span class="hljs-keyword">import</span> React, { PropTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react&apos;</span>;
+
+<span class="hljs-keyword">const</span> SomeThing = ({ thing }) =&gt; (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    Thing is currently: {thing}
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+);
+
+SomeThing.propTypes = {
+  thing: PropTypes.string.isRequired
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> SomeThing;
+</code></pre>
+<p>And then suppose we want another component to be able to set the current state of <code>thing</code>.  We&apos;ll use a function called <code>setThing</code>.  This is also extracted from the component&apos;s <code>props</code>, and we&apos;ll add an expected <code>setThing</code> function to its <code>propTypes</code>.  We&apos;ll render a button that prompts the user for the next <code>thing</code> when clicked.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// src/components/SomeThingSetter.js</span>
+
+<span class="hljs-keyword">import</span> React, { PropTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react&apos;</span>;
+
+<span class="hljs-keyword">const</span> SomeThingSetter = ({ setThing }) =&gt; (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+    const thing = window.prompt(`What should thing be?`);
+    setThing(thing);
+  }}&gt;
+    Click me to set thing.
+  <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+);
+
+SomeThingSetter.propTypes = {
+  setThing: PropTypes.func.isRequired
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> SomeThingSetter;
+</code></pre>
+<p>Now we need to create a provider that can manage the state of <code>thing</code>.  For this example, all we need is a <code>setThing</code> action, and a <code>thing</code> reducer.</p>
+<p>Let&apos;s break it down, step by step.</p>
+<p>We&apos;ll create a value to represent the type of action taking place.  You can create any number of values to represent any number of action types.  These values will remain constant, which is why they are typically called <code>constants</code>.  For this example, we need just one constant.  Let&apos;s call it <code>SET</code>.</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> SET = <span class="hljs-string">&apos;SET&apos;</span>;
+</code></pre>
+<p>Now we need to create the <code>setThing</code> function used within the <code>SomeThingSetter</code> component above.  This function will accept a new <code>thing</code> as an input, and it will return an object containing the new <code>thing</code> along with the <code>SET</code> action type.</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setThing</span>(<span class="hljs-params">thing</span>) </span>{
+  <span class="hljs-keyword">return</span> {
+    type: SET,
+    thing
+  };
+}
+</code></pre>
+<p>We can condense this function into a single line:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> setThing = (thing) =&gt; ({ type: SET, thing });
+</code></pre>
+<p>The object returned by the <code>setThing</code> function describes an action taking place.  A provider typically contains an <code>actions</code> object.  The <code>actions</code> object can contain any number of functions like this.</p>
+<p>With that said, let&apos;s create an object called <code>actions</code> and put our <code>setThing</code> function in it.</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> actions = {
+  setThing: (thing) =&gt; ({ type: SET, thing })
+};
+</code></pre>
+<p>Now we need to create a function that might return a new state for some <code>thing</code>.  This function should accept the current state and the action object as inputs.  It should always return either the current state of <code>thing</code> or a new state.  It will return a default <code>thing</code> if the current state is <code>undefined</code>.  And it will return the new <code>thing</code> if the action <code>type</code> matches our <code>SET</code> constant.</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">thing</span>(<span class="hljs-params">state, action</span>) </span>{
+  <span class="hljs-keyword">if</span> (action.type === SET) {
+    <span class="hljs-keyword">return</span> action.thing;
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> state === <span class="hljs-string">&apos;undefined&apos;</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&apos;nothing&apos;</span>;
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">return</span> state;
+  }
+}
+</code></pre>
+<p>We can also condense this function into a single line:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> thing = (state = <span class="hljs-string">&apos;nothing&apos;</span>, { type, thing }) =&gt; type === SET ? thing : state;
+</code></pre>
+<p>This function is a reducer.  A provider typically contains a <code>reducers</code> object to go with the <code>actions</code> object.  The <code>reducers</code> object can contain any number of functions like this.  Each reducer should be a <a href="https://en.wikipedia.org/wiki/Pure_function" target="_blank">pure function</a> designed to return some state based on any action <code>type</code>.</p>
+<p>With that said, let&apos;s create an object called <code>reducers</code> and put our <code>thing</code> function in it.</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> reducers = {
+  thing: (state = <span class="hljs-string">&apos;nothing&apos;</span>, { type, thing }) =&gt; type === SET ? thing : state
+};
+</code></pre>
+<p>These sets of <code>actions</code> and <code>reducers</code> become our provider module.  All that&apos;s left now is to export these <code>actions</code> and <code>reducers</code> within a single object.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// src/providers/thing.js</span>
+
+<span class="hljs-keyword">const</span> SET = <span class="hljs-string">&apos;SET&apos;</span>;
+
+<span class="hljs-keyword">const</span> actions = {
+  setThing: (thing) =&gt; ({ type: SET, thing })
+};
+
+<span class="hljs-keyword">const</span> reducers = {
+  thing: (state = <span class="hljs-string">&apos;nothing&apos;</span>, { type, thing }) =&gt; type === SET ? thing : state
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> { actions, reducers };
+</code></pre>
+<p>You may have noticed the following:</p>
+<ul>
+<li><p>The <code>SomeThing</code> component&apos;s <code>propTypes</code> contains <code>thing</code>, which matches the name of our reducer function.</p>
+</li>
+<li><p>The <code>SomeThingSetter</code> component&apos;s <code>propTypes</code> contains <code>setThing</code>, which matches the name of our action function.</p>
+</li>
+</ul>
+<p>Matching <code>propTypes</code> is how <code>react-redux-provide</code> knows that it should create a shared provider instance for these components.  The <code>SomeThingSetter</code> component will automatically receive the <code>setThing</code> function.  And the <code>SomeThing</code> component will automatically receive the current state of <code>thing</code>.</p>
+<p>Note that components don&apos;t receive the same exact <code>actions</code> and <code>reducers</code> functions.  They receive action creator functions and current states for matching keys.  The action creator functions will automatically dispatch (pass) the action object to each reducer.  All you should typically care about is the action objects and the states returned by each reducer.</p>
+<p>Also note that an internal cache of reducer keys to components allows updates to be as efficient as possible.  The fastest code is code that never runs!</p>
+<p>Next: <a href="more-than-one-thing.html">More Than One &quot;Thing&quot;</a></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Managing Some \"Thing\"","level":"1.3.1","depth":2,"next":{"title":"More Than One \"Thing\"","level":"1.3.2","depth":2,"path":"core-example/more-than-one-thing.md","ref":"core-example/more-than-one-thing.md","articles":[]},"previous":{"title":"Core Example","level":"1.3","depth":1,"path":"core-example/README.md","ref":"core-example/README.md","articles":[{"title":"Managing Some \"Thing\"","level":"1.3.1","depth":2,"path":"core-example/managing-some-thing.md","ref":"core-example/managing-some-thing.md","articles":[]},{"title":"More Than One \"Thing\"","level":"1.3.2","depth":2,"path":"core-example/more-than-one-thing.md","ref":"core-example/more-than-one-thing.md","articles":[]},{"title":"Persisting State via Replication","level":"1.3.3","depth":2,"path":"core-example/persisting-state-via-replication.md","ref":"core-example/persisting-state-via-replication.md","articles":[]},{"title":"Querying Replicated States","level":"1.3.4","depth":2,"path":"core-example/querying-replicated-states.md","ref":"core-example/querying-replicated-states.md","articles":[]},{"title":"Tying Everything Together","level":"1.3.5","depth":2,"path":"core-example/tying-everything-together.md","ref":"core-example/tying-everything-together.md","articles":[]}]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["theme-api"],"pluginsConfig":{"theme-api":{"languages":[{"lang":"js","name":"JavaScript","default":true},{"lang":"go","name":"Go"}],"split":true,"theme":"light"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"core-example/managing-some-thing.md","mtime":"2016-10-18T14:49:46.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2016-10-18T15:33:52.864Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-theme-api/theme-api.js"></script>
+        
+    
+
+    </body>
+</html>
+
