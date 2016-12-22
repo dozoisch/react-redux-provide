@@ -1,6 +1,6 @@
 {
   "name": "react-redux-provide",
-  "version": "7.0.0-rc.14",
+  "version": "7.0.0-rc.15",
   "description": "Build your UI with React. Manage application state with Redux providers. Persist and share application state with replication. Use pure functions everywhere.",
   "main": "./lib/index.js",
   "scripts": {
@@ -73,5 +73,9 @@
     "react-redux-provide-test-utils": "^1.0.4",
     "rimraf": "^2.3.4",
     "webpack": "^1.11.0"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0 || ^15.0.0-0 <15.4",
+    "react-dom": "^0.14.0 || ^15.0.0-0 <15.4"
   }
 }
