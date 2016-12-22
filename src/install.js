@@ -54,6 +54,10 @@ React.createElement = function(ComponentClass, props, ...args) {
   props = props || {};
   props.__provided = true;
 
+  if (props.child && props.child['$$typeof'] && props.child.props) {
+    Object.assign(props, props.child.props);
+  }
+
   return createElement.call(
     this,
     ComponentClass && ComponentClass.Provide || ComponentClass,
