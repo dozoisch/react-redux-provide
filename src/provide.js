@@ -50,7 +50,6 @@ export default function provide(ComponentClass) {
       this.providers = this.providers
         || props.providers
         || context.providers
-        || props.child && props.child.props && props.child.props.providers
         || {};
 
       return this.providers;

@@ -48,7 +48,7 @@
   "dependencies": {
     "hoist-non-react-statics": "^1.0.3",
     "is-plain-object": "^2.0.1",
-    "react": "^0.14.0 || ^15.0.0-0",
+    "react": "^0.14.0 || ^15.0.0-0 <15.4",
     "redux": "^3.0.0",
     "redux-replicate": "^3.0.0"
   },
@@ -68,8 +68,8 @@
     "jsdom": "~5.4.3",
     "mocha": "^2.2.5",
     "provide-array": "^1.0.0",
-    "react-addons-test-utils": "^0.14.0 || ^15.0.0-0",
-    "react-dom": "^0.14.0 || ^15.0.0-0",
+    "react-addons-test-utils": "^0.14.0 || ^15.0.0-0 <15.4",
+    "react-dom": "^0.14.0 || ^15.0.0-0 <15.4",
     "react-redux-provide-test-utils": "^1.0.4",
     "rimraf": "^2.3.4",
     "webpack": "^1.11.0"
