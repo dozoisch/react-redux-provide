@@ -362,7 +362,7 @@ export default function provide(ComponentClass) {
       let shouldSubscribe = false;
 
       for (let reducerKey of reducerKeys) {
-        if (!props[reducerKey]) {
+        if (typeof props[reducerKey] === 'undefined') {
           getReducerKeys[reducerKey] = true;
           shouldSubscribe = true;
         }
@@ -414,7 +414,7 @@ export default function provide(ComponentClass) {
       let shouldSubscribe = false;
 
       for (let mergeKey of mergeKeys) {
-        if (!props[mergeKey]) {
+        if (typeof props[mergeKey] === 'undefined') {
           let merger = merge[mergeKey];
 
           for (let reducerKey of merger.keys) {
