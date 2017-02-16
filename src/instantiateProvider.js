@@ -827,7 +827,7 @@ export function handleQueries(fauxInstance, callback, previousResults) {
 
   // TODO: we should probably do something better at some point
   const setPartialStates = (provider, result) => {
-    if (!result || !isServerSide) {
+    if (!result || typeof result.map !== 'function' || !isServerSide) {
       return;
     }
 
