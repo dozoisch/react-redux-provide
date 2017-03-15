@@ -461,7 +461,13 @@ export default function instantiateProvider(
     Object.keys(provider.subscribers).forEach(key => {
       const handler = provider.subscribers[key];
       const subProvider = providers[key];
-      function callHandler() {
+      const subKey = provider.defaultKey || (
+        typeof provider.key === 'function'
+          ? provider.key({})
+          : String(provider.key)
+      );
+
+      const callHandler = () => {
         const subProviderInstances = subProvider && subProvider.instances;
 
         if (subProviderInstances) {
@@ -469,14 +475,14 @@ export default function instantiateProvider(
             handler(providerInstance, subProviderInstance);
           });
         }
-      }
+      };
 
       if (subProvider) {
         if (!subProvider.subscribeTo) {
           subProvider.subscribeTo = {};
         }
-        if (!subProvider.subscribeTo[provider.key]) {
-          subProvider.subscribeTo[provider.key] = handler;
+        if (!subProvider.subscribeTo[subKey]) {
+          subProvider.subscribeTo[subKey] = handler;
         }
       }
 
@@ -489,6 +495,11 @@ export default function instantiateProvider(
     Object.keys(provider.subscribeTo).forEach(key => {
       const handler = provider.subscribeTo[key];
       const supProvider = providers[key];
+      const supKey = provider.defaultKey || (
+        typeof provider.key === 'function'
+          ? provider.key({})
+          : String(provider.key)
+      );
 
       if (!supProvider) {
         return;
@@ -497,8 +508,8 @@ export default function instantiateProvider(
       if (!supProvider.subscribers) {
         supProvider.subscribers = {};
       }
-      if (!supProvider.subscribers[provider.key]) {
-        supProvider.subscribers[provider.key] = handler;
+      if (!supProvider.subscribers[supKey]) {
+        supProvider.subscribers[supKey] = handler;
 
         if (supProvider.instances) {
           supProvider.instances.forEach(supProviderInstance => {
