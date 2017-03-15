@@ -1,6 +1,6 @@
 {
   "name": "react-redux-provide",
-  "version": "7.0.0-rc.19",
+  "version": "7.0.0-rc.20",
   "description": "Build your UI with React. Manage application state with Redux providers. Persist and share application state with replication. Use pure functions everywhere.",
   "main": "./lib/index.js",
   "scripts": {
