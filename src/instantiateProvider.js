@@ -915,6 +915,14 @@ export function handleQueries(fauxInstance, callback, previousResults) {
 
     // result handler for both sync and async queries
     const setResult = result => {
+      if (!activeQueries[resultKey]) {
+        console.warn(
+          `setResult was called but the following query is no longer active:`,
+          { query, options }
+        );
+        return;
+      }
+
       const first = activeQueries[resultKey].values().next().value;
       const leader = setResult === first;
       const previousResult = queryResultExists
