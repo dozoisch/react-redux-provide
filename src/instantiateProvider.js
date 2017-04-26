@@ -642,6 +642,10 @@ export function getFunctionOrObject(fauxInstance, key, defaultValue = null) {
 }
 
 export function getQueries(fauxInstance) {
+  if (getQueries.disabled) {
+    return false;
+  }
+
   if (typeof fauxInstance.queries !== 'undefined') {
     return fauxInstance.queries;
   }
