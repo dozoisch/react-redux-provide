@@ -275,7 +275,13 @@ export default function provide(ComponentClass) {
         this.getQueryResults(props, context);
         this.getPartialStates(props, context);
         this.getSubscriptions(props, context);
-        this.fauxInstance = { ...this, props: componentProps };
+        this.fauxInstance = {
+          ...Object.getOwnPropertyNames(this).reduce(
+            (prev, propName) => ({ ...prev, [propName]: this[propName] }),
+            {}
+          ),
+          props: componentProps
+        };
       }
 
       this.fauxInstance.context = context;
