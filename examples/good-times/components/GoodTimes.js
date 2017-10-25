@@ -1,62 +1,49 @@
-import React, { Component, PropTypes } from 'react';
-import QueryTest from './QueryTest';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export default class GoodTimes extends Component {
-  static propTypes = {
-    list: PropTypes.arrayOf(PropTypes.object).isRequired,
-    pushItem: PropTypes.func.isRequired,
-    setRoll: PropTypes.func.isRequired,
-    roll: PropTypes.any
-  };
+const GoodTimes = ({ list, pushItem, setRoll, roll }) => (
+  <div className="good-times">
+    <div style={{ marginBottom: 20, fontStyle: 'italic' }}>
+      The state of your store(s) will be replicated to local storage so that it persists when you refresh.
+    </div>
 
-  addTime = () => {
-    this.props.pushItem({
-      time: Date.now()
-    });
-  };
+    <input
+      type="button"
+      style={{
+        fontSize: '20px',
+        marginBottom: '20px'
+      }}
+      value={`Let the good times ${roll}`}
+      onClick={() => pushItem({
+        time: Date.now()
+      })}
+      onContextMenu={event => {
+        if (event) {
+          event.preventDefault();
+        }
 
-  setRoll = event => {
-    if (event) {
-      event.preventDefault();
-    }
+        setRoll(window.prompt('Let the good times what?'));
+      }}
+    />
 
-    this.props.setRoll(window.prompt('Let the good times what?'));
-  };
+    <div style={{ marginBottom: 20 }}>
+      Right clicked on button and entered "roll"?
+      <b style={{ marginLeft: 10 }}>{roll === 'roll' ? 'Yes!' : 'No.'}</b>
+    </div>
 
-  render() {
-    return (
-      <div className="good-times">
-        {this.renderButton()}
-        <QueryTest/>
-        {this.renderTimes()}
-      </div>
-    );
-  }
+    {list.map(item => (
+      <li key={item.time}>
+        {new Date(item.time).toString()}
+      </li>
+    ))}
+  </div>
+);
 
-  renderButton() {
-    const style = {
-      fontSize: '20px',
-      marginBottom: '20px'
-    };
-    
-    return (
-      <input
-        type="button"
-        style={style}
-        value={`Let the good times ${this.props.roll}`}
-        onClick={this.addTime}
-        onContextMenu={this.setRoll}
-      />
-    );
-  }
+GoodTimes.propTypes = {
+  list: PropTypes.arrayOf(PropTypes.object).isRequired,
+  pushItem: PropTypes.func.isRequired,
+  setRoll: PropTypes.func.isRequired,
+  roll: PropTypes.any
+};
 
-  renderTimes() {
-    return this.props.list.map(
-      item => (
-      	<li key={item.time}>
-      	  {new Date(item.time).toString()}
-      	</li>
-      )
-    );
-  }
-}
+export default GoodTimes;

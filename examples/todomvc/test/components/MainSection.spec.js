@@ -1,7 +1,7 @@
 import 'react-redux-provide/lib/install';
 import expect from 'expect';
 import React from 'react';
-import { Simulate } from 'react-addons-test-utils';
+import { Simulate } from 'react-dom/test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
 import MainSection from '../../components/MainSection';
 import TodoItem from '../../components/TodoItem';

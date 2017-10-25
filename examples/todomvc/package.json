@@ -25,12 +25,13 @@
   },
   "dependencies": {
     "classnames": "^2.1.2",
+    "prop-types": "^15.6.0",
     "provide-array": "^1.0.0",
     "provide-map": "^1.0.0",
-    "react": "^0.14.0 || ^15.0.0-0",
-    "react-dom": "^0.14.0 || ^15.0.0-0",
-    "react-redux-provide": "^6.0.0-0",
-    "redux-replicate-localforage": "^2.0.0-0"
+    "react": "^0.14.0 || ^15.0.0-0 || ^16.0.0-0",
+    "react-dom": "^0.14.0 || ^15.0.0-0 || ^16.0.0-0",
+    "react-redux-provide": "^6.0.0-0 || ^7.0.0-0",
+    "redux-replicate-localforage": "^3.0.2"
   },
   "devDependencies": {
     "babel-cli": "^6.6.0",
@@ -48,8 +49,7 @@
     "mocha": "^2.2.5",
     "node-libs-browser": "^0.5.2",
     "raw-loader": "^0.5.1",
-    "react-addons-test-utils": "^0.14.0 || ^15.0.0-0",
-    "react-redux-provide-test-utils": "^1.0.4",
+    "react-redux-provide-test-utils": "^1.0.15",
     "react-transform-hmr": "^1.0.0",
     "style-loader": "^0.12.3",
     "todomvc-app-css": "^2.0.1",

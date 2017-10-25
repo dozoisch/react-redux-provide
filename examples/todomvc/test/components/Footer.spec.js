@@ -1,7 +1,7 @@
 import 'react-redux-provide/lib/install';
 import expect from 'expect';
 import React from 'react';
-import { Simulate } from 'react-addons-test-utils';
+import { Simulate } from 'react-dom/test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
 import Footer from '../../components/Footer';
 import defaultProps from '../../defaultProps';
