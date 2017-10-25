@@ -2,7 +2,7 @@ import '../src/install';
 import expect from 'expect';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Simulate } from 'react-addons-test-utils';
+import { Simulate } from 'react-dom/test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
 import { Test } from './components/index';
 import { test } from './providers/index';
@@ -46,8 +46,7 @@ describe('react-redux-provide', () => {
     expect(firstItem.className).toBe('test-item');
     expect(firstItem.textContent).toBe('test');
   });
-/*
-  // TODO: latest react breaks this... will need to debug later (thx fb!)
+
   it('should trigger an action and re-render', () => {
     const { node, wrappedInstance } = render({ placeholder });
     const { unshiftItem } = wrappedInstance;
@@ -138,5 +137,4 @@ describe('react-redux-provide', () => {
     expect(providedItem0.renders).toBe(6);
     expect(providedItem1.renders).toBe(2);
   });
-*/
 });
