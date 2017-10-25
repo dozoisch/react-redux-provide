@@ -128,6 +128,15 @@ export default function instantiateProvider(
     fauxInstance.relevantProviders[providerKey] = true;
   }
 
+  if (
+    createState
+    && typeof createState === 'object'
+    && provider.state
+    && typeof provider.state === 'object'
+  ) {
+    createState = { ...provider.state, ...createState };
+  }
+
   // TODO: we'll use this at some point
   //if (providerInstance && hasReducerKeys(providerInstance, getReducerKeys)) {
   if (providerInstance) {
