@@ -37,7 +37,9 @@ React.createElement = function(ComponentClass, props, ...args) {
               const instances = update.apply(this, arguments);
 
               for (let instance of instances) {
-                let wrapper = instance.props.__wrapper;
+                let wrapper = (
+                  instance.componentProps || !instance.props.__wrapper
+                ) ? instance : instance.props.__wrapper;
                 let { props, context } = wrapper;
 
                 wrapper.reinitialize(props, context);
