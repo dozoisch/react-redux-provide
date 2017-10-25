@@ -1,6 +1,7 @@
 import '../src/install';
 import expect from 'expect';
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Simulate } from 'react-addons-test-utils';
 import { renderTest } from 'react-redux-provide-test-utils';
 import { Test } from './components/index';
