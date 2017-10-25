@@ -91,7 +91,6 @@ export default function instantiateProvider(
   let providerInstance;
   let isStatic = typeof providerKey !== 'function';
   let storeKey;
-  let creator;
 
   if (typeof provider.key === 'string') {
     if (!providers[provider.key]) {
@@ -140,20 +139,22 @@ export default function instantiateProvider(
   // TODO: we'll use this at some point
   //if (providerInstance && hasReducerKeys(providerInstance, getReducerKeys)) {
   if (providerInstance) {
-    if (createState) {
-      creator = providerInstance;
-    } else {
-      if (readyCallback) {
-        if (providerInstance.ready) {
-          readyCallback(providerInstance);
-        } else {
-          pushOnReady({ providerInstance }, readyCallback);
-        }
+    if (readyCallback) {
+      if (providerInstance.ready) {
+        readyCallback(providerInstance);
+      } else {
+        pushOnReady({ providerInstance }, readyCallback);
       }
-
-      providerInstances[providerKey] = providerInstance;
-      return providerInstance;
     }
+
+    providerInstances[providerKey] = providerInstance;
+
+    if (createState) {
+      // TODO: clean this up
+      providerInstance.store.setState(createState, false, true);
+    }
+
+    return providerInstance;
   }
 
   if (!provider.hasThunk) {
@@ -410,9 +411,7 @@ export default function instantiateProvider(
           }
         }
       );
-    } : null,
-    // TODO: we need a better way to create + replicate
-    creator && creator.store
+    } : null
   );
 
   const initialState = store.getState();
