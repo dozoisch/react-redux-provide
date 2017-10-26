@@ -42,6 +42,7 @@ function hasReducerKeys(providerInstance, getReducerKeys) {
  * @param {Function} readyCallback Optional
  * @param {Object} createState Optional
  * @param {Object} getReducerKeys Optional
+ * @param {Boolean} useCreator Optional
  * @return {Object}
  * @api public
  */
@@ -51,7 +52,8 @@ export default function instantiateProvider(
   providerKey,
   readyCallback,
   createState,
-  getReducerKeys
+  getReducerKeys,
+  useCreator  // TODO: clean this up
 ) {
   if (arguments.length === 1) {
     fauxInstance = arguments[0].fauxInstance;
@@ -60,6 +62,7 @@ export default function instantiateProvider(
     readyCallback = arguments[0].readyCallback;
     createState = arguments[0].createState;
     getReducerKeys = arguments[0].getReducerKeys;
+    useCreator = arguments[0].useCreator;
 
     if (!fauxInstance) {
       provider = arguments[0];
@@ -91,6 +94,7 @@ export default function instantiateProvider(
   let providerInstance;
   let isStatic = typeof providerKey !== 'function';
   let storeKey;
+  let creator;
 
   if (typeof provider.key === 'string') {
     if (!providers[provider.key]) {
@@ -139,22 +143,32 @@ export default function instantiateProvider(
   // TODO: we'll use this at some point
   //if (providerInstance && hasReducerKeys(providerInstance, getReducerKeys)) {
   if (providerInstance) {
-    if (readyCallback) {
-      if (providerInstance.ready) {
-        readyCallback(providerInstance);
-      } else {
-        pushOnReady({ providerInstance }, readyCallback);
-      }
-    }
-
-    providerInstances[providerKey] = providerInstance;
-
     if (createState) {
-      // TODO: clean this up
-      providerInstance.store.setState(createState, false, true);
+      if (useCreator) {   // TODO: clean this up
+        creator = providerInstance;
+      } else {
+        providerInstances[providerKey] = providerInstance;
+        providerInstance.store.setState(createState, false, true);
+        if (readyCallback) {
+          if (providerInstance.ready) {
+            readyCallback(providerInstance);
+          } else {
+            pushOnReady({ providerInstance }, readyCallback);
+          }
+        }
+        return providerInstance;
+      }
+    } else {
+      providerInstances[providerKey] = providerInstance;
+      if (readyCallback) {
+        if (providerInstance.ready) {
+          readyCallback(providerInstance);
+        } else {
+          pushOnReady({ providerInstance }, readyCallback);
+        }
+      }
+      return providerInstance;
     }
-
-    return providerInstance;
   }
 
   if (!provider.hasThunk) {
@@ -200,19 +214,18 @@ export default function instantiateProvider(
       result.forEach((resultProps, index) => {
         resultInstances[index] = null;
 
-        instantiateProvider(
-          getTempFauxInstance(fauxInstance, resultProps),
-          findProvider(resultProps),
-          undefined,
-          resultInstance => {
+        instantiateProvider({
+          fauxInstance: getTempFauxInstance(fauxInstance, resultProps),
+          provider: findProvider(resultProps),
+          readyCallback: resultInstance => {
             resultInstances[index] = resultInstance;
             clear();
           }
-        );
+        });
       });
     }
 
-    function getInstance(props, callback, create) {
+    function getInstance(props, callback, create, useCreator) {
       let provider;
       let providerKey;
 
@@ -227,16 +240,17 @@ export default function instantiateProvider(
         provider = findProvider(props);
       }
 
-      return instantiateProvider(
-        getTempFauxInstance(fauxInstance, props),
+      return instantiateProvider({
+        fauxInstance: getTempFauxInstance(fauxInstance, props),
         provider,
         providerKey,
-        callback,
-        create ? props : null
-      );
+        readyCallback: callback,
+        createState: create ? props : null,
+        useCreator
+      });
     }
 
-    function getInstances(propsArray, callback, create) {
+    function getInstances(propsArray, callback, create, useCreator) {
       const instances = [];
       let getCount = propsArray.length;
       const clear = () => {
@@ -257,12 +271,12 @@ export default function instantiateProvider(
       return instances;
     }
 
-    function createInstance(props, callback) {
-      return getInstance(props, callback, true);
+    function createInstance(props, callback, useCreator) {
+      return getInstance(props, callback, true, useCreator);
     }
 
-    function createInstances(propsArray, callback) {
-      return getInstances(propsArray, callback, true);
+    function createInstances(propsArray, callback, useCreator) {
+      return getInstances(propsArray, callback, true, useCreator);
     }
 
     function setStates(states) {
@@ -399,19 +413,20 @@ export default function instantiateProvider(
     createState ? (state) => {
       const { onReady } = providerInstance;
 
-      providerInstance = instantiateProvider(
-        getTempFauxInstance(fauxInstance, state),
+      providerInstance = instantiateProvider({
+        fauxInstance: getTempFauxInstance(fauxInstance, state),
         provider,
-        undefined,
-        createdInstance => {
+        readyCallback: createdInstance => {
           if (Array.isArray(onReady)) {
             onReady.forEach(fn => fn(createdInstance));
           } else if (onReady) {
             onReady(createdInstance);
           }
         }
-      );
-    } : null
+      });
+    } : null,
+    // TODO: we need a better way to create + replicate   
+    creator && creator.store
   );
 
   const initialState = store.getState();
