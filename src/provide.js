@@ -35,6 +35,7 @@ export default function provide(ComponentClass) {
     static propTypes = contextTypes;
     static contextTypes = contextTypes;
     static childContextTypes = contextTypes;
+    static defaultProps = ComponentClass.defaultProps;
 
     getChildContext() {
       return {
