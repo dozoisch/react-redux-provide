@@ -175,11 +175,14 @@ export default function provide(ComponentClass) {
       if (clientStates) {
         for (let providerKey in clientStates) {
           let state = clientStates[providerKey];
+          let provider = findProvider(state);
 
-          instantiateProvider(
-            getTempFauxInstance(fauxInstance, state),
-            findProvider(state)
-          );
+          if (provider) {
+            instantiateProvider(
+              getTempFauxInstance(fauxInstance, state),
+              provider
+            );
+          }
         }
       }
     }
