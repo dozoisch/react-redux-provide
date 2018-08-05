@@ -1,6 +1,6 @@
 # react-redux-provide
 
-[![build status](https://img.shields.io/travis/loggur/react-redux-provide/master.svg?style=flat-square)](https://travis-ci.org/loggur/react-redux-provide) [![npm version](https://img.shields.io/npm/v/react-redux-provide.svg?style=flat-square)](https://www.npmjs.com/package/react-redux-provide)
+[![build status](https://img.shields.io/travis/timbur/react-redux-provide/master.svg?style=flat-square)](https://travis-ci.org/timbur/react-redux-provide) [![npm version](https://img.shields.io/npm/v/react-redux-provide.svg?style=flat-square)](https://www.npmjs.com/package/react-redux-provide)
 [![npm downloads](https://img.shields.io/npm/dm/react-redux-provide.svg?style=flat-square)](https://www.npmjs.com/package/react-redux-provide)
 
 
@@ -21,7 +21,7 @@ Build your UI with [React](https://facebook.github.io/react/).
 
 Manage application state with [Redux](http://redux.js.org/) providers.
 
-Persist and share application state with [replication](https://github.com/loggur/redux-replicate).
+Persist and share application state with [replication](https://github.com/timbur/redux-replicate).
 
 Use [pure functions](https://en.wikipedia.org/wiki/Pure_function) everywhere.
 
@@ -34,7 +34,7 @@ Unfamiliar with [React](https://facebook.github.io/react/) and/or [Redux](http:/
 
 ## Documentation
 
-Checkout the full documentation at [https://loggur.github.io/react-redux-provide/](https://loggur.github.io/react-redux-provide/).
+Checkout the full documentation at [https://timbur.github.io/react-redux-provide/](https://timbur.github.io/react-redux-provide/).
 
 
 ## Installation
